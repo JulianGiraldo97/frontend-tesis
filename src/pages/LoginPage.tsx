@@ -1,230 +1,101 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { useAuth } from '@/context/AuthContext';
-import { LoginCredentials, RegisterData } from '@/types';
-import * as Label from '@radix-ui/react-label';
-import * as Button from '@radix-ui/react-button';
+import { Button } from '../components/Button';
+import { Input } from '../components/Input';
 
 export const LoginPage: React.FC = () => {
-  const { login, register, isLoading, error, clearError } = useAuth();
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const {
-    register: registerField,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm<LoginCredentials & RegisterData>();
-
-  const onSubmit = async (data: LoginCredentials | RegisterData) => {
-    clearError();
-    try {
-      if (isRegistering) {
-        await register(data as RegisterData);
-      } else {
-        await login(data as LoginCredentials);
-      }
-    } catch (error) {
-      // Error is handled by the auth context
-    }
-  };
-
-  const toggleMode = () => {
-    setIsRegistering(!isRegistering);
-    clearError();
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Login attempt:', { email, password });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-primary-500 mb-2">
-            Emplea+
-          </h1>
-          <p className="text-lg text-gray-600">
-            {isRegistering ? 'Crear cuenta' : 'Iniciar sesión'}
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            Plataforma accesible de intermediación laboral
-          </p>
-        </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h1 className="text-center text-3xl font-bold text-green-600">
+          Emplea+
+        </h1>
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Iniciar sesión
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Plataforma de intermediación laboral accesible
+        </p>
+      </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {isRegistering && (
-            <div>
-              <Label.Root htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Nombre completo
-              </Label.Root>
-              <input
-                id="name"
-                type="text"
-                {...registerField('name', { 
-                  required: isRegistering ? 'El nombre es requerido' : false 
-                })}
-                className="input-field"
-                aria-describedby={errors.name ? 'name-error' : undefined}
-                aria-invalid={errors.name ? 'true' : 'false'}
-              />
-              {errors.name && (
-                <p id="name-error" className="mt-1 text-sm text-red-600" role="alert">
-                  {errors.name.message}
-                </p>
-              )}
-            </div>
-          )}
-
-          <div>
-            <Label.Root htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Correo electrónico
-            </Label.Root>
-            <input
-              id="email"
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <Input
               type="email"
-              autoComplete="email"
-              {...registerField('email', { 
-                required: 'El correo es requerido',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Correo electrónico inválido'
-                }
-              })}
-              className="input-field"
-              aria-describedby={errors.email ? 'email-error' : undefined}
-              aria-invalid={errors.email ? 'true' : 'false'}
+              label="Correo electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="correo@ejemplo.com"
+              required
             />
-            {errors.email && (
-              <p id="email-error" className="mt-1 text-sm text-red-600" role="alert">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
 
-          <div>
-            <Label.Root htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Contraseña
-            </Label.Root>
             <div className="relative">
-              <input
-                id="password"
+              <Input
                 type={showPassword ? 'text' : 'password'}
-                autoComplete={isRegistering ? 'new-password' : 'current-password'}
-                {...registerField('password', { 
-                  required: 'La contraseña es requerida',
-                  minLength: {
-                    value: 6,
-                    message: 'La contraseña debe tener al menos 6 caracteres'
-                  }
-                })}
-                className="input-field pr-12"
-                aria-describedby={errors.password ? 'password-error' : undefined}
-                aria-invalid={errors.password ? 'true' : 'false'}
+                label="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute right-3 top-8 text-gray-500 hover:text-gray-700"
                 aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
               >
-                {showPassword ? (
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                  </svg>
-                ) : (
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
+                {showPassword ? '👁️' : '👁️‍🗨️'}
               </button>
             </div>
-            {errors.password && (
-              <p id="password-error" className="mt-1 text-sm text-red-600" role="alert">
-                {errors.password.message}
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                  Recordarme
+                </label>
+              </div>
+
+              <div className="text-sm">
+                <a href="#" className="font-medium text-green-600 hover:text-green-500">
+                  ¿Olvidaste tu contraseña?
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <Button
+                type="submit"
+                className="w-full"
+                aria-label="Iniciar sesión"
+              >
+                Iniciar sesión
+              </Button>
+            </div>
+
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                ¿No tienes cuenta?{' '}
+                <a href="#" className="font-medium text-green-600 hover:text-green-500">
+                  Crear cuenta
+                </a>
               </p>
-            )}
-          </div>
-
-          {isRegistering && (
-            <div>
-              <Label.Root htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
-                Tipo de cuenta
-              </Label.Root>
-              <select
-                id="role"
-                {...registerField('role', { required: 'Selecciona un tipo de cuenta' })}
-                className="input-field"
-                aria-describedby={errors.role ? 'role-error' : undefined}
-                aria-invalid={errors.role ? 'true' : 'false'}
-              >
-                <option value="">Selecciona...</option>
-                <option value="candidate">Candidato</option>
-                <option value="employer">Empleador</option>
-              </select>
-              {errors.role && (
-                <p id="role-error" className="mt-1 text-sm text-red-600" role="alert">
-                  {errors.role.message}
-                </p>
-              )}
             </div>
-          )}
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4" role="alert">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
-          )}
-
-          <Button.Root
-            type="submit"
-            disabled={isLoading}
-            className="btn-primary w-full"
-            aria-describedby={isLoading ? 'loading-status' : undefined}
-          >
-            {isLoading ? 'Procesando...' : (isRegistering ? 'Crear cuenta' : 'Iniciar sesión')}
-          </Button.Root>
-
-          {isLoading && (
-            <p id="loading-status" className="sr-only" aria-live="polite">
-              Procesando solicitud...
-            </p>
-          )}
-        </form>
-
-        {/* Links */}
-        <div className="text-center space-y-4">
-          <button
-            type="button"
-            onClick={toggleMode}
-            className="text-primary-600 hover:text-primary-500 font-medium"
-            aria-label={isRegistering ? 'Cambiar a inicio de sesión' : 'Cambiar a registro'}
-          >
-            {isRegistering ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
-          </button>
-
-          {!isRegistering && (
-            <div>
-              <Link
-                to="/forgot-password"
-                className="text-sm text-gray-600 hover:text-gray-500"
-                aria-label="¿Olvidaste tu contraseña?"
-              >
-                ¿Olvidaste tu contraseña?
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Demo credentials */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 mb-2">Credenciales de prueba:</h3>
-          <p className="text-sm text-blue-700">
-            Email: test@example.com<br />
-            Contraseña: password
-          </p>
+          </form>
         </div>
       </div>
     </div>

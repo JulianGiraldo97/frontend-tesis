@@ -4,17 +4,20 @@ FROM node:18-alpine AS base
 # Set working directory
 WORKDIR /app
 
+# Set Node.js options for OpenSSL compatibility
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production --legacy-peer-deps
+# Install dependencies with legacy peer deps and force resolution
+RUN npm install --legacy-peer-deps --force
 
 # Development stage
 FROM base AS development
 
 # Install all dependencies including devDependencies
-RUN npm ci --legacy-peer-deps
+RUN npm install --legacy-peer-deps --force
 
 # Copy source code
 COPY . .
@@ -29,7 +32,7 @@ CMD ["npm", "start"]
 FROM base AS build
 
 # Install all dependencies
-RUN npm ci --legacy-peer-deps
+RUN npm install --legacy-peer-deps --force
 
 # Copy source code
 COPY . .

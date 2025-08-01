@@ -1,20 +1,20 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { useAccessibility } from '@/hooks/useAccessibility';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { SkipLink } from '@/components/SkipLink';
-import { AccessibilitySettingsPanel } from '@/components/AccessibilitySettingsPanel';
+import { useAuth } from './hooks/useAuth';
+import { useAccessibility } from './hooks/useAccessibility';
+import { LoadingSpinner } from './components/LoadingSpinner';
+import { SkipLink } from './components/SkipLink';
+import { AccessibilitySettingsPanel } from './components/AccessibilitySettingsPanel';
 
 // Pages
-import { LoginPage } from '@/pages/LoginPage';
-import { CandidateDashboard } from '@/pages/CandidateDashboard';
-import { JobSearchPage } from '@/pages/JobSearchPage';
-import { JobDetailPage } from '@/pages/JobDetailPage';
-import { ApplicationPage } from '@/pages/ApplicationPage';
-import { EmployerDashboard } from '@/pages/EmployerDashboard';
-import { AdminDashboard } from '@/pages/AdminDashboard';
-import { ProfilePage } from '@/pages/ProfilePage';
+import { LoginPage } from './pages/LoginPage';
+import { CandidateDashboard } from './pages/CandidateDashboard';
+import { JobSearchPage } from './pages/JobSearchPage';
+import { JobDetailPage } from './pages/JobDetailPage';
+import { ApplicationPage } from './pages/ApplicationPage';
+import { EmployerDashboard } from './pages/EmployerDashboard';
+import { AdminDashboard } from './pages/AdminDashboard';
+import { ProfilePage } from './pages/ProfilePage';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -113,24 +113,6 @@ export const AppRouter: React.FC = () => {
           />
 
           <Route
-            path="/employer"
-            element={
-              <ProtectedRoute requiredRole="employer">
-                <EmployerDashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/admin/*"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
             path="/profile"
             element={
               <ProtectedRoute>
@@ -139,23 +121,36 @@ export const AppRouter: React.FC = () => {
             }
           />
 
-          {/* Default redirect */}
+          {/* Employer routes */}
           <Route
-            path="/"
+            path="/employer"
             element={
-              <Navigate 
-                to={isAuthenticated ? "/dashboard" : "/login"} 
-                replace 
-              />
+              <ProtectedRoute requiredRole="employer">
+                <EmployerDashboard />
+              </ProtectedRoute>
             }
           />
 
-          {/* 404 route */}
+          {/* Admin routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Default redirect */}
+          <Route
+            path="/"
+            element={<Navigate to="/login" replace />}
+          />
+
+          {/* Catch all */}
           <Route
             path="*"
-            element={
-              <Navigate to="/login" replace />
-            }
+            element={<Navigate to="/login" replace />}
           />
         </Routes>
       </main>
