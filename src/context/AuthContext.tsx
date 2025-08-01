@@ -1,11 +1,14 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, AuthState, LoginCredentials, RegisterData } from '@/types';
+import { apiClient } from '@/services/apiClient';
+import { accessibilityUtils } from '@/utils/accessibilityUtils';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  register: (userData: RegisterData) => Promise<void>;
   logout: () => void;
   clearError: () => void;
+  validateSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -15,113 +18,143 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: true,
-    error: null,
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Check for existing session on mount
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('auth-token');
-        if (token) {
-          // Mock API call to validate token
-          const user = await validateToken(token);
-          setState({
-            user,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          });
-        } else {
-          setState(prev => ({ ...prev, isLoading: false }));
+    const checkExistingSession = async (): Promise<void> => {
+      const token = localStorage.getItem('auth-token');
+      if (token) {
+        try {
+          await validateSession();
+        } catch (err) {
+          localStorage.removeItem('auth-token');
+          setIsAuthenticated(false);
+          setUser(null);
         }
-      } catch (error) {
-        setState({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: 'Session expired',
-        });
       }
+      setIsLoading(false);
     };
 
-    checkAuth();
+    checkExistingSession();
   }, []);
 
-  const login = async (credentials: LoginCredentials) => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
-    
+  const login = async (credentials: LoginCredentials): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+
     try {
-      // Mock API call
-      const user = await mockLogin(credentials);
-      localStorage.setItem('auth-token', 'mock-token');
+      const response = await apiClient.login(credentials);
       
-      setState({
-        user,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      });
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Login failed',
-      }));
+      if (response.success && response.data) {
+        const { user: userData, token } = response.data;
+        
+        localStorage.setItem('auth-token', token);
+        setUser(userData);
+        setIsAuthenticated(true);
+        
+        accessibilityUtils.announceChange(
+          `Sesión iniciada exitosamente. Bienvenido ${userData.name}`,
+          'polite'
+        );
+      } else {
+        throw new Error(response.message || 'Error al iniciar sesión');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al iniciar sesión';
+      setError(errorMessage);
+      
+      accessibilityUtils.announceChange(
+        `Error al iniciar sesión: ${errorMessage}`,
+        'assertive'
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const register = async (data: RegisterData) => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
-    
+  const register = async (userData: RegisterData): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+
     try {
-      // Mock API call
-      const user = await mockRegister(data);
-      localStorage.setItem('auth-token', 'mock-token');
+      const response = await apiClient.register(userData);
       
-      setState({
-        user,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      });
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Registration failed',
-      }));
+      if (response.success && response.data) {
+        const { user: newUser, token } = response.data;
+        
+        localStorage.setItem('auth-token', token);
+        setUser(newUser);
+        setIsAuthenticated(true);
+        
+        accessibilityUtils.announceChange(
+          `Cuenta creada exitosamente. Bienvenido ${newUser.name}`,
+          'polite'
+        );
+      } else {
+        throw new Error(response.message || 'Error al crear cuenta');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al crear cuenta';
+      setError(errorMessage);
+      
+      accessibilityUtils.announceChange(
+        `Error al crear cuenta: ${errorMessage}`,
+        'assertive'
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const logout = () => {
+  const logout = (): void => {
     localStorage.removeItem('auth-token');
-    setState({
-      user: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
-    });
+    setUser(null);
+    setIsAuthenticated(false);
+    setError(null);
+    
+    accessibilityUtils.announceChange('Sesión cerrada exitosamente', 'polite');
   };
 
-  const clearError = () => {
-    setState(prev => ({ ...prev, error: null }));
+  const clearError = (): void => {
+    setError(null);
   };
 
-  const value: AuthContextType = {
-    ...state,
+  const validateSession = async (): Promise<void> => {
+    try {
+      const response = await apiClient.validateToken();
+      
+      if (response.success && response.data) {
+        setUser(response.data.user);
+        setIsAuthenticated(true);
+      } else {
+        throw new Error('Token inválido');
+      }
+    } catch (err) {
+      localStorage.removeItem('auth-token');
+      setUser(null);
+      setIsAuthenticated(false);
+      throw err;
+    }
+  };
+
+  const contextValue: AuthContextType = {
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
     login,
     register,
     logout,
     clearError,
+    validateSession,
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
@@ -133,65 +166,4 @@ export const useAuth = (): AuthContextType => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
-
-// Mock API functions
-const mockLogin = async (credentials: LoginCredentials): Promise<User> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Mock validation
-  if (credentials.email === 'test@example.com' && credentials.password === 'password') {
-    return {
-      id: '1',
-      email: credentials.email,
-      name: 'Test User',
-      role: 'candidate',
-      accessibilityPreferences: {
-        highContrast: false,
-        easyReading: false,
-        keyboardNavigation: true,
-        captions: false,
-        screenReader: false,
-      },
-    };
-  }
-  
-  throw new Error('Invalid credentials');
-};
-
-const mockRegister = async (data: RegisterData): Promise<User> => {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  return {
-    id: Date.now().toString(),
-    email: data.email,
-    name: data.name,
-    role: data.role,
-    accessibilityPreferences: {
-      highContrast: false,
-      easyReading: false,
-      keyboardNavigation: true,
-      captions: false,
-      screenReader: false,
-    },
-  };
-};
-
-const validateToken = async (token: string): Promise<User> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  return {
-    id: '1',
-    email: 'test@example.com',
-    name: 'Test User',
-    role: 'candidate',
-    accessibilityPreferences: {
-      highContrast: false,
-      easyReading: false,
-      keyboardNavigation: true,
-      captions: false,
-      screenReader: false,
-    },
-  };
 }; 
