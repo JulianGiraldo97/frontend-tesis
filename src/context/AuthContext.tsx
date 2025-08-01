@@ -1,45 +1,57 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, AuthState, LoginCredentials, RegisterData } from '@/types';
-import { apiClient } from '@/services/apiClient';
-import { accessibilityUtils } from '@/utils/accessibilityUtils';
 
-interface AuthContextType extends AuthState {
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'candidate' | 'employer' | 'admin';
+}
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  role: 'candidate' | 'employer';
+}
+
+interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
   logout: () => void;
   clearError: () => void;
-  validateSession: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   // Check for existing session on mount
   useEffect(() => {
-    const checkExistingSession = async (): Promise<void> => {
-      const token = localStorage.getItem('auth-token');
-      if (token) {
-        try {
-          await validateSession();
-        } catch (err) {
-          localStorage.removeItem('auth-token');
-          setIsAuthenticated(false);
-          setUser(null);
-        }
-      }
-      setIsLoading(false);
-    };
-
-    checkExistingSession();
+    const token = localStorage.getItem('auth-token');
+    if (token) {
+      // Mock user data for demo
+      const mockUser: User = {
+        id: '1',
+        name: 'Juan Pérez',
+        email: 'juan@example.com',
+        role: 'candidate'
+      };
+      setUser(mockUser);
+      setIsAuthenticated(true);
+    }
   }, []);
 
   const login = async (credentials: LoginCredentials): Promise<void> => {
@@ -47,30 +59,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      const response = await apiClient.login(credentials);
+      // Mock login - in real app this would be an API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (response.success && response.data) {
-        const { user: userData, token } = response.data;
+      if (credentials.email === 'demo@example.com' && credentials.password === 'password') {
+        const mockUser: User = {
+          id: '1',
+          name: 'Juan Pérez',
+          email: credentials.email,
+          role: 'candidate'
+        };
         
-        localStorage.setItem('auth-token', token);
-        setUser(userData);
+        localStorage.setItem('auth-token', 'mock-token');
+        setUser(mockUser);
         setIsAuthenticated(true);
-        
-        accessibilityUtils.announceChange(
-          `Sesión iniciada exitosamente. Bienvenido ${userData.name}`,
-          'polite'
-        );
       } else {
-        throw new Error(response.message || 'Error al iniciar sesión');
+        throw new Error('Credenciales inválidas');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al iniciar sesión';
       setError(errorMessage);
-      
-      accessibilityUtils.announceChange(
-        `Error al iniciar sesión: ${errorMessage}`,
-        'assertive'
-      );
     } finally {
       setIsLoading(false);
     }
@@ -81,30 +89,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      const response = await apiClient.register(userData);
+      // Mock registration - in real app this would be an API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (response.success && response.data) {
-        const { user: newUser, token } = response.data;
-        
-        localStorage.setItem('auth-token', token);
-        setUser(newUser);
-        setIsAuthenticated(true);
-        
-        accessibilityUtils.announceChange(
-          `Cuenta creada exitosamente. Bienvenido ${newUser.name}`,
-          'polite'
-        );
-      } else {
-        throw new Error(response.message || 'Error al crear cuenta');
-      }
+      const newUser: User = {
+        id: Date.now().toString(),
+        name: userData.name,
+        email: userData.email,
+        role: userData.role
+      };
+      
+      localStorage.setItem('auth-token', 'mock-token');
+      setUser(newUser);
+      setIsAuthenticated(true);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al crear cuenta';
       setError(errorMessage);
-      
-      accessibilityUtils.announceChange(
-        `Error al crear cuenta: ${errorMessage}`,
-        'assertive'
-      );
     } finally {
       setIsLoading(false);
     }
@@ -115,30 +115,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
     setError(null);
-    
-    accessibilityUtils.announceChange('Sesión cerrada exitosamente', 'polite');
   };
 
   const clearError = (): void => {
     setError(null);
-  };
-
-  const validateSession = async (): Promise<void> => {
-    try {
-      const response = await apiClient.validateToken();
-      
-      if (response.success && response.data) {
-        setUser(response.data.user);
-        setIsAuthenticated(true);
-      } else {
-        throw new Error('Token inválido');
-      }
-    } catch (err) {
-      localStorage.removeItem('auth-token');
-      setUser(null);
-      setIsAuthenticated(false);
-      throw err;
-    }
   };
 
   const contextValue: AuthContextType = {
@@ -150,7 +130,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout,
     clearError,
-    validateSession,
   };
 
   return (
@@ -162,7 +141,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

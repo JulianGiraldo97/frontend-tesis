@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
-import { useAccessibility } from './hooks/useAccessibility';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { SkipLink } from './components/SkipLink';
 import { AccessibilitySettingsPanel } from './components/AccessibilitySettingsPanel';
@@ -41,22 +40,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
 
 export const AppRouter: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const { announceToScreenReader } = useAccessibility();
-
-  // Announce route changes to screen readers
-  React.useEffect(() => {
-    const currentPath = window.location.pathname;
-    const routeNames: Record<string, string> = {
-      '/login': 'Página de inicio de sesión',
-      '/dashboard': 'Panel de candidato',
-      '/jobs': 'Búsqueda de empleos',
-      '/profile': 'Perfil de usuario',
-      '/admin': 'Panel de administración',
-    };
-
-    const routeName = routeNames[currentPath] || 'Página';
-    announceToScreenReader(`Navegando a ${routeName}`, 'polite');
-  }, [window.location.pathname, announceToScreenReader]);
 
   return (
     <>
@@ -147,7 +130,7 @@ export const AppRouter: React.FC = () => {
             element={<Navigate to="/login" replace />}
           />
 
-          {/* Catch all */}
+          {/* Catch all route */}
           <Route
             path="*"
             element={<Navigate to="/login" replace />}

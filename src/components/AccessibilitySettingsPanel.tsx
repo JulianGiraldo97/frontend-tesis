@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAccessibility } from '../hooks/useAccessibility';
 
 interface AccessibilitySettingsPanelProps {
   className?: string;
@@ -8,8 +9,7 @@ export const AccessibilitySettingsPanel: React.FC<AccessibilitySettingsPanelProp
   className = ''
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [highContrast, setHighContrast] = React.useState(false);
-  const [easyReading, setEasyReading] = React.useState(false);
+  const { highContrast, setHighContrast, easyReading, setEasyReading } = useAccessibility();
 
   const togglePanel = () => setIsOpen(!isOpen);
 
