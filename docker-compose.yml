@@ -1,0 +1,53 @@
+services:
+  # Development environment
+  emplea-plus-dev:
+    build:
+      context: .
+      target: development
+    container_name: emplea-plus-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    stdin_open: true
+    tty: true
+    networks:
+      - emplea-plus-network
+
+  # Production environment
+  emplea-plus-prod:
+    build:
+      context: .
+      target: production
+    container_name: emplea-plus-prod
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - emplea-plus-network
+    restart: unless-stopped
+
+  # Testing environment
+  emplea-plus-test:
+    build:
+      context: .
+      target: development
+    container_name: emplea-plus-test
+    environment:
+      - NODE_ENV=test
+    command: ["npm", "test", "--", "--watchAll=false", "--coverage"]
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - emplea-plus-network
+
+networks:
+  emplea-plus-network:
+    driver: bridge 

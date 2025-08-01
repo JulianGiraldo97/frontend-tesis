@@ -54,6 +54,62 @@ Una plataforma web accesible diseñada específicamente para personas con discap
 - **ESLint** + **Prettier**
 - **Husky** para pre-commit hooks
 
+## 🐳 Docker (Recomendado)
+
+### Prerrequisitos
+- Docker Desktop instalado y ejecutándose
+- Docker Compose
+
+### Desarrollo con Docker
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/emplea-plus.git
+cd emplea-plus
+
+# Iniciar desarrollo
+./scripts/docker-dev.sh
+
+# O manualmente:
+docker-compose up emplea-plus-dev
+```
+
+### Producción con Docker
+
+```bash
+# Construir y ejecutar en producción
+./scripts/docker-prod.sh
+
+# O manualmente:
+docker-compose up -d emplea-plus-prod
+```
+
+### Testing con Docker
+
+```bash
+# Ejecutar tests
+./scripts/docker-test.sh
+
+# O manualmente:
+docker-compose run --rm emplea-plus-test
+```
+
+### Comandos Docker Útiles
+
+```bash
+# Ver logs
+docker-compose logs -f emplea-plus-dev
+
+# Reconstruir imagen
+docker-compose build emplea-plus-dev
+
+# Parar todos los servicios
+docker-compose down
+
+# Ver estado de contenedores
+docker-compose ps
+```
+
 ## 📁 Estructura del Proyecto
 
 ```
@@ -93,7 +149,7 @@ src/
 └── index.tsx
 ```
 
-## 🚀 Instalación y Configuración
+## 🚀 Instalación Local (Alternativa)
 
 ### Prerrequisitos
 - Node.js 18+ 
@@ -106,7 +162,7 @@ git clone https://github.com/tu-usuario/emplea-plus.git
 cd emplea-plus
 
 # Instalar dependencias
-npm install
+npm install --legacy-peer-deps
 
 # Configurar variables de entorno
 cp .env.example .env.local
@@ -208,6 +264,10 @@ Pre-commit hooks que ejecutan:
 
 ### Build de Producción
 ```bash
+# Con Docker (recomendado)
+./scripts/docker-prod.sh
+
+# Sin Docker
 npm run build
 ```
 
