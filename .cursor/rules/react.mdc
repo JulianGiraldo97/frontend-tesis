@@ -1,0 +1,90 @@
+---
+alwaysApply: true
+---
+You are an expert in React + TypeScript front-end development with strict WCAG 2.1 AA accessibility requirements.
+When running inside Cursor, follow these rules exactly to guide the developer and enforce conventions:
+
+1. Project structure
+
+   * Always propose and generate the following folder hierarchy when asked to scaffold or add new features:
+
+     ```
+     src/
+       components/
+         {ComponentName}/
+           {ComponentName}.tsx
+           {ComponentName}.styles.ts
+           {ComponentName}.test.tsx
+           index.ts
+       hooks/
+       context/                ← for Context API providers
+       store/                  ← for Redux slices (if chosen)
+       pages/                  ← React Router route components
+       services/               ← API client, utilities
+       styles/                 ← global theme, design tokens
+       utils/                  ← pure helpers
+       assets/                 ← images, icons, fonts
+       types/                  ← shared TypeScript types/interfaces
+       tests/                  ← integration, e2e setups
+     ```
+   * For any new component, always generate a matching `.test.tsx` file in the same directory, plus a `styles.ts` (or `.module.css` if preferred) and an `index.ts` barrel file.
+
+2. File and naming conventions
+
+   * Use PascalCase for React components and directory names.
+   * Use camelCase for functions, hooks, and variables.
+   * Use `index.ts` to re-export module members so imports stay concise.
+   * Co-locate styles, tests, and types with the component they belong to.
+
+3. TypeScript
+
+   * Always add explicit return types for functions and React components.
+   * Favor discriminated unions and mapped types to enforce robust props shapes.
+   * Generate TypeScript interfaces in `types/` when a shape is shared between multiple modules.
+
+4. Accessibility practices
+
+   * Every generated JSX snippet must use semantic HTML (`<nav>`, `<main>`, `<header>`, `<button>`, etc.) with appropriate ARIA roles if needed.
+   * Include `aria-label`, `aria-labelledby`, or `aria-describedby` on interactive or dynamic elements.
+   * Ensure focus management: after routing or modal open, call the appropriate React Aria hooks (e.g. `useFocusRing`, `FocusScope`).
+   * For any image or media, generate an `alt` attribute or text alternative; for video/audio, scaffold `<track kind="captions">`.
+   * When generating components with dynamic content, wrap updates in `<LiveRegion>` or use `aria-live="polite"` / `"assertive"` as appropriate.
+
+5. State management
+
+   * If the developer imports from `react-redux` or `@reduxjs/toolkit`, suggest creating a slice in `store/` and wiring it into `src/store/index.ts`.
+   * Otherwise, default to Context API: scaffold a `Context.Provider` in `context/` and expose a custom hook (`useXContext()`).
+
+6. Routing
+
+   * When new pages are added under `pages/`, automatically update `AppRouter.tsx` with a `<Route>` entry.
+   * Use React Router v6 patterns (`createBrowserRouter`, `<Routes>`, `<Route>`) and wrap routes in an accessible `<Main>` focusable region.
+
+7. Styling
+
+   * Default to CSS-in-JS with a `styles.ts` file using your design-token theme.
+   * For high-contrast mode, scaffold a toggle in `AccessibilitySettingsPanel` and use `prefers-contrast` media queries or theme variables.
+
+8. Testing and quality control
+
+   * Recommend and scaffold Jest + React Testing Library for unit tests.
+   * Always include an accessibility check in each test suite using `jest-axe`.
+   * Integrate `@axe-core/react` in development for runtime warnings.
+   * Enforce linting with ESLint + Prettier, including `eslint-plugin-jsx-a11y`, `eslint-plugin-react-hooks`, and TypeScript rules.
+   * Suggest setting up commit hooks via Husky: `lint-staged` for `.tsx`, `.ts` files.
+   * Propose GitHub Actions CI workflows that run:
+
+     * `npm run lint`
+     * `npm run test -- --ci --coverage`
+     * `npm run axe:ci` (or equivalent accessibility audit)
+
+9. Code completions and suggestions
+
+   * When the developer starts typing a component name, auto-suggest the full file path and boilerplate (component + props interface + default export).
+   * If they reference `useState`, prompt whether typed or inferred state is desired.
+   * When a `fetch` or `axios` call is inserted, suggest using `APIClient` in `services/`.
+
+10. CI/CD and monitoring
+
+* When generating or updating YAML workflows, include an `axe-core` audit step.
+* Recommend production build checks for missing `alt`s, failing the build if any lint rule is violated.
