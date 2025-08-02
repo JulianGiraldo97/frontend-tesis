@@ -5,7 +5,7 @@ import { AccessibilityNotification } from '../components/AccessibilityNotificati
 
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
-  const { highContrast, setHighContrast, easyReading, setEasyReading } = useAccessibility();
+  const { highContrast, setHighContrast, easyReading, setEasyReading, fontSize, setFontSize } = useAccessibility();
   const [isEditing, setIsEditing] = useState(false);
   const [notification, setNotification] = useState({
     message: '',
@@ -46,6 +46,28 @@ export const ProfilePage: React.FC = () => {
     setEasyReading(newValue);
     const message = newValue ? 'Modo lectura fácil activado' : 'Modo lectura fácil desactivado';
     showNotification(message, 'success');
+  };
+
+  const handleFontSizeChange = (newSize: 'small' | 'medium' | 'large' | 'xlarge') => {
+    setFontSize(newSize);
+    const sizeLabels = {
+      small: 'Pequeño',
+      medium: 'Mediano',
+      large: 'Grande',
+      xlarge: 'Muy Grande'
+    };
+    const message = `Tamaño de fuente cambiado a ${sizeLabels[newSize]}`;
+    showNotification(message, 'success');
+  };
+
+  const getFontSizeLabel = (size: string) => {
+    const labels = {
+      small: 'Pequeño (14px)',
+      medium: 'Mediano (16px)',
+      large: 'Grande (18px)',
+      xlarge: 'Muy Grande (20px)'
+    };
+    return labels[size as keyof typeof labels] || size;
   };
 
   return (
@@ -306,12 +328,29 @@ export const ProfilePage: React.FC = () => {
                   <label htmlFor="fontSize" className="form-label fw-semibold">
                     Tamaño de Fuente
                   </label>
-                  <select className="form-select form-control-custom" id="fontSize">
-                    <option value="small">Pequeño</option>
-                    <option value="medium" selected>Mediano</option>
-                    <option value="large">Grande</option>
-                    <option value="xlarge">Muy Grande</option>
+                  <select 
+                    className="form-select form-control-custom" 
+                    id="fontSize"
+                    value={fontSize}
+                    onChange={(e) => handleFontSizeChange(e.target.value as 'small' | 'medium' | 'large' | 'xlarge')}
+                  >
+                    <option value="small">Pequeño (14px)</option>
+                    <option value="medium">Mediano (16px)</option>
+                    <option value="large">Grande (18px)</option>
+                    <option value="xlarge">Muy Grande (20px)</option>
                   </select>
+                  <small className="d-block text-muted mt-2">
+                    {fontSize !== 'medium' ? `✅ Actual: ${getFontSizeLabel(fontSize)}` : 'Tamaño predeterminado'}
+                  </small>
+                  <div className="mt-2 p-3 bg-light rounded">
+                    <small className="text-muted">
+                      <strong>Opciones disponibles:</strong><br/>
+                      • <strong>Pequeño:</strong> 14px - Compacto<br/>
+                      • <strong>Mediano:</strong> 16px - Estándar<br/>
+                      • <strong>Grande:</strong> 18px - Legible<br/>
+                      • <strong>Muy Grande:</strong> 20px - Accesible
+                    </small>
+                  </div>
                 </div>
                 <div>
                   <label htmlFor="colorScheme" className="form-label fw-semibold">

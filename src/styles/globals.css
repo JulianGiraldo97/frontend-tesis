@@ -35,6 +35,182 @@ body {
   transition: all 0.3s ease;
 }
 
+/* Font Size Classes */
+.font-size-small {
+  font-size: 0.875rem !important; /* 14px */
+}
+
+.font-size-small * {
+  font-size: 0.875rem !important;
+}
+
+.font-size-small h1, .font-size-small .h1, .font-size-small .display-1,
+.font-size-small h2, .font-size-small .h2, .font-size-small .display-2,
+.font-size-small h3, .font-size-small .h3, .font-size-small .display-3,
+.font-size-small h4, .font-size-small .h4, .font-size-small .display-4,
+.font-size-small h5, .font-size-small .h5, .font-size-small .display-5,
+.font-size-small h6, .font-size-small .h6, .font-size-small .display-6 {
+  font-size: 1.5rem !important;
+}
+
+.font-size-small .btn {
+  font-size: 0.875rem !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.font-size-small .form-control,
+.font-size-small .form-select {
+  font-size: 0.875rem !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+.font-size-small .navbar-brand {
+  font-size: 1.25rem !important;
+}
+
+.font-size-small .nav-link {
+  font-size: 0.875rem !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+.font-size-small .badge {
+  font-size: 0.75rem !important;
+  padding: 0.25rem 0.5rem !important;
+}
+
+.font-size-small .table {
+  font-size: 0.875rem !important;
+}
+
+.font-size-small .table th,
+.font-size-small .table td {
+  padding: 0.5rem !important;
+  font-size: 0.875rem !important;
+}
+
+.font-size-small .list-group-item {
+  font-size: 0.875rem !important;
+  padding: 0.5rem !important;
+}
+
+.font-size-medium {
+  font-size: 1rem !important; /* 16px - default */
+}
+
+.font-size-large {
+  font-size: 1.125rem !important; /* 18px */
+}
+
+.font-size-large * {
+  font-size: 1.125rem !important;
+}
+
+.font-size-large h1, .font-size-large .h1, .font-size-large .display-1,
+.font-size-large h2, .font-size-large .h2, .font-size-large .display-2,
+.font-size-large h3, .font-size-large .h3, .font-size-large .display-3,
+.font-size-large h4, .font-size-large .h4, .font-size-large .display-4,
+.font-size-large h5, .font-size-large .h5, .font-size-large .display-5,
+.font-size-large h6, .font-size-large .h6, .font-size-large .display-6 {
+  font-size: 2rem !important;
+}
+
+.font-size-large .btn {
+  font-size: 1.125rem !important;
+  padding: 0.75rem 1.5rem !important;
+}
+
+.font-size-large .form-control,
+.font-size-large .form-select {
+  font-size: 1.125rem !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.font-size-large .navbar-brand {
+  font-size: 1.5rem !important;
+}
+
+.font-size-large .nav-link {
+  font-size: 1.125rem !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.font-size-large .badge {
+  font-size: 1rem !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.font-size-large .table {
+  font-size: 1.125rem !important;
+}
+
+.font-size-large .table th,
+.font-size-large .table td {
+  padding: 0.75rem !important;
+  font-size: 1.125rem !important;
+}
+
+.font-size-large .list-group-item {
+  font-size: 1.125rem !important;
+  padding: 0.75rem !important;
+}
+
+.font-size-xlarge {
+  font-size: 1.25rem !important; /* 20px */
+}
+
+.font-size-xlarge * {
+  font-size: 1.25rem !important;
+}
+
+.font-size-xlarge h1, .font-size-xlarge .h1, .font-size-xlarge .display-1,
+.font-size-xlarge h2, .font-size-xlarge .h2, .font-size-xlarge .display-2,
+.font-size-xlarge h3, .font-size-xlarge .h3, .font-size-xlarge .display-3,
+.font-size-xlarge h4, .font-size-xlarge .h4, .font-size-xlarge .display-4,
+.font-size-xlarge h5, .font-size-xlarge .h5, .font-size-xlarge .display-5,
+.font-size-xlarge h6, .font-size-xlarge .h6, .font-size-xlarge .display-6 {
+  font-size: 2.5rem !important;
+}
+
+.font-size-xlarge .btn {
+  font-size: 1.25rem !important;
+  padding: 1rem 2rem !important;
+}
+
+.font-size-xlarge .form-control,
+.font-size-xlarge .form-select {
+  font-size: 1.25rem !important;
+  padding: 1rem 1.25rem !important;
+}
+
+.font-size-xlarge .navbar-brand {
+  font-size: 1.75rem !important;
+}
+
+.font-size-xlarge .nav-link {
+  font-size: 1.25rem !important;
+  padding: 1rem 1.25rem !important;
+}
+
+.font-size-xlarge .badge {
+  font-size: 1.125rem !important;
+  padding: 0.75rem 1.25rem !important;
+}
+
+.font-size-xlarge .table {
+  font-size: 1.25rem !important;
+}
+
+.font-size-xlarge .table th,
+.font-size-xlarge .table td {
+  padding: 1rem !important;
+  font-size: 1.25rem !important;
+}
+
+.font-size-xlarge .list-group-item {
+  font-size: 1.25rem !important;
+  padding: 1rem !important;
+}
+
 /* High Contrast Mode - Applied when .high-contrast class is present */
 .high-contrast {
   color: var(--high-contrast-text) !important;
