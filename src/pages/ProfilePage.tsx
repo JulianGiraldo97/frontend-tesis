@@ -5,7 +5,7 @@ import { AccessibilityNotification } from '../components/AccessibilityNotificati
 
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
-  const { highContrast, setHighContrast, easyReading, setEasyReading, fontSize, setFontSize } = useAccessibility();
+  const { highContrast, setHighContrast, easyReading, setEasyReading, fontSize, setFontSize, colorScheme, setColorScheme } = useAccessibility();
   const [isEditing, setIsEditing] = useState(false);
   const [notification, setNotification] = useState({
     message: '',
@@ -60,6 +60,18 @@ export const ProfilePage: React.FC = () => {
     showNotification(message, 'success');
   };
 
+  const handleColorSchemeChange = (newScheme: 'default' | 'high-contrast' | 'colorblind' | 'dark') => {
+    setColorScheme(newScheme);
+    const schemeLabels = {
+      'default': 'Predeterminado',
+      'high-contrast': 'Alto Contraste',
+      'colorblind': 'Daltónico',
+      'dark': 'Modo Oscuro'
+    };
+    const message = `Esquema de colores cambiado a ${schemeLabels[newScheme]}`;
+    showNotification(message, 'success');
+  };
+
   const getFontSizeLabel = (size: string) => {
     const labels = {
       small: 'Pequeño (14px)',
@@ -68,6 +80,16 @@ export const ProfilePage: React.FC = () => {
       xlarge: 'Muy Grande (20px)'
     };
     return labels[size as keyof typeof labels] || size;
+  };
+
+  const getColorSchemeLabel = (scheme: string) => {
+    const labels = {
+      'default': 'Predeterminado',
+      'high-contrast': 'Alto Contraste',
+      'colorblind': 'Daltónico',
+      'dark': 'Modo Oscuro'
+    };
+    return labels[scheme as keyof typeof labels] || scheme;
   };
 
   return (
@@ -356,12 +378,29 @@ export const ProfilePage: React.FC = () => {
                   <label htmlFor="colorScheme" className="form-label fw-semibold">
                     Esquema de Colores
                   </label>
-                  <select className="form-select form-control-custom" id="colorScheme">
-                    <option value="default" selected>Predeterminado</option>
+                  <select 
+                    className="form-select form-control-custom" 
+                    id="colorScheme"
+                    value={colorScheme}
+                    onChange={(e) => handleColorSchemeChange(e.target.value as 'default' | 'high-contrast' | 'colorblind' | 'dark')}
+                  >
+                    <option value="default">Predeterminado</option>
                     <option value="high-contrast">Alto Contraste</option>
                     <option value="colorblind">Daltónico</option>
                     <option value="dark">Modo Oscuro</option>
                   </select>
+                  <small className="d-block text-muted mt-2">
+                    {colorScheme !== 'default' ? `✅ Actual: ${getColorSchemeLabel(colorScheme)}` : 'Esquema predeterminado'}
+                  </small>
+                  <div className="mt-2 p-3 bg-light rounded">
+                    <small className="text-muted">
+                      <strong>Esquemas disponibles:</strong><br/>
+                      • <strong>Predeterminado:</strong> Colores estándar<br/>
+                      • <strong>Alto Contraste:</strong> Máxima visibilidad<br/>
+                      • <strong>Daltónico:</strong> Colores accesibles<br/>
+                      • <strong>Modo Oscuro:</strong> Fondo oscuro
+                    </small>
+                  </div>
                 </div>
               </div>
             </div>

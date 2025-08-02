@@ -1,6 +1,7 @@
 import React, { createContext, useState, ReactNode, useContext } from 'react';
 
 type FontSize = 'small' | 'medium' | 'large' | 'xlarge';
+type ColorScheme = 'default' | 'high-contrast' | 'colorblind' | 'dark';
 
 interface AccessibilityContextProps {
   highContrast: boolean;
@@ -9,6 +10,8 @@ interface AccessibilityContextProps {
   setEasyReading: (value: boolean) => void;
   fontSize: FontSize;
   setFontSize: (size: FontSize) => void;
+  colorScheme: ColorScheme;
+  setColorScheme: (scheme: ColorScheme) => void;
 }
 
 export const AccessibilityContext = createContext<AccessibilityContextProps | undefined>(undefined);
@@ -17,6 +20,7 @@ export const AccessibilityProvider: React.FC<{ children: ReactNode }> = ({ child
   const [highContrast, setHighContrast] = useState(false);
   const [easyReading, setEasyReading] = useState(false);
   const [fontSize, setFontSize] = useState<FontSize>('medium');
+  const [colorScheme, setColorScheme] = useState<ColorScheme>('default');
 
   return (
     <AccessibilityContext.Provider value={{ 
@@ -25,7 +29,9 @@ export const AccessibilityProvider: React.FC<{ children: ReactNode }> = ({ child
       easyReading, 
       setEasyReading,
       fontSize,
-      setFontSize
+      setFontSize,
+      colorScheme,
+      setColorScheme
     }}>
       {children}
     </AccessibilityContext.Provider>

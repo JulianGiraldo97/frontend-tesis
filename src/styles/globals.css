@@ -24,6 +24,23 @@
   --easy-reading-text: #2d3748;
   --easy-reading-bg: #f7fafc;
   --easy-reading-border: #e2e8f0;
+  
+  /* Colorblind-friendly colors */
+  --colorblind-primary: #1f77b4;
+  --colorblind-secondary: #ff7f0e;
+  --colorblind-success: #2ca02c;
+  --colorblind-danger: #d62728;
+  --colorblind-warning: #9467bd;
+  --colorblind-info: #8c564b;
+  
+  /* Dark mode colors */
+  --dark-bg: #1a1a1a;
+  --dark-surface: #2d2d2d;
+  --dark-text: #ffffff;
+  --dark-text-secondary: #b0b0b0;
+  --dark-border: #404040;
+  --dark-primary: #4CAF50;
+  --dark-secondary: #FF9800;
 }
 
 /* Base styles */
@@ -355,6 +372,189 @@ body {
 .high-contrast .form-check-input:checked {
   background-color: var(--high-contrast-text) !important;
   border-color: var(--high-contrast-text) !important;
+}
+
+/* Colorblind-friendly Mode */
+.colorblind {
+  /* Override Bootstrap colors with colorblind-friendly alternatives */
+}
+
+.colorblind .btn-primary {
+  background-color: var(--colorblind-primary) !important;
+  border-color: var(--colorblind-primary) !important;
+}
+
+.colorblind .btn-primary:hover {
+  background-color: #1565c0 !important;
+  border-color: #1565c0 !important;
+}
+
+.colorblind .btn-secondary {
+  background-color: var(--colorblind-secondary) !important;
+  border-color: var(--colorblind-secondary) !important;
+}
+
+.colorblind .btn-success {
+  background-color: var(--colorblind-success) !important;
+  border-color: var(--colorblind-success) !important;
+}
+
+.colorblind .btn-danger {
+  background-color: var(--colorblind-danger) !important;
+  border-color: var(--colorblind-danger) !important;
+}
+
+.colorblind .btn-warning {
+  background-color: var(--colorblind-warning) !important;
+  border-color: var(--colorblind-warning) !important;
+}
+
+.colorblind .btn-info {
+  background-color: var(--colorblind-info) !important;
+  border-color: var(--colorblind-info) !important;
+}
+
+.colorblind .badge.bg-primary {
+  background-color: var(--colorblind-primary) !important;
+}
+
+.colorblind .badge.bg-secondary {
+  background-color: var(--colorblind-secondary) !important;
+}
+
+.colorblind .badge.bg-success {
+  background-color: var(--colorblind-success) !important;
+}
+
+.colorblind .badge.bg-danger {
+  background-color: var(--colorblind-danger) !important;
+}
+
+.colorblind .badge.bg-warning {
+  background-color: var(--colorblind-warning) !important;
+}
+
+.colorblind .badge.bg-info {
+  background-color: var(--colorblind-info) !important;
+}
+
+.colorblind .text-primary {
+  color: var(--colorblind-primary) !important;
+}
+
+.colorblind .text-secondary {
+  color: var(--colorblind-secondary) !important;
+}
+
+.colorblind .text-success {
+  color: var(--colorblind-success) !important;
+}
+
+.colorblind .text-danger {
+  color: var(--colorblind-danger) !important;
+}
+
+.colorblind .text-warning {
+  color: var(--colorblind-warning) !important;
+}
+
+.colorblind .text-info {
+  color: var(--colorblind-info) !important;
+}
+
+.colorblind .bg-gradient-primary {
+  background: linear-gradient(135deg, var(--colorblind-primary), #1565c0) !important;
+}
+
+/* Dark Mode */
+.dark-mode {
+  background-color: var(--dark-bg) !important;
+  color: var(--dark-text) !important;
+}
+
+.dark-mode * {
+  color: var(--dark-text) !important;
+}
+
+.dark-mode .card {
+  background-color: var(--dark-surface) !important;
+  border-color: var(--dark-border) !important;
+  color: var(--dark-text) !important;
+}
+
+.dark-mode .navbar {
+  background-color: var(--dark-surface) !important;
+  border-bottom-color: var(--dark-border) !important;
+}
+
+.dark-mode .navbar-brand,
+.dark-mode .nav-link {
+  color: var(--dark-text) !important;
+}
+
+.dark-mode .btn-primary {
+  background-color: var(--dark-primary) !important;
+  border-color: var(--dark-primary) !important;
+}
+
+.dark-mode .btn-secondary {
+  background-color: var(--dark-secondary) !important;
+  border-color: var(--dark-secondary) !important;
+}
+
+.dark-mode .btn-outline-primary {
+  color: var(--dark-primary) !important;
+  border-color: var(--dark-primary) !important;
+}
+
+.dark-mode .btn-outline-primary:hover {
+  background-color: var(--dark-primary) !important;
+  color: var(--dark-bg) !important;
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+  background-color: var(--dark-surface) !important;
+  color: var(--dark-text) !important;
+  border-color: var(--dark-border) !important;
+}
+
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus {
+  border-color: var(--dark-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25) !important;
+}
+
+.dark-mode .text-muted {
+  color: var(--dark-text-secondary) !important;
+}
+
+.dark-mode .bg-light {
+  background-color: var(--dark-surface) !important;
+}
+
+.dark-mode .bg-white {
+  background-color: var(--dark-surface) !important;
+}
+
+.dark-mode .list-group-item {
+  background-color: var(--dark-surface) !important;
+  color: var(--dark-text) !important;
+  border-color: var(--dark-border) !important;
+}
+
+.dark-mode .table {
+  color: var(--dark-text) !important;
+}
+
+.dark-mode .table th,
+.dark-mode .table td {
+  border-color: var(--dark-border) !important;
+  color: var(--dark-text) !important;
+}
+
+.dark-mode .bg-gradient-primary {
+  background: linear-gradient(135deg, var(--dark-primary), #45a049) !important;
 }
 
 /* Easy Reading Mode - Applied when .easy-reading class is present */
