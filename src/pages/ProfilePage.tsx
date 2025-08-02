@@ -2,6 +2,19 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { AccessibilityNotification } from '../components/AccessibilityNotification';
+import { SavedJobs } from '../components/SavedJobs';
+
+interface SavedJob {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  salary: string;
+  contractType: string;
+  match: string;
+  savedDate: string;
+  status: 'saved' | 'applied' | 'interviewed';
+}
 
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -19,6 +32,43 @@ export const ProfilePage: React.FC = () => {
     location: 'Madrid, España',
     bio: 'Desarrolladora Frontend con 5 años de experiencia en React, TypeScript y Vue.js. Apasionada por crear aplicaciones accesibles e inclusivas.'
   });
+
+  // Mock data for saved jobs
+  const [savedJobs, setSavedJobs] = useState<SavedJob[]>([
+    {
+      id: '1',
+      title: 'Desarrollador Frontend React',
+      company: 'TechCorp Inc.',
+      location: 'Madrid, España',
+      salary: '$45,000 - $60,000',
+      contractType: 'Tiempo completo',
+      match: '95%',
+      savedDate: 'Hace 2 días',
+      status: 'saved'
+    },
+    {
+      id: '2',
+      title: 'UI/UX Developer',
+      company: 'Digital Solutions',
+      location: 'Barcelona, España',
+      salary: '$40,000 - $55,000',
+      contractType: 'Tiempo completo',
+      match: '88%',
+      savedDate: 'Hace 1 semana',
+      status: 'applied'
+    },
+    {
+      id: '3',
+      title: 'Frontend Engineer',
+      company: 'Innovation Labs',
+      location: 'Valencia, España',
+      salary: '$50,000 - $65,000',
+      contractType: 'Tiempo completo',
+      match: '82%',
+      savedDate: 'Hace 2 semanas',
+      status: 'interviewed'
+    }
+  ]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +140,23 @@ export const ProfilePage: React.FC = () => {
       'dark': 'Modo Oscuro'
     };
     return labels[scheme as keyof typeof labels] || scheme;
+  };
+
+  const handleRemoveSavedJob = (jobId: string) => {
+    setSavedJobs(prev => prev.filter(job => job.id !== jobId));
+    showNotification('Empleo eliminado de guardados', 'success');
+  };
+
+  const handleApplyToSavedJob = (jobId: string) => {
+    setSavedJobs(prev => prev.map(job => 
+      job.id === jobId ? { ...job, status: 'applied' as const } : job
+    ));
+    showNotification('Postulación enviada', 'success');
+  };
+
+  const handleViewSavedJobDetail = (jobId: string) => {
+    console.log('Ver detalle del empleo guardado:', jobId);
+    // Aquí se podría abrir un modal o navegar a una página de detalle
   };
 
   return (
@@ -218,6 +285,14 @@ export const ProfilePage: React.FC = () => {
                 </form>
               </div>
             </div>
+
+            {/* Saved Jobs */}
+            <SavedJobs
+              savedJobs={savedJobs}
+              onRemove={handleRemoveSavedJob}
+              onApply={handleApplyToSavedJob}
+              onViewDetail={handleViewSavedJobDetail}
+            />
 
             {/* Skills */}
             <div className="card card-custom mb-4 animate-fade-in">

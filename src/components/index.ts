@@ -4,4 +4,6 @@ export { LoadingSpinner } from './LoadingSpinner/LoadingSpinner';
 export { SkipLink } from './SkipLink/SkipLink';
 export { AccessibilitySettingsPanel } from './AccessibilitySettingsPanel';
 export { Navigation } from './Navigation';
-export { AccessibilityNotification } from './AccessibilityNotification'; 
+export { AccessibilityNotification } from './AccessibilityNotification';
+export { JobDetailModal } from './JobDetailModal';
+export { SavedJobs } from './SavedJobs'; 
