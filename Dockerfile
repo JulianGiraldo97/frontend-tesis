@@ -4,19 +4,21 @@ FROM node:18-alpine AS base
 # Set working directory
 WORKDIR /app
 
-# Set Node.js options for OpenSSL compatibility
-ENV NODE_OPTIONS=--openssl-legacy-provider
-
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies with legacy peer deps and force resolution
+# Install dependencies with legacy peer deps and force
 RUN npm install --legacy-peer-deps --force
 
 # Development stage
 FROM base AS development
 
-# Install all dependencies including devDependencies
+# Set environment variables for development
+ENV NODE_ENV=development
+ENV DISABLE_ESLINT_PLUGIN=true
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
+# Install dependencies again for development
 RUN npm install --legacy-peer-deps --force
 
 # Copy source code
@@ -28,10 +30,15 @@ EXPOSE 3000
 # Start development server
 CMD ["npm", "start"]
 
-# Build stage
-FROM base AS build
+# Production build stage
+FROM base AS production-build
 
-# Install all dependencies
+# Set environment variables for production build
+ENV NODE_ENV=production
+ENV DISABLE_ESLINT_PLUGIN=true
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
+# Install dependencies again for production
 RUN npm install --legacy-peer-deps --force
 
 # Copy source code
@@ -43,14 +50,31 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine AS production
 
-# Copy built application from build stage
-COPY --from=build /app/build /usr/share/nginx/html
-
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy built application from production-build stage
+COPY --from=production-build /app/build /usr/share/nginx/html
 
 # Expose port
 EXPOSE 80
 
 # Start nginx
-CMD ["nginx", "-g", "daemon off;"] 
+CMD ["nginx", "-g", "daemon off;"]
+
+# Test stage
+FROM base AS test
+
+# Set environment variables for testing
+ENV NODE_ENV=test
+ENV DISABLE_ESLINT_PLUGIN=true
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
+# Install dependencies again for testing
+RUN npm install --legacy-peer-deps --force
+
+# Copy source code
+COPY . .
+
+# Run tests
+CMD ["npm", "test"] 

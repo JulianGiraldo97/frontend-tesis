@@ -32,16 +32,17 @@ export const Input: React.FC<InputProps> = ({
   const inputId = id || name || `input-${Math.random().toString(36).substr(2, 9)}`;
   const errorId = error ? `${inputId}-error` : undefined;
   
-  const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm';
+  const baseClasses = 'block w-full px-4 py-3 rounded-lg border-2 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-base';
+  const normalClasses = 'border-gray-300 focus:border-green-500 focus:ring-green-500';
   const errorClasses = error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : '';
-  const disabledClasses = disabled ? 'bg-gray-100 cursor-not-allowed' : '';
+  const disabledClasses = disabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : '';
   
-  const classes = `${baseClasses} ${errorClasses} ${disabledClasses} ${className}`;
+  const classes = `${baseClasses} ${error ? errorClasses : normalClasses} ${disabledClasses} ${className}`;
 
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={inputId} className="block text-sm font-semibold text-gray-700 mb-2">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -60,7 +61,7 @@ export const Input: React.FC<InputProps> = ({
         aria-invalid={error ? 'true' : 'false'}
       />
       {error && (
-        <p id={errorId} className="mt-1 text-sm text-red-600" role="alert">
+        <p id={errorId} className="mt-2 text-sm text-red-600 font-medium" role="alert">
           {error}
         </p>
       )}

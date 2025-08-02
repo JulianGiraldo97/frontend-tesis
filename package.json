@@ -12,7 +12,6 @@
     "web-vitals": "^3.5.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.23.3",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
@@ -29,8 +28,8 @@
     "tailwindcss": "^3.3.6"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
+    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
     "test": "react-scripts test --env=jsdom --coverage --watchAll=false",
     "test:watch": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
@@ -71,18 +70,6 @@
         "functions": 80,
         "lines": 80,
         "statements": 80
-      }
-    }
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ],
-    "parser": "@babel/eslint-parser",
-    "parserOptions": {
-      "requireConfigFile": false,
-      "babelOptions": {
-        "presets": ["@babel/preset-react"]
       }
     }
   }

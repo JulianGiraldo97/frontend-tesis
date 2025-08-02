@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test CSS Loading</title>
+    <style>
+        .test-inline {
+            background-color: yellow !important;
+            color: black !important;
+            padding: 20px !important;
+            margin: 20px !important;
+            border: 3px solid green !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test de Carga de Estilos CSS</h1>
+    
+    <div class="test-inline">
+        🎨 Test Inline CSS: Si ves este elemento con fondo amarillo y borde verde, los estilos inline funcionan
+    </div>
+    
+    <div class="test-css-loading">
+        🎨 Test CSS File: Si ves este elemento con fondo rojo y borde azul, el archivo CSS se está cargando
+    </div>
+    
+    <div class="bg-blue-500 text-white p-4 rounded-lg">
+        🎨 Test Tailwind: Si ves este elemento con fondo azul y texto blanco, Tailwind CSS está funcionando
+    </div>
+    
+    <div class="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 rounded-lg">
+        🎨 Test Gradiente: Si ves este elemento con gradiente verde, los estilos personalizados funcionan
+    </div>
+</body>
+</html> 

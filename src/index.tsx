@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { AuthProvider } from './context/AuthContext';
 import { App } from './App';
+import './styles/test.css';
 import './styles/globals.css';
 
 const root = ReactDOM.createRoot(
