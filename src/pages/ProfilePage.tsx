@@ -289,8 +289,17 @@ export const ProfilePage: React.FC = () => {
                       Modo Lectura Fácil
                     </label>
                     <small className="d-block text-muted">
-                      {easyReading ? '✅ Activado - Aumenta el tamaño de fuente' : 'Aumenta el tamaño de fuente'}
+                      {easyReading ? '✅ Activado - Fuente más grande y espaciado mejorado' : 'Fuente más grande y espaciado mejorado'}
                     </small>
+                    <div className="mt-2 p-3 bg-light rounded">
+                      <small className="text-muted">
+                        <strong>Beneficios:</strong><br/>
+                        • Fuente Open Sans más legible<br/>
+                        • Tamaño de texto aumentado (18px)<br/>
+                        • Mayor espaciado entre líneas (1.8)<br/>
+                        • Mejor contraste y padding
+                      </small>
+                    </div>
                   </div>
                 </div>
                 <div className="mb-4">

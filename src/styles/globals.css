@@ -181,6 +181,168 @@ body {
   border-color: var(--high-contrast-text) !important;
 }
 
+/* Easy Reading Mode - Applied when .easy-reading class is present */
+.easy-reading {
+  font-family: 'Open Sans', Arial, sans-serif !important;
+  font-size: 1.125rem !important;
+  line-height: 1.8 !important;
+  color: var(--easy-reading-text) !important;
+  background-color: var(--easy-reading-bg) !important;
+}
+
+.easy-reading * {
+  font-family: 'Open Sans', Arial, sans-serif !important;
+  line-height: 1.8 !important;
+}
+
+.easy-reading h1,
+.easy-reading .h1,
+.easy-reading .display-1,
+.easy-reading .display-2,
+.easy-reading .display-3,
+.easy-reading .display-4,
+.easy-reading .display-5 {
+  font-size: 2.5rem !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+}
+
+.easy-reading h2,
+.easy-reading .h2,
+.easy-reading .display-6 {
+  font-size: 2rem !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+}
+
+.easy-reading h3,
+.easy-reading .h3 {
+  font-size: 1.75rem !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+}
+
+.easy-reading h4,
+.easy-reading .h4 {
+  font-size: 1.5rem !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+}
+
+.easy-reading h5,
+.easy-reading .h5 {
+  font-size: 1.25rem !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+}
+
+.easy-reading h6,
+.easy-reading .h6 {
+  font-size: 1.125rem !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+}
+
+.easy-reading p,
+.easy-reading .lead,
+.easy-reading .text-muted,
+.easy-reading small {
+  font-size: 1.125rem !important;
+  line-height: 1.8 !important;
+}
+
+.easy-reading .btn {
+  font-size: 1.125rem !important;
+  padding: 0.75rem 1.5rem !important;
+  line-height: 1.6 !important;
+}
+
+.easy-reading .form-control,
+.easy-reading .form-select {
+  font-size: 1.125rem !important;
+  padding: 0.75rem 1rem !important;
+  line-height: 1.6 !important;
+}
+
+.easy-reading .form-label {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.easy-reading .card {
+  padding: 1.5rem !important;
+}
+
+.easy-reading .card-body {
+  padding: 1.5rem !important;
+}
+
+.easy-reading .navbar {
+  padding: 1rem 0 !important;
+}
+
+.easy-reading .navbar-brand {
+  font-size: 1.5rem !important;
+}
+
+.easy-reading .nav-link {
+  font-size: 1.125rem !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.easy-reading .badge {
+  font-size: 1rem !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.easy-reading .table {
+  font-size: 1.125rem !important;
+}
+
+.easy-reading .table th,
+.easy-reading .table td {
+  padding: 1rem !important;
+  font-size: 1.125rem !important;
+}
+
+.easy-reading .list-group-item {
+  font-size: 1.125rem !important;
+  padding: 1rem !important;
+}
+
+.easy-reading .modal-title {
+  font-size: 1.75rem !important;
+}
+
+.easy-reading .modal-body {
+  font-size: 1.125rem !important;
+  line-height: 1.8 !important;
+}
+
+.easy-reading .alert {
+  font-size: 1.125rem !important;
+  padding: 1rem 1.5rem !important;
+}
+
+.easy-reading .toast {
+  font-size: 1.125rem !important;
+}
+
+.easy-reading .toast-body {
+  padding: 1rem !important;
+}
+
+/* Combined modes */
+.easy-reading.high-contrast,
+.high-contrast.easy-reading {
+  font-family: 'Open Sans', Arial, sans-serif !important;
+  font-size: 1.125rem !important;
+  line-height: 1.8 !important;
+  color: var(--high-contrast-text) !important;
+  background-color: var(--high-contrast-bg) !important;
+}
+
 /* Focus styles for keyboard navigation */
 *:focus {
   outline: 2px solid var(--high-contrast-focus);
@@ -227,15 +389,6 @@ body {
 @layer base {
   html {
     scroll-behavior: smooth;
-  }
-
-  /* Easy reading mode */
-  .easy-reading {
-    font-family: 'Open Sans', Arial, sans-serif !important;
-    font-size: 1.125rem !important;
-    line-height: 1.8 !important;
-    color: var(--easy-reading-text) !important;
-    background-color: var(--easy-reading-bg) !important;
   }
 
   /* Skip to content link */
