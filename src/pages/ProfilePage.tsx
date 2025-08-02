@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
+import { AccessibilityNotification } from '../components/AccessibilityNotification';
 
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
   const { highContrast, setHighContrast, easyReading, setEasyReading } = useAccessibility();
   const [isEditing, setIsEditing] = useState(false);
+  const [notification, setNotification] = useState({
+    message: '',
+    type: 'info' as 'success' | 'info' | 'warning',
+    isVisible: false
+  });
   const [formData, setFormData] = useState({
     name: 'María González',
     email: 'maria.gonzalez@email.com',
@@ -20,8 +26,38 @@ export const ProfilePage: React.FC = () => {
     console.log('Profile updated:', formData);
   };
 
+  const showNotification = (message: string, type: 'success' | 'info' | 'warning' = 'info') => {
+    setNotification({
+      message,
+      type,
+      isVisible: true
+    });
+  };
+
+  const handleHighContrastToggle = () => {
+    const newValue = !highContrast;
+    setHighContrast(newValue);
+    const message = newValue ? 'Alto contraste activado' : 'Alto contraste desactivado';
+    showNotification(message, 'success');
+  };
+
+  const handleEasyReadingToggle = () => {
+    const newValue = !easyReading;
+    setEasyReading(newValue);
+    const message = newValue ? 'Modo lectura fácil activado' : 'Modo lectura fácil desactivado';
+    showNotification(message, 'success');
+  };
+
   return (
     <div className="min-vh-100 bg-light">
+      {/* Accessibility Notification */}
+      <AccessibilityNotification
+        message={notification.message}
+        type={notification.type}
+        isVisible={notification.isVisible}
+        onClose={() => setNotification(prev => ({ ...prev, isVisible: false }))}
+      />
+
       {/* Header Section */}
       <div className="bg-gradient-primary text-white py-5">
         <div className="container">
@@ -223,37 +259,41 @@ export const ProfilePage: React.FC = () => {
                 <h3 className="h4 fw-bold mb-0">Configuración de Accesibilidad</h3>
               </div>
               <div className="card-body">
-                <div className="mb-3">
+                <div className="mb-4">
                   <div className="form-check form-switch">
                     <input
                       className="form-check-input"
                       type="checkbox"
                       id="highContrast"
                       checked={highContrast}
-                      onChange={(e) => setHighContrast(e.target.checked)}
+                      onChange={handleHighContrastToggle}
                     />
                     <label className="form-check-label fw-semibold" htmlFor="highContrast">
                       Alto Contraste
                     </label>
-                    <small className="d-block text-muted">Mejora la visibilidad del texto</small>
+                    <small className="d-block text-muted">
+                      {highContrast ? '✅ Activado - Mejora la visibilidad del texto' : 'Mejora la visibilidad del texto'}
+                    </small>
                   </div>
                 </div>
-                <div className="mb-3">
+                <div className="mb-4">
                   <div className="form-check form-switch">
                     <input
                       className="form-check-input"
                       type="checkbox"
                       id="easyReading"
                       checked={easyReading}
-                      onChange={(e) => setEasyReading(e.target.checked)}
+                      onChange={handleEasyReadingToggle}
                     />
                     <label className="form-check-label fw-semibold" htmlFor="easyReading">
                       Modo Lectura Fácil
                     </label>
-                    <small className="d-block text-muted">Aumenta el tamaño de fuente</small>
+                    <small className="d-block text-muted">
+                      {easyReading ? '✅ Activado - Aumenta el tamaño de fuente' : 'Aumenta el tamaño de fuente'}
+                    </small>
                   </div>
                 </div>
-                <div className="mb-3">
+                <div className="mb-4">
                   <label htmlFor="fontSize" className="form-label fw-semibold">
                     Tamaño de Fuente
                   </label>

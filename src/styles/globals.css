@@ -32,6 +32,164 @@ body {
   line-height: 1.6;
   color: var(--dark-color);
   background-color: var(--light-color);
+  transition: all 0.3s ease;
+}
+
+/* High Contrast Mode - Applied when .high-contrast class is present */
+.high-contrast {
+  color: var(--high-contrast-text) !important;
+  background-color: var(--high-contrast-bg) !important;
+}
+
+.high-contrast * {
+  color: var(--high-contrast-text) !important;
+  background-color: var(--high-contrast-bg) !important;
+  border-color: var(--high-contrast-border) !important;
+}
+
+.high-contrast .card {
+  background-color: var(--high-contrast-bg) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+  color: var(--high-contrast-text) !important;
+}
+
+.high-contrast .btn {
+  border: 2px solid var(--high-contrast-border) !important;
+  color: var(--high-contrast-text) !important;
+  background-color: var(--high-contrast-bg) !important;
+}
+
+.high-contrast .btn-primary {
+  background-color: var(--high-contrast-text) !important;
+  color: var(--high-contrast-bg) !important;
+  border-color: var(--high-contrast-text) !important;
+}
+
+.high-contrast .btn-outline-primary {
+  color: var(--high-contrast-text) !important;
+  border-color: var(--high-contrast-text) !important;
+  background-color: transparent !important;
+}
+
+.high-contrast .btn-outline-primary:hover {
+  background-color: var(--high-contrast-text) !important;
+  color: var(--high-contrast-bg) !important;
+}
+
+.high-contrast .form-control,
+.high-contrast .form-select {
+  background-color: var(--high-contrast-bg) !important;
+  color: var(--high-contrast-text) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+}
+
+.high-contrast .navbar {
+  background-color: var(--high-contrast-bg) !important;
+  border-bottom: 2px solid var(--high-contrast-border) !important;
+}
+
+.high-contrast .navbar-brand,
+.high-contrast .nav-link {
+  color: var(--high-contrast-text) !important;
+}
+
+.high-contrast .bg-gradient-primary {
+  background: var(--high-contrast-text) !important;
+  color: var(--high-contrast-bg) !important;
+}
+
+.high-contrast .text-gradient {
+  color: var(--high-contrast-text) !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+}
+
+.high-contrast .text-white {
+  color: var(--high-contrast-text) !important;
+}
+
+.high-contrast .text-white-50 {
+  color: var(--high-contrast-text) !important;
+  opacity: 0.7 !important;
+}
+
+.high-contrast .text-muted {
+  color: var(--high-contrast-text) !important;
+  opacity: 0.8 !important;
+}
+
+.high-contrast .badge {
+  background-color: var(--high-contrast-text) !important;
+  color: var(--high-contrast-bg) !important;
+  border: 1px solid var(--high-contrast-text) !important;
+}
+
+.high-contrast .bg-light {
+  background-color: var(--high-contrast-bg) !important;
+}
+
+.high-contrast .bg-white {
+  background-color: var(--high-contrast-bg) !important;
+}
+
+.high-contrast .bg-white.bg-opacity-20 {
+  background-color: var(--high-contrast-text) !important;
+  opacity: 0.2 !important;
+}
+
+.high-contrast .bg-white.bg-opacity-10 {
+  background-color: var(--high-contrast-text) !important;
+  opacity: 0.1 !important;
+}
+
+.high-contrast .bg-primary.bg-opacity-10,
+.high-contrast .bg-success.bg-opacity-10,
+.high-contrast .bg-info.bg-opacity-10,
+.high-contrast .bg-warning.bg-opacity-10 {
+  background-color: var(--high-contrast-text) !important;
+  opacity: 0.1 !important;
+}
+
+.high-contrast .progress-bar {
+  background-color: var(--high-contrast-text) !important;
+}
+
+.high-contrast .list-group-item {
+  background-color: var(--high-contrast-bg) !important;
+  color: var(--high-contrast-text) !important;
+  border-color: var(--high-contrast-border) !important;
+}
+
+.high-contrast .table {
+  color: var(--high-contrast-text) !important;
+}
+
+.high-contrast .table th,
+.high-contrast .table td {
+  border-color: var(--high-contrast-border) !important;
+  color: var(--high-contrast-text) !important;
+}
+
+.high-contrast .form-check-input {
+  background-color: var(--high-contrast-bg) !important;
+  border-color: var(--high-contrast-border) !important;
+}
+
+.high-contrast .form-check-input:checked {
+  background-color: var(--high-contrast-text) !important;
+  border-color: var(--high-contrast-text) !important;
+}
+
+/* Focus styles for keyboard navigation */
+*:focus {
+  outline: 2px solid var(--high-contrast-focus);
+  outline-offset: 2px;
+}
+
+.high-contrast *:focus {
+  outline: 3px solid var(--high-contrast-border) !important;
+  outline-offset: 2px !important;
 }
 
 /* Custom Bootstrap overrides */
@@ -69,23 +227,6 @@ body {
 @layer base {
   html {
     scroll-behavior: smooth;
-  }
-
-  /* Focus styles for keyboard navigation */
-  *:focus {
-    outline: 2px solid var(--high-contrast-focus);
-    outline-offset: 2px;
-  }
-
-  /* High contrast mode */
-  .high-contrast {
-    color: var(--high-contrast-text) !important;
-    background-color: var(--high-contrast-bg) !important;
-    border-color: var(--high-contrast-border) !important;
-  }
-
-  .high-contrast *:focus {
-    outline: 2px solid var(--high-contrast-border) !important;
   }
 
   /* Easy reading mode */
