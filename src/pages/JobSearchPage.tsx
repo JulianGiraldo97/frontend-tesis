@@ -367,6 +367,7 @@ export const JobSearchPage: React.FC = () => {
         onApply={handleModalApply}
         onSave={handleModalSave}
         isSaved={selectedJob ? savedJobs.includes(selectedJob.id) : false}
+        jobStatus={selectedJob && appliedJobs.includes(selectedJob.id) ? 'applied' : 'saved'}
       />
     </div>
   );

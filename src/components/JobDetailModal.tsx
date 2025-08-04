@@ -22,6 +22,7 @@ interface JobDetailModalProps {
   onApply: (jobId: string) => void;
   onSave: (jobId: string) => void;
   isSaved: boolean;
+  jobStatus?: 'saved' | 'applied' | 'interviewed';
 }
 
 export const JobDetailModal: React.FC<JobDetailModalProps> = ({
@@ -30,7 +31,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   onClose,
   onApply,
   onSave,
-  isSaved
+  isSaved,
+  jobStatus = 'saved'
 }) => {
   if (!job || !isOpen) return null;
 
@@ -42,6 +44,30 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   const handleSave = () => {
     onSave(job.id);
   };
+
+  const getApplyButtonText = () => {
+    switch (jobStatus) {
+      case 'applied':
+        return 'Postulado';
+      case 'interviewed':
+        return 'Entrevistado';
+      default:
+        return 'Postularse';
+    }
+  };
+
+  const getApplyButtonIcon = () => {
+    switch (jobStatus) {
+      case 'applied':
+        return '📝';
+      case 'interviewed':
+        return '✅';
+      default:
+        return '📝';
+    }
+  };
+
+  const isApplyDisabled = jobStatus === 'applied' || jobStatus === 'interviewed';
 
   return (
     <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
@@ -86,6 +112,14 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   <span className="badge bg-success rounded-pill fs-6">{job.match} de coincidencia</span>
                   <small className="text-muted">Publicado {job.postedDate}</small>
                   <small className="text-muted">{job.applications} postulaciones</small>
+                  {/* Status badge */}
+                  {jobStatus !== 'saved' && (
+                    <span className={`badge rounded-pill ${
+                      jobStatus === 'applied' ? 'bg-primary' : 'bg-success'
+                    }`}>
+                      {jobStatus === 'applied' ? 'Postulado' : 'Entrevistado'}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -152,18 +186,19 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             <div className="d-flex gap-2 w-100">
               <button
                 type="button"
-                className="btn btn-primary btn-custom flex-fill"
+                className={`btn ${isApplyDisabled ? 'btn-secondary' : 'btn-primary'} btn-custom flex-fill`}
                 onClick={handleApply}
+                disabled={isApplyDisabled}
               >
-                <span className="fs-5 me-2">📝</span>
-                Postularse
+                <span className="fs-5 me-2">{getApplyButtonIcon()}</span>
+                {getApplyButtonText()}
               </button>
               <button
                 type="button"
                 className={`btn ${isSaved ? 'btn-success' : 'btn-outline-primary'} btn-custom`}
                 onClick={handleSave}
               >
-                <span className="fs-5 me-2">{isSaved ? '💾' : '💾'}</span>
+                <span className="fs-5 me-2">💾</span>
                 {isSaved ? 'Guardado' : 'Guardar'}
               </button>
               <button

@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { AccessibilityNotification } from '../components/AccessibilityNotification';
 import { SavedJobs } from '../components/SavedJobs';
+import { JobDetailModal } from '../components/JobDetailModal';
 
 interface SavedJob {
   id: string;
@@ -16,10 +17,27 @@ interface SavedJob {
   status: 'saved' | 'applied' | 'interviewed';
 }
 
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  salary: string;
+  contractType: string;
+  description: string;
+  requirements: string[];
+  benefits: string[];
+  match: string;
+  postedDate: string;
+  applications: number;
+}
+
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
   const { highContrast, setHighContrast, easyReading, setEasyReading, fontSize, setFontSize, colorScheme, setColorScheme } = useAccessibility();
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState({
     message: '',
     type: 'info' as 'success' | 'info' | 'warning',
@@ -69,6 +87,88 @@ export const ProfilePage: React.FC = () => {
       status: 'interviewed'
     }
   ]);
+
+  // Mock data for job details (matching the saved jobs)
+  const jobDetails: Job[] = [
+    {
+      id: '1',
+      title: 'Desarrollador Frontend React',
+      company: 'TechCorp Inc.',
+      location: 'Madrid, España',
+      salary: '$45,000 - $60,000',
+      contractType: 'Tiempo completo',
+      description: 'Buscamos un desarrollador Frontend con experiencia en React y TypeScript para unirse a nuestro equipo de desarrollo de aplicaciones accesibles. Ideal para personas comprometidas con la inclusión digital.',
+      requirements: [
+        'Experiencia mínima de 3 años con React',
+        'Conocimientos sólidos de TypeScript',
+        'Experiencia con CSS3 y HTML5',
+        'Conocimientos de accesibilidad web (WCAG)',
+        'Trabajo en equipo y comunicación efectiva'
+      ],
+      benefits: [
+        'Horario flexible y trabajo remoto',
+        'Seguro médico privado',
+        'Plan de desarrollo profesional',
+        'Equipamiento de trabajo',
+        'Bonos por rendimiento'
+      ],
+      match: '95%',
+      postedDate: 'Hace 2 días',
+      applications: 45
+    },
+    {
+      id: '2',
+      title: 'UI/UX Developer',
+      company: 'Digital Solutions',
+      location: 'Barcelona, España',
+      salary: '$40,000 - $55,000',
+      contractType: 'Tiempo completo',
+      description: 'Desarrollador UI/UX con experiencia en diseño de interfaces accesibles y experiencia de usuario inclusiva.',
+      requirements: [
+        'Experiencia en diseño de interfaces',
+        'Conocimientos de Figma y Adobe XD',
+        'Experiencia con CSS y JavaScript',
+        'Conocimientos de accesibilidad',
+        'Portfolio de proyectos'
+      ],
+      benefits: [
+        'Trabajo remoto híbrido',
+        'Seguro médico',
+        'Capacitación continua',
+        'Equipamiento Apple',
+        'Horario flexible'
+      ],
+      match: '88%',
+      postedDate: 'Hace 1 semana',
+      applications: 32
+    },
+    {
+      id: '3',
+      title: 'Frontend Engineer',
+      company: 'Innovation Labs',
+      location: 'Valencia, España',
+      salary: '$50,000 - $65,000',
+      contractType: 'Tiempo completo',
+      description: 'Ingeniero Frontend especializado en aplicaciones web accesibles y tecnologías modernas.',
+      requirements: [
+        '5+ años de experiencia en desarrollo frontend',
+        'Experiencia con Vue.js y React',
+        'Conocimientos de testing (Jest, Cypress)',
+        'Experiencia con CI/CD',
+        'Inglés fluido'
+      ],
+      benefits: [
+        'Salario competitivo',
+        'Stock options',
+        'Seguro médico premium',
+        'Gimnasio en oficina',
+        'Flexibilidad horaria'
+      ],
+      match: '82%',
+      postedDate: 'Hace 2 semanas',
+      applications: 28
+    }
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,8 +255,54 @@ export const ProfilePage: React.FC = () => {
   };
 
   const handleViewSavedJobDetail = (jobId: string) => {
-    console.log('Ver detalle del empleo guardado:', jobId);
-    // Aquí se podría abrir un modal o navegar a una página de detalle
+    const jobDetail = jobDetails.find(job => job.id === jobId);
+    if (jobDetail) {
+      setSelectedJob(jobDetail);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedJob(null);
+  };
+
+  const handleModalApply = (jobId: string) => {
+    handleApplyToSavedJob(jobId);
+    handleCloseModal();
+  };
+
+  const handleModalSave = (jobId: string) => {
+    // Toggle saved status
+    const isCurrentlySaved = savedJobs.some(job => job.id === jobId);
+    if (isCurrentlySaved) {
+      handleRemoveSavedJob(jobId);
+    } else {
+      // Add to saved jobs if not already saved
+      const jobDetail = jobDetails.find(job => job.id === jobId);
+      if (jobDetail) {
+        const newSavedJob: SavedJob = {
+          id: jobDetail.id,
+          title: jobDetail.title,
+          company: jobDetail.company,
+          location: jobDetail.location,
+          salary: jobDetail.salary,
+          contractType: jobDetail.contractType,
+          match: jobDetail.match,
+          savedDate: 'Hoy',
+          status: 'saved'
+        };
+        setSavedJobs(prev => [...prev, newSavedJob]);
+        showNotification('Empleo guardado', 'success');
+      }
+    }
+  };
+
+  // Get the current status of the selected job
+  const getSelectedJobStatus = () => {
+    if (!selectedJob) return 'saved';
+    const savedJob = savedJobs.find(job => job.id === selectedJob.id);
+    return savedJob ? savedJob.status : 'saved';
   };
 
   return (
@@ -509,6 +655,17 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Job Detail Modal */}
+      <JobDetailModal
+        job={selectedJob}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onApply={handleModalApply}
+        onSave={handleModalSave}
+        isSaved={selectedJob ? savedJobs.some(job => job.id === selectedJob.id) : false}
+        jobStatus={getSelectedJobStatus()}
+      />
     </div>
   );
 }; 
