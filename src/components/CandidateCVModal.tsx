@@ -1,4 +1,5 @@
 import React from 'react';
+import { ScreenReader, useScreenReader } from './ScreenReader';
 
 interface Candidate {
   id: string;
@@ -30,11 +31,59 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
   onClose,
   onContact
 }) => {
+  const { isReading, startReading, stopReading, handleReadingComplete } = useScreenReader();
+
   if (!candidate || !isOpen) return null;
 
   const handleContact = () => {
     onContact(candidate.id);
     onClose();
+  };
+
+  const handleReadCV = () => {
+    const textToRead = `
+      CV de ${candidate.name}
+      
+      Información Personal:
+      Nombre: ${candidate.name}
+      Discapacidad: ${candidate.disability}
+      Email: ${candidate.email || 'maria.gonzalez@email.com'}
+      Teléfono: ${candidate.phone || '+34 600 123 456'}
+      Ubicación: Madrid, España
+      Disponibilidad: Inmediata
+      
+      Posición aplicada: ${candidate.position}
+      Coincidencia: ${candidate.match}
+      Estado: ${candidate.status}
+      Fecha de postulación: ${candidate.time}
+      
+      Experiencia: ${candidate.experience}
+      
+      Experiencia Relevante:
+      Organización y clasificación de productos
+      Trabajo en equipo y colaboración
+      Seguimiento de instrucciones y procedimientos
+      Mantenimiento del orden y limpieza
+      
+      Educación:
+      Formación Básica
+      Educación Secundaria Obligatoria
+      Centro de Educación Especial - Madrid
+      
+      Habilidades y Fortalezas:
+      Trabajo en Equipo, Organización, Responsabilidad, Motivación, Puntualidad, Aprendizaje Continuo
+      
+      Intereses Personales:
+      Música, Deportes, Arte, Cocina
+      
+      Adaptaciones Recomendadas:
+      Apoyo personalizado continuo
+      Horario estructurado y predecible
+      Instrucciones claras y paso a paso
+      Entorno de trabajo tranquilo
+    `;
+
+    startReading(textToRead);
   };
 
   return (
@@ -55,6 +104,37 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
           </div>
           
           <div className="modal-body">
+            {/* Screen Reader Controls */}
+            <div className="mb-4 p-3 bg-light rounded">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <h6 className="fw-bold mb-0 d-flex align-items-center">
+                  <span className="fs-5 me-2">🔊</span>
+                  Lector de Pantalla
+                </h6>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={handleReadCV}
+                  disabled={isReading}
+                  title="Leer toda la información del CV"
+                >
+                  <span className="fs-6 me-1">🔊</span>
+                  Leer CV
+                </button>
+              </div>
+              <ScreenReader
+                text=""
+                isReading={isReading}
+                onReadingComplete={handleReadingComplete}
+                language="es-ES"
+                rate={0.9}
+                pitch={1}
+                volume={1}
+              />
+              <small className="text-muted">
+                El lector de pantalla leerá toda la información del CV en voz alta para facilitar el acceso a personas con discapacidad visual.
+              </small>
+            </div>
+
             {/* Candidate Header */}
             <div className="row align-items-center mb-4">
               <div className="col-md-8">

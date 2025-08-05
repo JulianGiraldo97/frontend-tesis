@@ -1,4 +1,5 @@
 import React from 'react';
+import { ScreenReader, useScreenReader } from './ScreenReader';
 
 interface Vacancy {
   id: string;
@@ -31,6 +32,8 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
   onEdit,
   onCloseVacancy
 }) => {
+  const { isReading, startReading, stopReading, handleReadingComplete } = useScreenReader();
+
   if (!vacancy || !isOpen) return null;
 
   const handleEdit = () => {
@@ -41,6 +44,41 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
   const handleCloseVacancy = () => {
     onCloseVacancy(vacancy.id);
     onClose();
+  };
+
+  const handleReadVacancy = () => {
+    const textToRead = `
+      Vacante: ${vacancy.position}
+      Empresa: ${vacancy.company}
+      Ubicación: ${vacancy.location}
+      Salario: ${vacancy.salary}
+      Estado: ${vacancy.status}
+      Candidatos: ${vacancy.candidates}
+      Discapacidad objetivo: ${vacancy.targetDisability}
+      Fecha de publicación: ${vacancy.date}
+      
+      Descripción: ${vacancy.description || `Buscamos personas con ${vacancy.targetDisability.toLowerCase()} para trabajar en este puesto. El entorno de trabajo está adaptado y se proporciona apoyo personalizado según las necesidades.`}
+      
+      Requisitos: ${(vacancy.requirements || [
+        'Motivación y ganas de trabajar',
+        'Capacidad de seguir instrucciones simples',
+        'Aptitud para tareas repetitivas',
+        'Trabajo en equipo',
+        'No requiere experiencia previa'
+      ]).join('. ')}
+      
+      Beneficios y adaptaciones: ${(vacancy.benefits || [
+        'Apoyo personalizado continuo',
+        'Horario estructurado',
+        'Formación adaptada',
+        'Entorno de trabajo inclusivo',
+        'Seguimiento profesional'
+      ]).join('. ')}
+      
+      Estadísticas: ${vacancy.candidates} candidatos han aplicado, ${Math.floor(vacancy.candidates * 0.3)} están en revisión, y ${Math.floor(vacancy.candidates * 0.1)} han sido invitados a entrevista.
+    `;
+
+    startReading(textToRead);
   };
 
   return (
@@ -61,6 +99,37 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
           </div>
           
           <div className="modal-body">
+            {/* Screen Reader Controls */}
+            <div className="mb-4 p-3 bg-light rounded">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <h6 className="fw-bold mb-0 d-flex align-items-center">
+                  <span className="fs-5 me-2">🔊</span>
+                  Lector de Pantalla
+                </h6>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={handleReadVacancy}
+                  disabled={isReading}
+                  title="Leer toda la información de la vacante"
+                >
+                  <span className="fs-6 me-1">🔊</span>
+                  Leer Vacante
+                </button>
+              </div>
+              <ScreenReader
+                text=""
+                isReading={isReading}
+                onReadingComplete={handleReadingComplete}
+                language="es-ES"
+                rate={0.9}
+                pitch={1}
+                volume={1}
+              />
+              <small className="text-muted">
+                El lector de pantalla leerá toda la información de la vacante en voz alta para facilitar el acceso a personas con discapacidad visual.
+              </small>
+            </div>
+
             {/* Vacancy Header */}
             <div className="row align-items-center mb-4">
               <div className="col-md-8">
@@ -112,7 +181,8 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
               <ul className="list-unstyled">
                 {(vacancy.requirements || [
                   'Motivación y ganas de trabajar',
-                  'Capacidad de seguir instrucciones',
+                  'Capacidad de seguir instrucciones simples',
+                  'Aptitud para tareas repetitivas',
                   'Trabajo en equipo',
                   'No requiere experiencia previa'
                 ]).map((requirement, index) => (

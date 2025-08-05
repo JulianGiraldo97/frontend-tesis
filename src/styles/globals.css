@@ -932,3 +932,366 @@ body {
     padding-right: 15px;
   }
 } 
+
+/* Screen Reader Styles */
+.screen-reader-controls {
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.screen-reader-controls .btn {
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.screen-reader-controls .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.screen-reader-controls .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Focus styles for screen reader accessibility */
+.screen-reader-controls .btn:focus {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Animation for reading indicator */
+@keyframes reading-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.screen-reader-controls .spinner-border {
+  animation: reading-pulse 2s infinite;
+}
+
+/* High contrast mode for screen reader */
+.high-contrast .screen-reader-controls {
+  border-color: #000;
+  background: #fff;
+}
+
+.high-contrast .screen-reader-controls .btn {
+  border: 2px solid #000;
+  color: #000;
+}
+
+.high-contrast .screen-reader-controls .btn:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* Dark mode for screen reader */
+.dark-mode .screen-reader-controls {
+  border-color: #fff;
+  background: #2d3748;
+  color: #fff;
+}
+
+.dark-mode .screen-reader-controls .btn {
+  border-color: #fff;
+  color: #fff;
+}
+
+.dark-mode .screen-reader-controls .btn:hover {
+  background: #fff;
+  color: #2d3748;
+}
+
+/* Screen reader announcement styles */
+.sr-announcement {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Focus management for screen readers */
+.screen-reader-focus:focus {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Reading progress indicator */
+.reading-progress {
+  height: 4px;
+  background: #e9ecef;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.reading-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Accessibility improvements for modals */
+.modal.show .modal-content {
+  animation: modal-fade-in 0.3s ease-out;
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Screen reader friendly button labels */
+.btn[aria-label] {
+  position: relative;
+}
+
+.btn[aria-label]:focus::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+/* Voice control friendly elements */
+[data-voice-command] {
+  cursor: pointer;
+}
+
+[data-voice-command]:hover {
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border-radius: 4px;
+}
+
+/* Screen reader navigation landmarks */
+.sr-landmark {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Reading speed controls */
+.reading-speed-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.reading-speed-controls label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.reading-speed-controls input[type="range"] {
+  width: 100px;
+  height: 4px;
+  border-radius: 2px;
+  background: #e9ecef;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.reading-speed-controls input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  cursor: pointer;
+}
+
+.reading-speed-controls input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  cursor: pointer;
+  border: none;
+}
+
+/* Voice feedback styles */
+.voice-feedback {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--primary-color);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1050;
+  animation: voice-feedback-slide-in 0.3s ease-out;
+}
+
+@keyframes voice-feedback-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Screen reader status indicator */
+.sr-status {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: var(--success-color);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 1060;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sr-status.show {
+  opacity: 1;
+}
+
+/* Accessibility focus ring for all interactive elements */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+a:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* High contrast focus styles */
+.high-contrast button:focus,
+.high-contrast input:focus,
+.high-contrast select:focus,
+.high-contrast textarea:focus,
+.high-contrast a:focus {
+  outline: 3px solid #000;
+  outline-offset: 3px;
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Voice command hints */
+.voice-hint {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.voice-hint.show {
+  opacity: 1;
+}
+
+/* Screen reader navigation */
+.sr-nav {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Reading mode styles */
+.reading-mode .screen-reader-controls {
+  background: #f8f9fa;
+  border-color: var(--primary-color);
+}
+
+.reading-mode .screen-reader-controls .btn {
+  font-size: 16px;
+  padding: 8px 16px;
+}
+
+/* Accessibility improvements for colorblind users */
+.colorblind .screen-reader-controls .btn {
+  border-width: 3px;
+}
+
+.colorblind .screen-reader-controls .btn:focus {
+  outline-width: 4px;
+}
+
+/* Mobile accessibility */
+@media (max-width: 768px) {
+  .screen-reader-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .screen-reader-controls .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .reading-speed-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Print styles for screen reader content */
+@media print {
+  .screen-reader-controls {
+    display: none;
+  }
+  
+  .sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+  }
+} 
