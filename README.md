@@ -1,5 +1,6 @@
 # 🚀 Emplea+ - Plataforma de Intermediación Laboral Inclusiva
 
+<!-- Trigger deployment -->
 ## 📋 Descripción
 
 Emplea+ es una plataforma web accesible de intermediación laboral diseñada específicamente para personas con discapacidad visual, auditiva y cognitiva. La aplicación cumple con los estándares WCAG 2.1 AA y ofrece funcionalidades avanzadas de accesibilidad.
