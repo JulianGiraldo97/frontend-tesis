@@ -18,7 +18,7 @@ Emplea+ es una plataforma web accesible de intermediación laboral diseñada esp
 - **React Router v6** para navegación
 - **Bootstrap 5** para UI responsive
 - **Context API** para estado global
-- **Tests automatizados** con Jest y Playwright
+- **Linting automático** con ESLint
 
 ### 📱 **Pantallas Principales**
 1. **Login/Registro** - Autenticación accesible
@@ -33,12 +33,11 @@ Emplea+ es una plataforma web accesible de intermediación laboral diseñada esp
 
 ### **URL de la Aplicación:**
 ```
-https://[tu-usuario].github.io/[tu-repositorio]
+https://juliangiraldo97.github.io/frontend-tesis
 ```
 
 ### **Configuración Automática:**
-- ✅ **Deployment automático** - En cada push a main
-- ✅ **Tests de accesibilidad** - Verificación WCAG 2.1 AA
+- ✅ **Deployment automático** - En cada push a master
 - ✅ **Build optimizado** - Para producción
 - ✅ **Rollback fácil** - Historial de deployments
 
@@ -52,8 +51,8 @@ https://[tu-usuario].github.io/[tu-repositorio]
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/[tu-usuario]/[tu-repositorio].git
-cd [tu-repositorio]
+git clone https://github.com/JulianGiraldo97/frontend-tesis.git
+cd frontend-tesis
 
 # Instalar dependencias
 npm install
@@ -72,51 +71,15 @@ npm run test                # Tests unitarios
 npm run lint                # Linting
 npm run type-check          # Verificación de tipos
 
-# Testing de Accesibilidad
-npm run test:accessibility  # Tests E2E de accesibilidad
-npm run test:e2e            # Todos los tests E2E
-npm run test:e2e:ui         # Tests con UI
-npm run install:playwright  # Instalar Playwright
-
 # Formateo
 npm run format              # Formatear código
 npm run lint:fix            # Corregir linting
-```
-
-## 🧪 Testing de Accesibilidad
-
-### **Tests Automatizados:**
-- ✅ **ARIA labels y roles** - Verificación automática
-- ✅ **Estructura de headings** - Jerarquía correcta
-- ✅ **Alt text en imágenes** - Accesibilidad visual
-- ✅ **Navegación por teclado** - Compatibilidad
-- ✅ **Contraste de colores** - Verificación básica
-- ✅ **Componente lector de pantalla** - Funcionalidad
-- ✅ **Accesibilidad de modales** - Interacciones
-- ✅ **Formularios accesibles** - Labels y controles
-- ✅ **Diseño responsive** - Móvil y desktop
-
-### **Ejecutar Tests Localmente:**
-
-```bash
-# Instalar Playwright
-npm run install:playwright
-
-# Ejecutar tests de accesibilidad
-npm run test:accessibility
-
-# Ejecutar todos los tests E2E
-npm run test:e2e
-
-# Ejecutar tests con UI
-npm run test:e2e:ui
 ```
 
 ## 📊 Monitoreo del Deployment
 
 ### **GitHub Actions Dashboard:**
 - **Actions** > **Deploy to GitHub Pages** - Estado del deployment
-- **Actions** > **Accessibility Check** - Tests de accesibilidad
 
 ### **GitHub Pages:**
 - **Settings** > **Pages** - Configuración y URL
@@ -129,31 +92,24 @@ npm run test:e2e:ui
 2. **Settings** > **Pages**
 3. **Source**: Selecciona **GitHub Actions**
 
-### **2. Actualizar package.json:**
-```json
-{
-  "homepage": "https://[tu-usuario].github.io/[tu-repositorio]"
-}
-```
-
-### **3. Hacer push a main:**
+### **2. Hacer push a master:**
 ```bash
 git add .
 git commit -m "Configurar deployment en GitHub Pages"
-git push origin main
+git push origin master
 ```
 
 ## 🎯 Beneficios del Deployment
 
 ### **✅ Para Desarrollo:**
-- **Testing automático** - Cada cambio se prueba
+- **Build automático** - Cada cambio se construye
 - **Deployment automático** - Sin intervención manual
 - **Rollback fácil** - Historial de deployments
 
 ### **✅ Para Usuarios:**
 - **URL pública** - Acceso directo a la aplicación
-- **Versión estable** - Siempre la última versión de main
-- **Testing de accesibilidad** - Verificación automática
+- **Versión estable** - Siempre la última versión de master
+- **Testing manual** - Verificación de accesibilidad
 
 ### **✅ Para Testing:**
 - **Entorno de producción** - Pruebas reales
@@ -173,11 +129,6 @@ git push origin main
 2. **Verificar index.html** - Tiene script SPA
 3. **Verificar homepage** - En package.json
 
-### **Si los tests fallan:**
-1. **Ejecutar localmente** - `npm test`
-2. **Verificar Playwright** - `npm run install:playwright`
-3. **Verificar accesibilidad** - `npm run test:accessibility`
-
 ## 📝 Notas Importantes
 
 ### **Seguridad:**
@@ -191,25 +142,25 @@ git push origin main
 - CDN de GitHub para distribución global
 
 ### **Accesibilidad:**
-- Tests automáticos verifican WCAG 2.1 AA
-- Reportes de accesibilidad en cada deployment
-- Correcciones automáticas cuando es posible
+- Verificación manual de WCAG 2.1 AA
+- Testing con usuarios reales
+- Feedback continuo de accesibilidad
 
 ## 🤝 Contribución
 
 ### **Flujo de Trabajo:**
 1. **Fork** del repositorio
 2. **Crear branch** para nueva funcionalidad
-3. **Desarrollar** con tests de accesibilidad
+3. **Desarrollar** con verificación de accesibilidad
 4. **Push** y crear Pull Request
-5. **Review** automático de accesibilidad
+5. **Review** manual de accesibilidad
 6. **Merge** después de aprobación
 
 ### **Estándares de Código:**
 - **TypeScript** - Tipado estricto
 - **ESLint** - Linting automático
 - **Prettier** - Formateo consistente
-- **Tests** - Cobertura de accesibilidad
+- **Accesibilidad** - Verificación manual
 
 ---
 
