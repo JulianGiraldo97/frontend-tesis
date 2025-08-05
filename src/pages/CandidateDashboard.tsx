@@ -50,81 +50,81 @@ export const CandidateDashboard: React.FC = () => {
   const recommendedJobs: RecommendedJob[] = [
     {
       id: 'rec1',
-      title: 'Senior React Developer',
-      company: 'TechCorp',
+      title: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva',
+      company: 'Supermercado Inclusivo S.L.',
       location: 'Madrid, España',
-      salary: '$60,000 - $80,000',
+      salary: '€18,000 - €22,000',
       contractType: 'Tiempo completo',
-      description: 'Buscamos un desarrollador Senior React con experiencia en aplicaciones a gran escala y liderazgo técnico. Ideal para personas comprometidas con la excelencia y la innovación.',
+      description: 'Buscamos personas con discapacidad cognitiva para trabajar como acomodadores de cajas en nuestro supermercado. Tareas de organización, clasificación y mantenimiento del orden en las estanterías. Entorno de trabajo estructurado y apoyo continuo.',
       requirements: [
-        '5+ años de experiencia con React',
-        'Experiencia con TypeScript',
-        'Conocimientos de arquitectura de aplicaciones',
-        'Experiencia liderando equipos',
-        'Inglés fluido'
+        'Motivación y ganas de trabajar',
+        'Capacidad de seguir instrucciones simples',
+        'Aptitud para tareas repetitivas',
+        'Trabajo en equipo',
+        'No requiere experiencia previa'
       ],
       benefits: [
-        'Salario competitivo',
-        'Stock options',
-        'Seguro médico premium',
-        'Trabajo remoto híbrido',
-        'Capacitación continua'
+        'Apoyo personalizado continuo',
+        'Horario estructurado (mañana)',
+        'Formación adaptada',
+        'Entorno de trabajo tranquilo',
+        'Seguimiento profesional'
       ],
-      match: '95%',
+      match: '98%',
       postedDate: 'Hace 1 día',
-      applications: 23
+      applications: 8
     },
     {
       id: 'rec2',
-      title: 'Frontend Engineer',
-      company: 'Digital Solutions',
+      title: 'Operador de Telefonía - Personas Sordas',
+      company: 'Centro de Atención Telefónica Inclusivo',
       location: 'Barcelona, España',
-      salary: '$50,000 - $70,000',
+      salary: '€20,000 - €25,000',
       contractType: 'Tiempo completo',
-      description: 'Ingeniero Frontend especializado en Vue.js y React para aplicaciones web modernas y accesibles.',
+      description: 'Buscamos personas sordas para trabajar como operadores de telefonía usando tecnologías de comunicación adaptadas. Atención al cliente a través de chat, email y videollamadas con intérprete.',
       requirements: [
-        '3+ años con Vue.js y React',
-        'Experiencia con CSS3 y HTML5',
-        'Conocimientos de accesibilidad',
-        'Trabajo en equipo',
-        'Portfolio de proyectos'
+        'Persona sorda con certificado de discapacidad',
+        'Buen nivel de escritura en español',
+        'Habilidades de comunicación escrita',
+        'Capacidad de trabajo en equipo',
+        'Formación básica en informática'
       ],
       benefits: [
+        'Tecnologías de comunicación adaptadas',
+        'Intérprete de lengua de señas disponible',
         'Horario flexible',
         'Seguro médico',
-        'Equipamiento de trabajo',
-        'Bonos por rendimiento',
-        'Desarrollo profesional'
+        'Entorno de trabajo inclusivo'
       ],
-      match: '88%',
+      match: '92%',
       postedDate: 'Hace 2 días',
-      applications: 18
+      applications: 5
     },
     {
       id: 'rec3',
-      title: 'UI/UX Developer',
-      company: 'Innovation Labs',
+      title: 'Tester de Accesibilidad - Personas Ciegas',
+      company: 'Empresa de Desarrollo de Software',
       location: 'Valencia, España',
-      salary: '$45,000 - $65,000',
+      salary: '€25,000 - €32,000',
       contractType: 'Tiempo completo',
-      description: 'Desarrollador UI/UX con enfoque en diseño de interfaces accesibles y experiencia de usuario inclusiva.',
+      description: 'Buscamos personas ciegas para trabajar como testers de accesibilidad. Evaluación de aplicaciones y sitios web usando lectores de pantalla y otras tecnologías asistivas.',
       requirements: [
-        'Experiencia en diseño de interfaces',
-        'Conocimientos de Figma y Adobe XD',
-        'Experiencia con CSS y JavaScript',
-        'Conocimientos de accesibilidad WCAG',
-        'Portfolio de proyectos'
+        'Persona ciega con experiencia en lectores de pantalla',
+        'Conocimientos básicos de informática',
+        'Capacidad de reportar problemas de accesibilidad',
+        'Paciencia y atención al detalle',
+        'No requiere formación técnica previa'
       ],
       benefits: [
-        'Trabajo remoto híbrido',
-        'Seguro médico',
-        'Capacitación continua',
-        'Equipamiento Apple',
-        'Horario flexible'
+        'Equipamiento adaptado completo',
+        'Formación en testing de accesibilidad',
+        'Trabajo remoto disponible',
+        'Horario flexible',
+        'Impacto directo en la accesibilidad digital'
       ],
-      match: '82%',
+      match: '95%',
       postedDate: 'Hace 3 días',
-      applications: 15
+      applications: 12
     }
   ];
 
@@ -294,10 +294,10 @@ export const CandidateDashboard: React.FC = () => {
               <div className="card-body">
                 <div className="list-group list-group-flush">
                   {[
-                    { company: 'TechCorp Inc.', position: 'Desarrollador Frontend React', status: 'En revisión', date: 'Hace 2 días', color: 'primary' },
-                    { company: 'Digital Solutions', position: 'UI/UX Developer', status: 'Entrevista programada', date: 'Hace 1 semana', color: 'success' },
-                    { company: 'Innovation Labs', position: 'Frontend Engineer', status: 'Rechazada', date: 'Hace 2 semanas', color: 'danger' },
-                    { company: 'StartupXYZ', position: 'React Developer', status: 'Pendiente', date: 'Hace 3 semanas', color: 'warning' }
+                    { company: 'Supermercado Inclusivo S.L.', position: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva', status: 'En revisión', date: 'Hace 2 días', color: 'primary' },
+                    { company: 'Centro de Atención Telefónica Inclusivo', position: 'Operador de Telefonía - Personas Sordas', status: 'Entrevista programada', date: 'Hace 1 semana', color: 'success' },
+                    { company: 'Empresa de Desarrollo de Software', position: 'Tester de Accesibilidad - Personas Ciegas', status: 'Rechazada', date: 'Hace 2 semanas', color: 'danger' },
+                    { company: 'Restaurante Inclusivo', position: 'Ayudante de Cocina - Personas con Discapacidad Cognitiva', status: 'Pendiente', date: 'Hace 3 semanas', color: 'warning' }
                   ].map((app, index) => (
                     <div key={index} className="list-group-item border-0 px-0 py-3">
                       <div className="row align-items-center">
@@ -398,12 +398,12 @@ export const CandidateDashboard: React.FC = () => {
                   <span className="text-white fw-bold fs-1">{user?.name?.charAt(0) || 'U'}</span>
                 </div>
                 <h5 className="fw-bold mb-1">{user?.name || 'Usuario'}</h5>
-                <p className="text-muted mb-3">Desarrolladora Frontend</p>
+                <p className="text-muted mb-3">Buscando oportunidades laborales inclusivas</p>
                 <div className="d-flex justify-content-center gap-2 mb-3">
-                  <span className="badge bg-primary rounded-pill">React</span>
-                  <span className="badge bg-info rounded-pill">TypeScript</span>
-                  <span className="badge bg-success rounded-pill">Vue.js</span>
-                  <span className="badge bg-warning rounded-pill">CSS3</span>
+                  <span className="badge bg-primary rounded-pill">Trabajo en Equipo</span>
+                  <span className="badge bg-info rounded-pill">Tareas Repetitivas</span>
+                  <span className="badge bg-success rounded-pill">Motivación</span>
+                  <span className="badge bg-warning rounded-pill">Organización</span>
                 </div>
                 <button className="btn btn-outline-primary btn-custom w-100">
                   Editar Perfil
@@ -449,7 +449,7 @@ export const CandidateDashboard: React.FC = () => {
                     <div className="d-flex align-items-center">
                       <div className="bg-success rounded-circle me-3" style={{ width: '8px', height: '8px' }}></div>
                       <div className="flex-grow-1">
-                        <p className="mb-0 small fw-semibold">Nueva entrevista programada</p>
+                        <p className="mb-0 small fw-semibold">Entrevista programada con apoyo personalizado</p>
                         <small className="text-muted">Hace 1 hora</small>
                       </div>
                     </div>
@@ -458,7 +458,7 @@ export const CandidateDashboard: React.FC = () => {
                     <div className="d-flex align-items-center">
                       <div className="bg-primary rounded-circle me-3" style={{ width: '8px', height: '8px' }}></div>
                       <div className="flex-grow-1">
-                        <p className="mb-0 small fw-semibold">Tu CV fue visto</p>
+                        <p className="mb-0 small fw-semibold">Tu perfil fue visto por Supermercado Inclusivo</p>
                         <small className="text-muted">Hace 3 horas</small>
                       </div>
                     </div>
@@ -467,7 +467,7 @@ export const CandidateDashboard: React.FC = () => {
                     <div className="d-flex align-items-center">
                       <div className="bg-info rounded-circle me-3" style={{ width: '8px', height: '8px' }}></div>
                       <div className="flex-grow-1">
-                        <p className="mb-0 small fw-semibold">Nuevo empleo recomendado</p>
+                        <p className="mb-0 small fw-semibold">Nuevo empleo inclusivo disponible</p>
                         <small className="text-muted">Hace 1 día</small>
                       </div>
                     </div>

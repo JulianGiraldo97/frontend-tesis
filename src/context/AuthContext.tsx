@@ -42,11 +42,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const token = localStorage.getItem('auth-token');
     if (token) {
-      // Mock user data for demo
       const mockUser: User = {
         id: '1',
-        name: 'Juan Pérez',
-        email: 'juan@example.com',
+        name: 'María González',
+        email: 'maria.gonzalez@email.com',
         role: 'candidate'
       };
       setUser(mockUser);
@@ -65,7 +64,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (credentials.email === 'demo@example.com' && credentials.password === 'password') {
         const mockUser: User = {
           id: '1',
-          name: 'Juan Pérez',
+          name: 'María González',
           email: credentials.email,
           role: 'candidate'
         };

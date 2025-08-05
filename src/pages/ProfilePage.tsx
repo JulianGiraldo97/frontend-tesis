@@ -48,41 +48,41 @@ export const ProfilePage: React.FC = () => {
     email: 'maria.gonzalez@email.com',
     phone: '+34 600 123 456',
     location: 'Madrid, España',
-    bio: 'Desarrolladora Frontend con 5 años de experiencia en React, TypeScript y Vue.js. Apasionada por crear aplicaciones accesibles e inclusivas.'
+    bio: 'Persona con discapacidad cognitiva buscando oportunidades laborales inclusivas. Motivada, responsable y con ganas de trabajar. Experiencia en tareas de organización y trabajo en equipo.'
   });
 
   // Mock data for saved jobs
   const [savedJobs, setSavedJobs] = useState<SavedJob[]>([
     {
       id: '1',
-      title: 'Desarrollador Frontend React',
-      company: 'TechCorp Inc.',
+      title: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva',
+      company: 'Supermercado Inclusivo S.L.',
       location: 'Madrid, España',
-      salary: '$45,000 - $60,000',
+      salary: '€18,000 - €22,000',
       contractType: 'Tiempo completo',
-      match: '95%',
+      match: '98%',
       savedDate: 'Hace 2 días',
       status: 'saved'
     },
     {
       id: '2',
-      title: 'UI/UX Developer',
-      company: 'Digital Solutions',
+      title: 'Operador de Telefonía - Personas Sordas',
+      company: 'Centro de Atención Telefónica Inclusivo',
       location: 'Barcelona, España',
-      salary: '$40,000 - $55,000',
+      salary: '€20,000 - €25,000',
       contractType: 'Tiempo completo',
-      match: '88%',
+      match: '92%',
       savedDate: 'Hace 1 semana',
       status: 'applied'
     },
     {
       id: '3',
-      title: 'Frontend Engineer',
-      company: 'Innovation Labs',
+      title: 'Tester de Accesibilidad - Personas Ciegas',
+      company: 'Empresa de Desarrollo de Software',
       location: 'Valencia, España',
-      salary: '$50,000 - $65,000',
+      salary: '€25,000 - €32,000',
       contractType: 'Tiempo completo',
-      match: '82%',
+      match: '95%',
       savedDate: 'Hace 2 semanas',
       status: 'interviewed'
     }
@@ -92,81 +92,81 @@ export const ProfilePage: React.FC = () => {
   const jobDetails: Job[] = [
     {
       id: '1',
-      title: 'Desarrollador Frontend React',
-      company: 'TechCorp Inc.',
+      title: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva',
+      company: 'Supermercado Inclusivo S.L.',
       location: 'Madrid, España',
-      salary: '$45,000 - $60,000',
+      salary: '€18,000 - €22,000',
       contractType: 'Tiempo completo',
-      description: 'Buscamos un desarrollador Frontend con experiencia en React y TypeScript para unirse a nuestro equipo de desarrollo de aplicaciones accesibles. Ideal para personas comprometidas con la inclusión digital.',
+      description: 'Buscamos personas con discapacidad cognitiva para trabajar como acomodadores de cajas en nuestro supermercado. Tareas de organización, clasificación y mantenimiento del orden en las estanterías. Entorno de trabajo estructurado y apoyo continuo.',
       requirements: [
-        'Experiencia mínima de 3 años con React',
-        'Conocimientos sólidos de TypeScript',
-        'Experiencia con CSS3 y HTML5',
-        'Conocimientos de accesibilidad web (WCAG)',
-        'Trabajo en equipo y comunicación efectiva'
+        'Motivación y ganas de trabajar',
+        'Capacidad de seguir instrucciones simples',
+        'Aptitud para tareas repetitivas',
+        'Trabajo en equipo',
+        'No requiere experiencia previa'
       ],
       benefits: [
-        'Horario flexible y trabajo remoto',
-        'Seguro médico privado',
-        'Plan de desarrollo profesional',
-        'Equipamiento de trabajo',
-        'Bonos por rendimiento'
+        'Apoyo personalizado continuo',
+        'Horario estructurado (mañana)',
+        'Formación adaptada',
+        'Entorno de trabajo tranquilo',
+        'Seguimiento profesional'
       ],
-      match: '95%',
+      match: '98%',
       postedDate: 'Hace 2 días',
-      applications: 45
+      applications: 8
     },
     {
       id: '2',
-      title: 'UI/UX Developer',
-      company: 'Digital Solutions',
+      title: 'Operador de Telefonía - Personas Sordas',
+      company: 'Centro de Atención Telefónica Inclusivo',
       location: 'Barcelona, España',
-      salary: '$40,000 - $55,000',
+      salary: '€20,000 - €25,000',
       contractType: 'Tiempo completo',
-      description: 'Desarrollador UI/UX con experiencia en diseño de interfaces accesibles y experiencia de usuario inclusiva.',
+      description: 'Buscamos personas sordas para trabajar como operadores de telefonía usando tecnologías de comunicación adaptadas. Atención al cliente a través de chat, email y videollamadas con intérprete.',
       requirements: [
-        'Experiencia en diseño de interfaces',
-        'Conocimientos de Figma y Adobe XD',
-        'Experiencia con CSS y JavaScript',
-        'Conocimientos de accesibilidad',
-        'Portfolio de proyectos'
+        'Persona sorda con certificado de discapacidad',
+        'Buen nivel de escritura en español',
+        'Habilidades de comunicación escrita',
+        'Capacidad de trabajo en equipo',
+        'Formación básica en informática'
       ],
       benefits: [
-        'Trabajo remoto híbrido',
+        'Tecnologías de comunicación adaptadas',
+        'Intérprete de lengua de señas disponible',
+        'Horario flexible',
         'Seguro médico',
-        'Capacitación continua',
-        'Equipamiento Apple',
-        'Horario flexible'
+        'Entorno de trabajo inclusivo'
       ],
-      match: '88%',
+      match: '92%',
       postedDate: 'Hace 1 semana',
-      applications: 32
+      applications: 5
     },
     {
       id: '3',
-      title: 'Frontend Engineer',
-      company: 'Innovation Labs',
+      title: 'Tester de Accesibilidad - Personas Ciegas',
+      company: 'Empresa de Desarrollo de Software',
       location: 'Valencia, España',
-      salary: '$50,000 - $65,000',
+      salary: '€25,000 - €32,000',
       contractType: 'Tiempo completo',
-      description: 'Ingeniero Frontend especializado en aplicaciones web accesibles y tecnologías modernas.',
+      description: 'Buscamos personas ciegas para trabajar como testers de accesibilidad. Evaluación de aplicaciones y sitios web usando lectores de pantalla y otras tecnologías asistivas.',
       requirements: [
-        '5+ años de experiencia en desarrollo frontend',
-        'Experiencia con Vue.js y React',
-        'Conocimientos de testing (Jest, Cypress)',
-        'Experiencia con CI/CD',
-        'Inglés fluido'
+        'Persona ciega con experiencia en lectores de pantalla',
+        'Conocimientos básicos de informática',
+        'Capacidad de reportar problemas de accesibilidad',
+        'Paciencia y atención al detalle',
+        'No requiere formación técnica previa'
       ],
       benefits: [
-        'Salario competitivo',
-        'Stock options',
-        'Seguro médico premium',
-        'Gimnasio en oficina',
-        'Flexibilidad horaria'
+        'Equipamiento adaptado completo',
+        'Formación en testing de accesibilidad',
+        'Trabajo remoto disponible',
+        'Horario flexible',
+        'Impacto directo en la accesibilidad digital'
       ],
-      match: '82%',
+      match: '95%',
       postedDate: 'Hace 2 semanas',
-      applications: 28
+      applications: 12
     }
   ];
 
