@@ -6,4 +6,6 @@ export { AccessibilitySettingsPanel } from './AccessibilitySettingsPanel';
 export { Navigation } from './Navigation';
 export { AccessibilityNotification } from './AccessibilityNotification';
 export { JobDetailModal } from './JobDetailModal';
-export { SavedJobs } from './SavedJobs'; 
+export { SavedJobs } from './SavedJobs';
+export { VacancyDetailModal } from './VacancyDetailModal';
+export { CandidateCVModal } from './CandidateCVModal'; 
