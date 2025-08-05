@@ -9,4 +9,5 @@ export { JobDetailModal } from './JobDetailModal';
 export { SavedJobs } from './SavedJobs';
 export { VacancyDetailModal } from './VacancyDetailModal';
 export { CandidateCVModal } from './CandidateCVModal';
-export { ScreenReader, useScreenReader } from './ScreenReader'; 
+export { ScreenReader, useScreenReader } from './ScreenReader';
+export { ScreenReaderTest } from './ScreenReaderTest'; 

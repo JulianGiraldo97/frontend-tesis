@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScreenReader, useScreenReader } from './ScreenReader';
 
 interface Vacancy {
@@ -33,6 +33,36 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
   onCloseVacancy
 }) => {
   const { isReading, startReading, stopReading, handleReadingComplete } = useScreenReader();
+  const [isScreenReaderReady, setIsScreenReaderReady] = useState(false);
+  const [textToRead, setTextToRead] = useState('');
+
+  // Detener la lectura cuando se cierra el modal
+  useEffect(() => {
+    if (!isOpen) {
+      stopReading();
+      setIsScreenReaderReady(false);
+      setTextToRead('');
+    }
+  }, [isOpen, stopReading]);
+
+  // Verificar cuando el ScreenReader esté listo
+  useEffect(() => {
+    if (isOpen) {
+      // Esperar a que el ScreenReader se inicialice
+      const checkScreenReaderReady = () => {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          setIsScreenReaderReady(true);
+          console.log('ScreenReader listo en modal de vacante');
+        } else {
+          setTimeout(checkScreenReaderReady, 100);
+        }
+      };
+      
+      // Esperar un poco más para asegurar que las voces estén cargadas
+      setTimeout(checkScreenReaderReady, 200);
+    }
+  }, [isOpen]);
 
   if (!vacancy || !isOpen) return null;
 
@@ -47,7 +77,13 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
   };
 
   const handleReadVacancy = () => {
-    const textToRead = `
+    if (!isScreenReaderReady) {
+      console.log('ScreenReader no está listo, esperando...');
+      return;
+    }
+
+    // Crear el texto a leer
+    const text = `
       Vacante: ${vacancy.position}
       Empresa: ${vacancy.company}
       Ubicación: ${vacancy.location}
@@ -78,7 +114,9 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
       Estadísticas: ${vacancy.candidates} candidatos han aplicado, ${Math.floor(vacancy.candidates * 0.3)} están en revisión, y ${Math.floor(vacancy.candidates * 0.1)} han sido invitados a entrevista.
     `;
 
-    startReading(textToRead);
+    console.log('Iniciando lectura de vacante con texto:', text.substring(0, 200) + '...');
+    setTextToRead(text);
+    startReading(text);
   };
 
   return (
@@ -109,15 +147,15 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
                 <button
                   className="btn btn-primary btn-sm"
                   onClick={handleReadVacancy}
-                  disabled={isReading}
-                  title="Leer toda la información de la vacante"
+                  disabled={isReading || !isScreenReaderReady}
+                  title={!isScreenReaderReady ? "Esperando inicialización..." : "Leer toda la información de la vacante"}
                 >
                   <span className="fs-6 me-1">🔊</span>
-                  Leer Vacante
+                  {!isScreenReaderReady ? "Inicializando..." : "Leer Vacante"}
                 </button>
               </div>
               <ScreenReader
-                text=""
+                text={textToRead}
                 isReading={isReading}
                 onReadingComplete={handleReadingComplete}
                 language="es-ES"
@@ -127,6 +165,7 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
               />
               <small className="text-muted">
                 El lector de pantalla leerá toda la información de la vacante en voz alta para facilitar el acceso a personas con discapacidad visual.
+                {!isScreenReaderReady && " ⏳ Inicializando..."}
               </small>
             </div>
 

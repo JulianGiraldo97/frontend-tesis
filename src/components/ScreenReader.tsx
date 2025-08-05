@@ -21,79 +21,198 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
 }) => {
   const [isSupported, setIsSupported] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   useEffect(() => {
     // Verificar si la Web Speech API está disponible
     if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
       setIsSupported(true);
+      
+      // Inicializar la síntesis de voz
+      const initSpeechSynthesis = () => {
+        try {
+          // Verificar si hay voces disponibles
+          const voices = window.speechSynthesis.getVoices();
+          console.log('Voces disponibles:', voices.length);
+          
+          if (voices.length > 0) {
+            // Seleccionar la mejor voz disponible
+            let bestVoice = voices[0]; // Voz por defecto
+            
+            // Buscar una voz en español
+            const spanishVoice = voices.find(voice => 
+              voice.lang.startsWith('es') || voice.lang.startsWith('es-ES')
+            );
+            
+            if (spanishVoice) {
+              bestVoice = spanishVoice;
+              console.log('Voz en español encontrada:', spanishVoice.name, spanishVoice.lang);
+            } else {
+              // Si no hay voz en español, buscar una voz en inglés
+              const englishVoice = voices.find(voice => 
+                voice.lang.startsWith('en')
+              );
+              if (englishVoice) {
+                bestVoice = englishVoice;
+                console.log('Voz en inglés encontrada:', englishVoice.name, englishVoice.lang);
+              }
+            }
+            
+            setSelectedVoice(bestVoice);
+            setIsInitialized(true);
+            console.log('Speech Synthesis inicializado correctamente con voz:', bestVoice.name);
+          } else {
+            // Esperar a que las voces se carguen
+            window.speechSynthesis.onvoiceschanged = () => {
+              const voices = window.speechSynthesis.getVoices();
+              console.log('Voces cargadas:', voices.length);
+              
+              if (voices.length > 0) {
+                let bestVoice = voices[0];
+                
+                const spanishVoice = voices.find(voice => 
+                  voice.lang.startsWith('es') || voice.lang.startsWith('es-ES')
+                );
+                
+                if (spanishVoice) {
+                  bestVoice = spanishVoice;
+                  console.log('Voz en español encontrada:', spanishVoice.name, spanishVoice.lang);
+                } else {
+                  const englishVoice = voices.find(voice => 
+                    voice.lang.startsWith('en')
+                  );
+                  if (englishVoice) {
+                    bestVoice = englishVoice;
+                    console.log('Voz en inglés encontrada:', englishVoice.name, englishVoice.lang);
+                  }
+                }
+                
+                setSelectedVoice(bestVoice);
+                setIsInitialized(true);
+                console.log('Speech Synthesis inicializado correctamente con voz:', bestVoice.name);
+              }
+            };
+          }
+        } catch (err) {
+          console.error('Error al inicializar Speech Synthesis:', err);
+          setError('Error al inicializar el lector de pantalla');
+        }
+      };
+
+      // Intentar inicializar inmediatamente
+      initSpeechSynthesis();
+      
+      // También intentar después de un pequeño delay
+      setTimeout(initSpeechSynthesis, 100);
     } else {
       console.warn('Web Speech API no está disponible en este navegador');
+      setError('Web Speech API no está disponible en este navegador');
     }
   }, []);
 
   useEffect(() => {
-    if (!isSupported) return;
+    if (!isSupported || !isInitialized || !selectedVoice) return;
 
     if (isReading && text) {
       startReading();
     } else if (!isReading) {
       stopReading();
     }
-  }, [isReading, text, isSupported]);
+  }, [isReading, text, isSupported, isInitialized, selectedVoice]);
 
   const startReading = () => {
-    if (!isSupported) return;
+    if (!isSupported || !isInitialized || !selectedVoice) {
+      console.error('Speech Synthesis no está disponible, inicializado o no hay voz seleccionada');
+      setError('El lector de pantalla no está listo');
+      return;
+    }
 
-    // Detener cualquier lectura previa
-    window.speechSynthesis.cancel();
+    try {
+      // Detener cualquier lectura previa
+      window.speechSynthesis.cancel();
 
-    // Crear nueva instancia de SpeechSynthesisUtterance
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = language;
-    utterance.rate = rate;
-    utterance.pitch = pitch;
-    utterance.volume = volume;
+      // Crear nueva instancia de SpeechSynthesisUtterance
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = selectedVoice.lang;
+      utterance.rate = rate;
+      utterance.pitch = pitch;
+      utterance.volume = volume;
+      utterance.voice = selectedVoice;
 
-    // Configurar eventos
-    utterance.onstart = () => {
-      setIsPaused(false);
-    };
+      console.log('Configurando utterance con voz:', selectedVoice.name, 'idioma:', selectedVoice.lang);
 
-    utterance.onend = () => {
-      setIsPaused(false);
+      // Configurar eventos
+      utterance.onstart = () => {
+        console.log('Iniciando lectura...');
+        setIsPaused(false);
+        setError(null);
+      };
+
+      utterance.onend = () => {
+        console.log('Lectura completada');
+        setIsPaused(false);
+        onReadingComplete();
+      };
+
+      utterance.onerror = (event) => {
+        console.error('Error en la síntesis de voz:', event);
+        setIsPaused(false);
+        setError(`Error al leer: ${event.error}`);
+        onReadingComplete();
+      };
+
+      // Guardar referencia
+      speechRef.current = utterance;
+
+      // Iniciar lectura
+      window.speechSynthesis.speak(utterance);
+      console.log('Comando de lectura enviado');
+      
+    } catch (err) {
+      console.error('Error al iniciar la lectura:', err);
+      setError('Error al iniciar la lectura');
       onReadingComplete();
-    };
-
-    utterance.onerror = (event) => {
-      console.error('Error en la síntesis de voz:', event);
-      setIsPaused(false);
-      onReadingComplete();
-    };
-
-    // Guardar referencia
-    speechRef.current = utterance;
-
-    // Iniciar lectura
-    window.speechSynthesis.speak(utterance);
+    }
   };
 
   const stopReading = () => {
     if (!isSupported) return;
-    window.speechSynthesis.cancel();
-    setIsPaused(false);
+    
+    try {
+      window.speechSynthesis.cancel();
+      setIsPaused(false);
+      setError(null);
+      console.log('Lectura detenida');
+    } catch (err) {
+      console.error('Error al detener la lectura:', err);
+    }
   };
 
   const pauseReading = () => {
     if (!isSupported) return;
-    window.speechSynthesis.pause();
-    setIsPaused(true);
+    
+    try {
+      window.speechSynthesis.pause();
+      setIsPaused(true);
+      console.log('Lectura pausada');
+    } catch (err) {
+      console.error('Error al pausar la lectura:', err);
+    }
   };
 
   const resumeReading = () => {
     if (!isSupported) return;
-    window.speechSynthesis.resume();
-    setIsPaused(false);
+    
+    try {
+      window.speechSynthesis.resume();
+      setIsPaused(false);
+      console.log('Lectura reanudada');
+    } catch (err) {
+      console.error('Error al reanudar la lectura:', err);
+    }
   };
 
   if (!isSupported) {
@@ -106,8 +225,28 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
     );
   }
 
+  if (!isInitialized || !selectedVoice) {
+    return (
+      <div className="alert alert-info" role="alert">
+        <div className="d-flex align-items-center">
+          <div className="spinner-border spinner-border-sm me-2" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <span>Inicializando lector de pantalla...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="screen-reader-controls d-flex align-items-center gap-2 mb-3">
+      {error && (
+        <div className="alert alert-danger alert-sm mb-2" role="alert">
+          <span className="fs-6 me-1">❌</span>
+          {error}
+        </div>
+      )}
+      
       <button
         className={`btn btn-sm ${isReading && !isPaused ? 'btn-warning' : 'btn-primary'}`}
         onClick={isReading && !isPaused ? pauseReading : resumeReading}
@@ -138,6 +277,16 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
           <small className="text-muted">Leyendo contenido...</small>
         </div>
       )}
+
+      {/* Debug info */}
+      <div className="ms-auto">
+        <small className="text-muted">
+          Estado: {isSupported ? 'Soportado' : 'No soportado'} | 
+          Inicializado: {isInitialized ? 'Sí' : 'No'} | 
+          Voz: {selectedVoice ? selectedVoice.name : 'No seleccionada'} | 
+          Leyendo: {isReading ? 'Sí' : 'No'}
+        </small>
+      </div>
     </div>
   );
 };
@@ -148,16 +297,19 @@ export const useScreenReader = () => {
   const [currentText, setCurrentText] = useState('');
 
   const startReading = (text: string) => {
+    console.log('Iniciando lectura con texto:', text.substring(0, 100) + '...');
     setCurrentText(text);
     setIsReading(true);
   };
 
   const stopReading = () => {
+    console.log('Deteniendo lectura');
     setIsReading(false);
     setCurrentText('');
   };
 
   const handleReadingComplete = () => {
+    console.log('Lectura completada');
     setIsReading(false);
   };
 

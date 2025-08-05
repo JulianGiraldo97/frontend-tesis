@@ -4,6 +4,7 @@ import { useAccessibility } from '../context/AccessibilityContext';
 import { AccessibilityNotification } from '../components/AccessibilityNotification';
 import { SavedJobs } from '../components/SavedJobs';
 import { JobDetailModal } from '../components/JobDetailModal';
+import { ScreenReaderTest } from '../components/ScreenReaderTest';
 
 interface SavedJob {
   id: string;
@@ -524,84 +525,65 @@ export const ProfilePage: React.FC = () => {
                 <h3 className="h4 fw-bold mb-0">Configuración de Accesibilidad</h3>
               </div>
               <div className="card-body">
+                {/* Screen Reader Test */}
                 <div className="mb-4">
+                  <ScreenReaderTest />
+                </div>
+
+                {/* High Contrast */}
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Alto Contraste</label>
                   <div className="form-check form-switch">
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      id="highContrast"
                       checked={highContrast}
-                      onChange={handleHighContrastToggle}
+                      onChange={(e) => setHighContrast(e.target.checked)}
+                      id="highContrastSwitch"
                     />
-                    <label className="form-check-label fw-semibold" htmlFor="highContrast">
-                      Alto Contraste
+                    <label className="form-check-label" htmlFor="highContrastSwitch">
+                      Activar modo alto contraste
                     </label>
-                    <small className="d-block text-muted">
-                      {highContrast ? '✅ Activado - Mejora la visibilidad del texto' : 'Mejora la visibilidad del texto'}
-                    </small>
                   </div>
                 </div>
-                <div className="mb-4">
+
+                {/* Easy Reading */}
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Lectura Fácil</label>
                   <div className="form-check form-switch">
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      id="easyReading"
                       checked={easyReading}
-                      onChange={handleEasyReadingToggle}
+                      onChange={(e) => setEasyReading(e.target.checked)}
+                      id="easyReadingSwitch"
                     />
-                    <label className="form-check-label fw-semibold" htmlFor="easyReading">
-                      Modo Lectura Fácil
+                    <label className="form-check-label" htmlFor="easyReadingSwitch">
+                      Activar modo lectura fácil
                     </label>
-                    <small className="d-block text-muted">
-                      {easyReading ? '✅ Activado - Fuente más grande y espaciado mejorado' : 'Fuente más grande y espaciado mejorado'}
-                    </small>
-                    <div className="mt-2 p-3 bg-light rounded">
-                      <small className="text-muted">
-                        <strong>Beneficios:</strong><br/>
-                        • Fuente Open Sans más legible<br/>
-                        • Tamaño de texto aumentado (18px)<br/>
-                        • Mayor espaciado entre líneas (1.8)<br/>
-                        • Mejor contraste y padding
-                      </small>
-                    </div>
                   </div>
                 </div>
-                <div className="mb-4">
-                  <label htmlFor="fontSize" className="form-label fw-semibold">
-                    Tamaño de Fuente
-                  </label>
-                  <select 
-                    className="form-select form-control-custom" 
-                    id="fontSize"
+
+                {/* Font Size */}
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Tamaño de Fuente</label>
+                  <select
+                    className="form-select"
                     value={fontSize}
-                    onChange={(e) => handleFontSizeChange(e.target.value as 'small' | 'medium' | 'large' | 'xlarge')}
+                    onChange={(e) => setFontSize(e.target.value as 'small' | 'medium' | 'large' | 'xlarge')}
                   >
                     <option value="small">Pequeño (14px)</option>
                     <option value="medium">Mediano (16px)</option>
                     <option value="large">Grande (18px)</option>
                     <option value="xlarge">Muy Grande (20px)</option>
                   </select>
-                  <small className="d-block text-muted mt-2">
-                    {fontSize !== 'medium' ? `✅ Actual: ${getFontSizeLabel(fontSize)}` : 'Tamaño predeterminado'}
-                  </small>
-                  <div className="mt-2 p-3 bg-light rounded">
-                    <small className="text-muted">
-                      <strong>Opciones disponibles:</strong><br/>
-                      • <strong>Pequeño:</strong> 14px - Compacto<br/>
-                      • <strong>Mediano:</strong> 16px - Estándar<br/>
-                      • <strong>Grande:</strong> 18px - Legible<br/>
-                      • <strong>Muy Grande:</strong> 20px - Accesible
-                    </small>
-                  </div>
                 </div>
-                <div>
-                  <label htmlFor="colorScheme" className="form-label fw-semibold">
-                    Esquema de Colores
-                  </label>
-                  <select 
-                    className="form-select form-control-custom" 
-                    id="colorScheme"
+
+                {/* Color Scheme */}
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Esquema de Color</label>
+                  <select
+                    className="form-select"
                     value={colorScheme}
                     onChange={(e) => handleColorSchemeChange(e.target.value as 'default' | 'high-contrast' | 'colorblind' | 'dark')}
                   >
@@ -610,18 +592,6 @@ export const ProfilePage: React.FC = () => {
                     <option value="colorblind">Daltónico</option>
                     <option value="dark">Modo Oscuro</option>
                   </select>
-                  <small className="d-block text-muted mt-2">
-                    {colorScheme !== 'default' ? `✅ Actual: ${getColorSchemeLabel(colorScheme)}` : 'Esquema predeterminado'}
-                  </small>
-                  <div className="mt-2 p-3 bg-light rounded">
-                    <small className="text-muted">
-                      <strong>Esquemas disponibles:</strong><br/>
-                      • <strong>Predeterminado:</strong> Colores estándar<br/>
-                      • <strong>Alto Contraste:</strong> Máxima visibilidad<br/>
-                      • <strong>Daltónico:</strong> Colores accesibles<br/>
-                      • <strong>Modo Oscuro:</strong> Fondo oscuro
-                    </small>
-                  </div>
                 </div>
               </div>
             </div>

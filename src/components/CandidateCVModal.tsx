@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScreenReader, useScreenReader } from './ScreenReader';
 
 interface Candidate {
@@ -32,6 +32,36 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
   onContact
 }) => {
   const { isReading, startReading, stopReading, handleReadingComplete } = useScreenReader();
+  const [isScreenReaderReady, setIsScreenReaderReady] = useState(false);
+  const [textToRead, setTextToRead] = useState('');
+
+  // Detener la lectura cuando se cierra el modal
+  useEffect(() => {
+    if (!isOpen) {
+      stopReading();
+      setIsScreenReaderReady(false);
+      setTextToRead('');
+    }
+  }, [isOpen, stopReading]);
+
+  // Verificar cuando el ScreenReader esté listo
+  useEffect(() => {
+    if (isOpen) {
+      // Esperar a que el ScreenReader se inicialice
+      const checkScreenReaderReady = () => {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          setIsScreenReaderReady(true);
+          console.log('ScreenReader listo en modal de CV');
+        } else {
+          setTimeout(checkScreenReaderReady, 100);
+        }
+      };
+      
+      // Esperar un poco más para asegurar que las voces estén cargadas
+      setTimeout(checkScreenReaderReady, 200);
+    }
+  }, [isOpen]);
 
   if (!candidate || !isOpen) return null;
 
@@ -41,7 +71,13 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
   };
 
   const handleReadCV = () => {
-    const textToRead = `
+    if (!isScreenReaderReady) {
+      console.log('ScreenReader no está listo, esperando...');
+      return;
+    }
+
+    // Crear el texto a leer
+    const text = `
       CV de ${candidate.name}
       
       Información Personal:
@@ -83,7 +119,9 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
       Entorno de trabajo tranquilo
     `;
 
-    startReading(textToRead);
+    console.log('Iniciando lectura de CV con texto:', text.substring(0, 200) + '...');
+    setTextToRead(text);
+    startReading(text);
   };
 
   return (
@@ -114,15 +152,15 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
                 <button
                   className="btn btn-primary btn-sm"
                   onClick={handleReadCV}
-                  disabled={isReading}
-                  title="Leer toda la información del CV"
+                  disabled={isReading || !isScreenReaderReady}
+                  title={!isScreenReaderReady ? "Esperando inicialización..." : "Leer toda la información del CV"}
                 >
                   <span className="fs-6 me-1">🔊</span>
-                  Leer CV
+                  {!isScreenReaderReady ? "Inicializando..." : "Leer CV"}
                 </button>
               </div>
               <ScreenReader
-                text=""
+                text={textToRead}
                 isReading={isReading}
                 onReadingComplete={handleReadingComplete}
                 language="es-ES"
@@ -132,6 +170,7 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
               />
               <small className="text-muted">
                 El lector de pantalla leerá toda la información del CV en voz alta para facilitar el acceso a personas con discapacidad visual.
+                {!isScreenReaderReady && " ⏳ Inicializando..."}
               </small>
             </div>
 
