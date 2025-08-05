@@ -1,11 +1,6 @@
 import React from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { LoadingSpinner } from './components/LoadingSpinner';
-import { SkipLink } from './components/SkipLink';
-import { AccessibilitySettingsPanel } from './components/AccessibilitySettingsPanel';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Navigation } from './components/Navigation';
-
-// Pages
 import { LoginPage } from './pages/LoginPage';
 import { CandidateDashboard } from './pages/CandidateDashboard';
 import { JobSearchPage } from './pages/JobSearchPage';
@@ -16,49 +11,28 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { ProfilePage } from './pages/ProfilePage';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
-
   return (
-    <>
-      {!isLoginPage && <Navigation />}
-      {children}
-    </>
+    <div className="min-vh-100 d-flex flex-column">
+      <Navigation />
+      <main className="flex-grow-1" id="main-content">
+        {children}
+      </main>
+    </div>
   );
 };
 
 export const AppRouter: React.FC = () => {
   return (
-    <>
-      <SkipLink />
-      <main id="main-content" tabIndex={-1}>
-        <AppLayout>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<LoginPage />} />
-
-            {/* Dashboard routes */}
-            <Route path="/dashboard" element={<CandidateDashboard />} />
-            <Route path="/jobs" element={<JobSearchPage />} />
-            <Route path="/jobs/:id" element={<JobDetailPage />} />
-            <Route path="/apply/:jobId" element={<ApplicationPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-
-            {/* Employer routes */}
-            <Route path="/employer" element={<EmployerDashboard />} />
-
-            {/* Admin routes */}
-            <Route path="/admin" element={<AdminDashboard />} />
-
-            {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/jobs" replace />} />
-
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/jobs" replace />} />
-          </Routes>
-        </AppLayout>
-      </main>
-      <AccessibilitySettingsPanel />
-    </>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<AppLayout><Navigate to="/jobs" replace /></AppLayout>} />
+      <Route path="/dashboard" element={<AppLayout><CandidateDashboard /></AppLayout>} />
+      <Route path="/jobs" element={<AppLayout><JobSearchPage /></AppLayout>} />
+      <Route path="/job/:id" element={<AppLayout><JobDetailPage /></AppLayout>} />
+      <Route path="/apply/:id" element={<AppLayout><ApplicationPage /></AppLayout>} />
+      <Route path="/employer" element={<AppLayout><EmployerDashboard /></AppLayout>} />
+      <Route path="/admin" element={<AppLayout><AdminDashboard /></AppLayout>} />
+      <Route path="/profile" element={<AppLayout><ProfilePage /></AppLayout>} />
+    </Routes>
   );
 }; 

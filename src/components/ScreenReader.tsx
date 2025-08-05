@@ -26,6 +26,74 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
 
+  const startReading = () => {
+    if (!isSupported || !isInitialized || !selectedVoice) {
+      console.error('Speech Synthesis no está disponible, inicializado o no hay voz seleccionada');
+      setError('El lector de pantalla no está listo');
+      return;
+    }
+
+    try {
+      // Detener cualquier lectura previa
+      window.speechSynthesis.cancel();
+
+      // Crear nueva instancia de SpeechSynthesisUtterance
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = selectedVoice.lang;
+      utterance.rate = rate;
+      utterance.pitch = pitch;
+      utterance.volume = volume;
+      utterance.voice = selectedVoice;
+
+      console.log('Configurando utterance con voz:', selectedVoice.name, 'idioma:', selectedVoice.lang);
+
+      // Configurar eventos
+      utterance.onstart = () => {
+        console.log('Iniciando lectura...');
+        setIsPaused(false);
+        setError(null);
+      };
+
+      utterance.onend = () => {
+        console.log('Lectura completada');
+        setIsPaused(false);
+        onReadingComplete();
+      };
+
+      utterance.onerror = (event) => {
+        console.error('Error en la síntesis de voz:', event);
+        setIsPaused(false);
+        setError(`Error al leer: ${event.error}`);
+        onReadingComplete();
+      };
+
+      // Guardar referencia
+      speechRef.current = utterance;
+
+      // Iniciar lectura
+      window.speechSynthesis.speak(utterance);
+      console.log('Comando de lectura enviado');
+      
+    } catch (err) {
+      console.error('Error al iniciar la lectura:', err);
+      setError('Error al iniciar la lectura');
+      onReadingComplete();
+    }
+  };
+
+  const stopReading = () => {
+    if (!isSupported) return;
+    
+    try {
+      window.speechSynthesis.cancel();
+      setIsPaused(false);
+      setError(null);
+      console.log('Lectura detenida');
+    } catch (err) {
+      console.error('Error al detener la lectura:', err);
+    }
+  };
+
   useEffect(() => {
     // Verificar si la Web Speech API está disponible
     if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
@@ -115,81 +183,12 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
 
   useEffect(() => {
     if (!isSupported || !isInitialized || !selectedVoice) return;
-
     if (isReading && text) {
       startReading();
     } else if (!isReading) {
       stopReading();
     }
-  }, [isReading, text, isSupported, isInitialized, selectedVoice]);
-
-  const startReading = () => {
-    if (!isSupported || !isInitialized || !selectedVoice) {
-      console.error('Speech Synthesis no está disponible, inicializado o no hay voz seleccionada');
-      setError('El lector de pantalla no está listo');
-      return;
-    }
-
-    try {
-      // Detener cualquier lectura previa
-      window.speechSynthesis.cancel();
-
-      // Crear nueva instancia de SpeechSynthesisUtterance
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = selectedVoice.lang;
-      utterance.rate = rate;
-      utterance.pitch = pitch;
-      utterance.volume = volume;
-      utterance.voice = selectedVoice;
-
-      console.log('Configurando utterance con voz:', selectedVoice.name, 'idioma:', selectedVoice.lang);
-
-      // Configurar eventos
-      utterance.onstart = () => {
-        console.log('Iniciando lectura...');
-        setIsPaused(false);
-        setError(null);
-      };
-
-      utterance.onend = () => {
-        console.log('Lectura completada');
-        setIsPaused(false);
-        onReadingComplete();
-      };
-
-      utterance.onerror = (event) => {
-        console.error('Error en la síntesis de voz:', event);
-        setIsPaused(false);
-        setError(`Error al leer: ${event.error}`);
-        onReadingComplete();
-      };
-
-      // Guardar referencia
-      speechRef.current = utterance;
-
-      // Iniciar lectura
-      window.speechSynthesis.speak(utterance);
-      console.log('Comando de lectura enviado');
-      
-    } catch (err) {
-      console.error('Error al iniciar la lectura:', err);
-      setError('Error al iniciar la lectura');
-      onReadingComplete();
-    }
-  };
-
-  const stopReading = () => {
-    if (!isSupported) return;
-    
-    try {
-      window.speechSynthesis.cancel();
-      setIsPaused(false);
-      setError(null);
-      console.log('Lectura detenida');
-    } catch (err) {
-      console.error('Error al detener la lectura:', err);
-    }
-  };
+  }, [isReading, text, isSupported, isInitialized, selectedVoice, startReading, stopReading]);
 
   const pauseReading = () => {
     if (!isSupported) return;

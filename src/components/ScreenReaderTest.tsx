@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ScreenReader, useScreenReader } from './ScreenReader';
 
 export const ScreenReaderTest: React.FC = () => {
-  const { isReading, startReading, stopReading, handleReadingComplete } = useScreenReader();
+  const { isReading, startReading, handleReadingComplete } = useScreenReader();
   const [testCount, setTestCount] = useState(0);
 
   const testText = `
@@ -19,7 +19,6 @@ export const ScreenReaderTest: React.FC = () => {
   };
 
   const handleTestModalSimulation = () => {
-    // Simular el comportamiento del modal
     setTimeout(() => {
       const modalText = `
         Vacante: Desarrollador Frontend - Personas con Discapacidad Visual
@@ -42,7 +41,6 @@ export const ScreenReaderTest: React.FC = () => {
         
         Estadísticas: 15 candidatos han aplicado, 5 están en revisión, y 2 han sido invitados a entrevista.
       `;
-      
       console.log('Simulando lectura de modal con texto:', modalText.substring(0, 200) + '...');
       startReading(modalText);
     }, 100);
@@ -51,13 +49,11 @@ export const ScreenReaderTest: React.FC = () => {
   return (
     <div className="card card-custom p-4">
       <h3 className="fw-bold mb-3">🧪 Test del Lector de Pantalla</h3>
-      
       <div className="mb-3">
         <p className="text-muted">
           Este componente te permite probar si el lector de pantalla funciona correctamente en tu navegador.
         </p>
       </div>
-
       <div className="mb-3">
         <button
           className="btn btn-primary btn-custom me-2"
@@ -67,7 +63,6 @@ export const ScreenReaderTest: React.FC = () => {
           <span className="fs-5 me-2">🔊</span>
           Probar Lector de Pantalla
         </button>
-        
         <button
           className="btn btn-success btn-custom"
           onClick={handleTestModalSimulation}
@@ -77,7 +72,6 @@ export const ScreenReaderTest: React.FC = () => {
           Simular Modal de Vacante
         </button>
       </div>
-
       <ScreenReader
         text={testText}
         isReading={isReading}
@@ -87,7 +81,6 @@ export const ScreenReaderTest: React.FC = () => {
         pitch={1}
         volume={1}
       />
-
       <div className="mt-3">
         <h6 className="fw-bold">Información de Debug:</h6>
         <ul className="list-unstyled">
@@ -98,12 +91,10 @@ export const ScreenReaderTest: React.FC = () => {
           <li>• Contador de tests: {testCount}</li>
         </ul>
       </div>
-
       <div className="mt-3 p-3 bg-light rounded">
         <h6 className="fw-bold">Texto de prueba:</h6>
         <p className="text-muted mb-0">{testText}</p>
       </div>
-
       <div className="mt-3 p-3 bg-info bg-opacity-10 rounded">
         <h6 className="fw-bold text-info">Instrucciones de prueba:</h6>
         <ol className="mb-0">
