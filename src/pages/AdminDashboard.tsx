@@ -1,10 +1,26 @@
 import React, { useState } from 'react';
 import { AccessibilitySettingsPanel } from '../components/AccessibilitySettingsPanel';
 
-export const AdminDashboard: React.FC = () => {
-  const [selectedMetric, setSelectedMetric] = useState('accessibility');
+interface MetricData {
+  label: string;
+  value: string;
+  color: string;
+}
 
-  const metrics = {
+interface MetricSection {
+  title: string;
+  data: MetricData[];
+}
+
+interface Metrics {
+  accessibility: MetricSection;
+  users: MetricSection;
+}
+
+export const AdminDashboard: React.FC = () => {
+  const [selectedMetric, setSelectedMetric] = useState<keyof Metrics>('accessibility');
+
+  const metrics: Metrics = {
     accessibility: {
       title: 'Métricas de Accesibilidad',
       data: [
