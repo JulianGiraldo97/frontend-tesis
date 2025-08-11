@@ -10,35 +10,46 @@ export const Navigation: React.FC = () => {
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
     { path: '/employer', label: 'Empleador', icon: '🏢' },
     { path: '/admin', label: 'Admin', icon: '⚙️' },
+    { path: '/profile-builder', label: 'Crear Perfil', icon: '📝' },
     { path: '/profile', label: 'Perfil', icon: '👤' },
   ];
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-      <div className="container">
+    <nav className='navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top'>
+      <div className='container'>
         {/* Enhanced Logo */}
-        <Link to="/jobs" className="navbar-brand d-flex align-items-center text-decoration-none">
-          <div className="bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center shadow-custom me-3" style={{ width: '40px', height: '40px' }}>
-            <span className="text-white fw-bold">E+</span>
+        <Link
+          to='/jobs'
+          className='navbar-brand d-flex align-items-center text-decoration-none'
+        >
+          <div
+            className='bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center shadow-custom me-3'
+            style={{ width: '40px', height: '40px' }}
+          >
+            <span className='text-white fw-bold'>E+</span>
           </div>
-          <span className="text-gradient fw-bold fs-4">Emplea+</span>
+          <span className='text-gradient fw-bold fs-4'>Emplea+</span>
         </Link>
 
         {/* Mobile menu button */}
         <button
-          className="navbar-toggler border-0"
-          type="button"
+          className='navbar-toggler border-0'
+          type='button'
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="Toggle navigation"
+          aria-label='Toggle navigation'
         >
-          <span className="navbar-toggler-icon"></span>
+          <span className='navbar-toggler-icon'></span>
         </button>
 
         {/* Navigation Links */}
-        <div className={`collapse navbar-collapse ${isMobileMenuOpen ? 'show' : ''}`}>
-          <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-            {navItems.map((item) => (
-              <li className="nav-item" key={item.path}>
+        <div
+          className={`collapse navbar-collapse ${
+            isMobileMenuOpen ? 'show' : ''
+          }`}
+        >
+          <ul className='navbar-nav ms-auto mb-2 mb-lg-0'>
+            {navItems.map(item => (
+              <li className='nav-item' key={item.path}>
                 <Link
                   to={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -48,7 +59,7 @@ export const Navigation: React.FC = () => {
                       : 'text-muted hover:text-primary'
                   }`}
                 >
-                  <span className="me-2 fs-5">{item.icon}</span>
+                  <span className='me-2 fs-5'>{item.icon}</span>
                   <span>{item.label}</span>
                 </Link>
               </li>
@@ -58,4 +69,4 @@ export const Navigation: React.FC = () => {
       </div>
     </nav>
   );
-}; 
+};
