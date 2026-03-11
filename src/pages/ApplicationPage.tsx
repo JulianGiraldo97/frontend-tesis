@@ -4,6 +4,8 @@ import { Input } from '../components/Input';
 
 export const ApplicationPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const coverLetterHelpId = 'cover-letter-help';
+  const resumeHelpId = 'resume-help';
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -121,17 +123,22 @@ export const ApplicationPage: React.FC = () => {
                   <h2 className="text-xl font-semibold text-gray-900">Carta de Presentación</h2>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="cover-letter" className="block text-sm font-medium text-gray-700 mb-2">
                       Carta de presentación
                     </label>
                     <textarea
+                      id="cover-letter"
                       rows={6}
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                       placeholder="Explica por qué te interesa este puesto y por qué serías un buen candidato..."
                       value={formData.coverLetter}
                       onChange={(e) => setFormData({...formData, coverLetter: e.target.value})}
+                      aria-describedby={coverLetterHelpId}
                       required
                     />
+                    <p id={coverLetterHelpId} className="mt-1 text-sm text-gray-500">
+                      Escribe un resumen breve de tu motivación y experiencia relevante.
+                    </p>
                   </div>
                 </div>
               )}
@@ -141,17 +148,19 @@ export const ApplicationPage: React.FC = () => {
                   <h2 className="text-xl font-semibold text-gray-900">Documentos</h2>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="resume-file" className="block text-sm font-medium text-gray-700 mb-2">
                       CV/Resumen
                     </label>
                     <input
+                      id="resume-file"
                       type="file"
                       accept=".pdf,.doc,.docx"
                       className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
                       onChange={(e) => setFormData({...formData, resume: e.target.files?.[0] || null})}
+                      aria-describedby={resumeHelpId}
                       required
                     />
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p id={resumeHelpId} className="mt-1 text-sm text-gray-500">
                       Formatos aceptados: PDF, DOC, DOCX (máximo 5MB)
                     </p>
                   </div>

@@ -337,6 +337,7 @@ export const JobSearchPage: React.FC = () => {
                 <button
                   type="submit"
                   className="btn btn-primary btn-custom px-4 py-3"
+                  aria-label="Buscar empleos con los filtros seleccionados"
                 >
                   <span className="fs-5 me-2">🔍</span>
                   Buscar empleos
@@ -355,7 +356,11 @@ export const JobSearchPage: React.FC = () => {
                   <div className="row align-items-start">
                     <div className="col-md-8">
                       <div className="d-flex align-items-center mb-3">
-                        <div className="bg-gradient-primary rounded-3 d-flex align-items-center justify-content-center me-3" style={{ width: '60px', height: '60px' }}>
+                        <div
+                          className="bg-gradient-primary rounded-3 d-flex align-items-center justify-content-center me-3"
+                          style={{ width: '60px', height: '60px' }}
+                          aria-hidden="true"
+                        >
                           <span className="text-white fw-bold fs-5">{job.company.charAt(0)}</span>
                         </div>
                         <div>
@@ -399,6 +404,7 @@ export const JobSearchPage: React.FC = () => {
                           className="btn btn-primary btn-custom"
                           onClick={() => handleApply(job.id)}
                           disabled={appliedJobs.includes(job.id)}
+                          aria-label={`${appliedJobs.includes(job.id) ? 'Ya postulado' : 'Postularse a'} ${job.title}`}
                         >
                           <span className="fs-5 me-2">
                             {appliedJobs.includes(job.id) ? '✅' : '📝'}
@@ -408,6 +414,7 @@ export const JobSearchPage: React.FC = () => {
                         <button
                           className={`btn ${savedJobs.includes(job.id) ? 'btn-success' : 'btn-outline-primary'} btn-custom`}
                           onClick={() => handleSave(job.id)}
+                          aria-label={`${savedJobs.includes(job.id) ? 'Quitar de guardados' : 'Guardar'} ${job.title}`}
                         >
                           <span className="fs-5 me-2">💾</span>
                           {savedJobs.includes(job.id) ? 'Guardado' : 'Guardar'}
@@ -415,6 +422,7 @@ export const JobSearchPage: React.FC = () => {
                         <button
                           className="btn btn-outline-secondary btn-custom"
                           onClick={() => handleViewDetail(job)}
+                          aria-label={`Ver detalles del empleo ${job.title}`}
                         >
                           <span className="fs-5 me-2">👁️</span>
                           Ver detalles
@@ -430,7 +438,10 @@ export const JobSearchPage: React.FC = () => {
 
         {/* Load more button */}
         <div className="text-center mt-5">
-          <button className="btn btn-outline-primary btn-custom px-5 py-3">
+          <button
+            className="btn btn-outline-primary btn-custom px-5 py-3"
+            aria-label="Cargar más empleos"
+          >
             <span className="fs-5 me-2">📄</span>
             Cargar más empleos
           </button>

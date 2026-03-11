@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface Job {
   id: string;
@@ -34,6 +34,73 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   isSaved,
   jobStatus = 'saved'
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusedElementRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      if (previousFocusedElementRef.current) {
+        previousFocusedElementRef.current.focus();
+        previousFocusedElementRef.current = null;
+      }
+      return;
+    }
+
+    previousFocusedElementRef.current = document.activeElement as HTMLElement;
+    const selector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = Array.from(
+      modalRef.current?.querySelectorAll(selector) || []
+    ) as HTMLElement[];
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus();
+    } else {
+      modalRef.current?.focus();
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const activeFocusable = Array.from(
+        modalRef.current?.querySelectorAll(selector) || []
+      ) as HTMLElement[];
+
+      if (activeFocusable.length === 0) {
+        event.preventDefault();
+        modalRef.current?.focus();
+        return;
+      }
+
+      const firstElement = activeFocusable[0];
+      const lastElement = activeFocusable[activeFocusable.length - 1];
+      const isFocusInsideModal = modalRef.current?.contains(document.activeElement) ?? false;
+
+      if (!isFocusInsideModal) {
+        event.preventDefault();
+        (event.shiftKey ? lastElement : firstElement).focus();
+        return;
+      }
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!job || !isOpen) return null;
 
   const handleApply = () => {
@@ -70,11 +137,17 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   const isApplyDisabled = jobStatus === 'applied' || jobStatus === 'interviewed';
 
   return (
-    <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+    <div
+      className="modal fade show d-block"
+      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="job-detail-modal-title"
+    >
       <div className="modal-dialog modal-lg modal-dialog-scrollable">
-        <div className="modal-content">
+        <div className="modal-content" ref={modalRef} tabIndex={-1}>
           <div className="modal-header bg-gradient-primary text-white">
-            <h5 className="modal-title fw-bold">
+            <h5 className="modal-title fw-bold" id="job-detail-modal-title">
               <span className="fs-5 me-2">💼</span>
               {job.title}
             </h5>
@@ -82,7 +155,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
               type="button"
               className="btn-close btn-close-white"
               onClick={onClose}
-              aria-label="Cerrar"
+              aria-label="Cerrar detalle del empleo"
             ></button>
           </div>
           
@@ -142,7 +215,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
               <ul className="list-unstyled">
                 {job.requirements.map((requirement, index) => (
                   <li key={index} className="mb-2 d-flex align-items-start">
-                    <span className="text-success me-2">•</span>
+                    <span className="text-dark me-2">•</span>
                     <span className="text-muted">{requirement}</span>
                   </li>
                 ))}
@@ -189,6 +262,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 className={`btn ${isApplyDisabled ? 'btn-secondary' : 'btn-primary'} btn-custom flex-fill`}
                 onClick={handleApply}
                 disabled={isApplyDisabled}
+                aria-label={`${getApplyButtonText()} al empleo ${job.title}`}
               >
                 <span className="fs-5 me-2">{getApplyButtonIcon()}</span>
                 {getApplyButtonText()}
@@ -197,6 +271,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 type="button"
                 className={`btn ${isSaved ? 'btn-success' : 'btn-outline-primary'} btn-custom`}
                 onClick={handleSave}
+                aria-label={`${isSaved ? 'Quitar de guardados' : 'Guardar'} empleo ${job.title}`}
               >
                 <span className="fs-5 me-2">💾</span>
                 {isSaved ? 'Guardado' : 'Guardar'}
@@ -205,6 +280,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 type="button"
                 className="btn btn-outline-secondary btn-custom"
                 onClick={onClose}
+                aria-label="Cerrar ventana de detalle de empleo"
               >
                 Cerrar
               </button>

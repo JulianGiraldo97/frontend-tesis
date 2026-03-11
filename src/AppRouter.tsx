@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Navigation } from './components/Navigation';
+import { SkipLink } from './components/SkipLink/SkipLink';
 import { LoginPage } from './pages/LoginPage';
 import { CandidateDashboard } from './pages/CandidateDashboard';
 import { JobSearchPage } from './pages/JobSearchPage';
@@ -14,8 +15,9 @@ import { ProfileBuilder } from './pages/ProfileBuilder';
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className='min-vh-100 d-flex flex-column'>
+      <SkipLink />
       <Navigation />
-      <main className='flex-grow-1' id='main-content'>
+      <main className='flex-grow-1' id='main-content' tabIndex={-1}>
         {children}
       </main>
     </div>

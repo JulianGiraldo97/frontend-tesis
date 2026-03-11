@@ -352,7 +352,7 @@ export const EmployerDashboard: React.FC = () => {
             <div className="card card-custom mb-4 animate-fade-in">
               <div className="card-header bg-transparent border-0 pb-0 d-flex justify-content-between align-items-center">
                 <h3 className="h4 fw-bold mb-0">Vacantes Activas</h3>
-                <button className="btn btn-primary btn-custom">
+                <button className="btn btn-primary btn-custom" aria-label="Crear una nueva vacante inclusiva">
                   <span className="fs-5 me-2">➕</span>
                   Crear Vacante Inclusiva
                 </button>
@@ -399,6 +399,7 @@ export const EmployerDashboard: React.FC = () => {
                                 className="btn btn-outline-primary"
                                 onClick={() => handleViewVacancy(vacancy.id)}
                                 title="Ver detalles de la vacante"
+                                aria-label={`Ver detalles de la vacante ${vacancy.position}`}
                               >
                                 👁️ Ver
                               </button>
@@ -406,6 +407,7 @@ export const EmployerDashboard: React.FC = () => {
                                 className="btn btn-outline-secondary"
                                 onClick={() => handleEditVacancy(vacancy.id)}
                                 title="Editar vacante"
+                                aria-label={`Editar vacante ${vacancy.position}`}
                               >
                                 ✏️ Editar
                               </button>
@@ -413,6 +415,7 @@ export const EmployerDashboard: React.FC = () => {
                                 className="btn btn-outline-danger"
                                 onClick={() => handleCloseVacancy(vacancy.id)}
                                 title="Cerrar vacante"
+                                aria-label={`Cerrar vacante ${vacancy.position}`}
                               >
                                 ❌ Cerrar
                               </button>
@@ -462,12 +465,14 @@ export const EmployerDashboard: React.FC = () => {
                             <button 
                               className="btn btn-primary btn-sm flex-fill"
                               onClick={() => handleViewCV(application.id)}
+                              aria-label={`Ver CV de ${application.name}`}
                             >
                               👁️ Ver CV
                             </button>
                             <button 
                               className="btn btn-outline-primary btn-sm flex-fill"
                               onClick={() => handleContactCandidate(application.id)}
+                              aria-label={`Contactar a ${application.name}`}
                             >
                               📞 Contactar
                             </button>
@@ -490,19 +495,19 @@ export const EmployerDashboard: React.FC = () => {
               </div>
               <div className="card-body">
                 <div className="d-grid gap-2">
-                  <button className="btn btn-primary btn-custom">
+                  <button className="btn btn-primary btn-custom" aria-label="Crear vacante inclusiva">
                     <span className="fs-5 me-2">📋</span>
                     Crear Vacante Inclusiva
                   </button>
-                  <button className="btn btn-outline-primary btn-custom">
+                  <button className="btn btn-outline-primary btn-custom" aria-label="Ver listado de candidatos">
                     <span className="fs-5 me-2">👥</span>
                     Ver Candidatos
                   </button>
-                  <button className="btn btn-outline-primary btn-custom">
+                  <button className="btn btn-outline-primary btn-custom" aria-label="Ver reportes de inclusión">
                     <span className="fs-5 me-2">📊</span>
                     Reportes de Inclusión
                   </button>
-                  <button className="btn btn-outline-primary btn-custom">
+                  <button className="btn btn-outline-primary btn-custom" aria-label="Abrir configuración del empleador">
                     <span className="fs-5 me-2">⚙️</span>
                     Configuración
                   </button>

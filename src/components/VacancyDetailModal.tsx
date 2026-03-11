@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScreenReader, useScreenReader } from './ScreenReader';
 
 interface Vacancy {
@@ -35,6 +35,8 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
   const { isReading, startReading, stopReading, handleReadingComplete } = useScreenReader();
   const [isScreenReaderReady, setIsScreenReaderReady] = useState(false);
   const [textToRead, setTextToRead] = useState('');
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusedElementRef = useRef<HTMLElement | null>(null);
 
   // Detener la lectura cuando se cierra el modal
   useEffect(() => {
@@ -63,6 +65,70 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
       setTimeout(checkScreenReaderReady, 200);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      if (previousFocusedElementRef.current) {
+        previousFocusedElementRef.current.focus();
+        previousFocusedElementRef.current = null;
+      }
+      return;
+    }
+
+    previousFocusedElementRef.current = document.activeElement as HTMLElement;
+    const selector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = Array.from(
+      modalRef.current?.querySelectorAll(selector) || []
+    ) as HTMLElement[];
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus();
+    } else {
+      modalRef.current?.focus();
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const activeFocusable = Array.from(
+        modalRef.current?.querySelectorAll(selector) || []
+      ) as HTMLElement[];
+
+      if (activeFocusable.length === 0) {
+        event.preventDefault();
+        modalRef.current?.focus();
+        return;
+      }
+
+      const firstElement = activeFocusable[0];
+      const lastElement = activeFocusable[activeFocusable.length - 1];
+      const isFocusInsideModal = modalRef.current?.contains(document.activeElement) ?? false;
+
+      if (!isFocusInsideModal) {
+        event.preventDefault();
+        (event.shiftKey ? lastElement : firstElement).focus();
+        return;
+      }
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!vacancy || !isOpen) return null;
 
@@ -120,11 +186,17 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
   };
 
   return (
-    <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+    <div
+      className="modal fade show d-block"
+      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="vacancy-detail-modal-title"
+    >
       <div className="modal-dialog modal-lg modal-dialog-scrollable">
-        <div className="modal-content">
+        <div className="modal-content" ref={modalRef} tabIndex={-1}>
           <div className="modal-header bg-gradient-primary text-white">
-            <h5 className="modal-title fw-bold">
+            <h5 className="modal-title fw-bold" id="vacancy-detail-modal-title">
               <span className="fs-5 me-2">📋</span>
               Detalles de la Vacante
             </h5>
@@ -132,7 +204,7 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
               type="button"
               className="btn-close btn-close-white"
               onClick={onClose}
-              aria-label="Cerrar"
+              aria-label="Cerrar detalle de vacante"
             ></button>
           </div>
           
@@ -145,10 +217,12 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
                   Lector de Pantalla
                 </h6>
                 <button
+                  type="button"
                   className="btn btn-primary btn-sm"
                   onClick={handleReadVacancy}
                   disabled={isReading || !isScreenReaderReady}
                   title={!isScreenReaderReady ? "Esperando inicialización..." : "Leer toda la información de la vacante"}
+                  aria-label="Leer en voz alta la información de la vacante"
                 >
                   <span className="fs-6 me-1">🔊</span>
                   {!isScreenReaderReady ? "Inicializando..." : "Leer Vacante"}
@@ -290,6 +364,7 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
                 type="button"
                 className="btn btn-primary btn-custom flex-fill"
                 onClick={handleEdit}
+                aria-label={`Editar vacante ${vacancy.position}`}
               >
                 <span className="fs-5 me-2">✏️</span>
                 Editar Vacante
@@ -298,6 +373,7 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
                 type="button"
                 className="btn btn-warning btn-custom"
                 onClick={handleCloseVacancy}
+                aria-label={`Cerrar vacante ${vacancy.position}`}
               >
                 <span className="fs-5 me-2">❌</span>
                 Cerrar Vacante
@@ -306,6 +382,7 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
                 type="button"
                 className="btn btn-outline-secondary btn-custom"
                 onClick={onClose}
+                aria-label="Cerrar ventana de detalle de vacante"
               >
                 Cerrar
               </button>

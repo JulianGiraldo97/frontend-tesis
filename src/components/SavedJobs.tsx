@@ -58,8 +58,8 @@ export const SavedJobs: React.FC<SavedJobsProps> = ({
           <p className="text-muted mb-4">
             Cuando guardes empleos que te interesen, aparecerán aquí para que puedas revisarlos más tarde.
           </p>
-          <button className="btn btn-primary btn-custom">
-            <span className="fs-5 me-2">🔍</span>
+          <button className="btn btn-primary btn-custom" aria-label="Ir a la búsqueda de empleos">
+            <span className="fs-5 me-2" aria-hidden="true">🔍</span>
             Buscar Empleos
           </button>
         </div>
@@ -87,7 +87,11 @@ export const SavedJobs: React.FC<SavedJobsProps> = ({
                   <div className="row align-items-start">
                     <div className="col-md-8">
                       <div className="d-flex align-items-center mb-3">
-                        <div className="bg-gradient-primary rounded-3 d-flex align-items-center justify-content-center me-3" style={{ width: '50px', height: '50px' }}>
+                        <div
+                          className="bg-gradient-primary rounded-3 d-flex align-items-center justify-content-center me-3"
+                          style={{ width: '50px', height: '50px' }}
+                          aria-hidden="true"
+                        >
                           <span className="text-white fw-bold fs-6">{job.company.charAt(0)}</span>
                         </div>
                         <div>
@@ -126,6 +130,7 @@ export const SavedJobs: React.FC<SavedJobsProps> = ({
                           className="btn btn-primary btn-custom"
                           onClick={() => onApply(job.id)}
                           disabled={job.status === 'applied' || job.status === 'interviewed'}
+                          aria-label={`${job.status === 'applied' || job.status === 'interviewed' ? 'Estado actual' : 'Postularse a'} ${job.title}`}
                         >
                           <span className="fs-6 me-1">{getStatusIcon(job.status)}</span>
                           {job.status === 'applied' ? 'Postulado' : job.status === 'interviewed' ? 'Entrevistado' : 'Postularse'}
@@ -133,6 +138,7 @@ export const SavedJobs: React.FC<SavedJobsProps> = ({
                         <button
                           className="btn btn-outline-primary btn-custom"
                           onClick={() => onViewDetail(job.id)}
+                          aria-label={`Ver detalle del empleo ${job.title}`}
                         >
                           <span className="fs-6 me-1">👁️</span>
                           Ver Detalle
@@ -140,6 +146,7 @@ export const SavedJobs: React.FC<SavedJobsProps> = ({
                         <button
                           className="btn btn-outline-danger btn-custom"
                           onClick={() => onRemove(job.id)}
+                          aria-label={`Eliminar de guardados el empleo ${job.title}`}
                         >
                           <span className="fs-6 me-1">🗑️</span>
                           Eliminar
@@ -155,4 +162,4 @@ export const SavedJobs: React.FC<SavedJobsProps> = ({
       </div>
     </div>
   );
-}; 
+};

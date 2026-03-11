@@ -25,6 +25,7 @@ export const Navigation: React.FC = () => {
           <div
             className='bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center shadow-custom me-3'
             style={{ width: '40px', height: '40px' }}
+            aria-hidden='true'
           >
             <span className='text-white fw-bold'>E+</span>
           </div>
@@ -36,7 +37,7 @@ export const Navigation: React.FC = () => {
           className='navbar-toggler border-0'
           type='button'
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label='Toggle navigation'
+          aria-label='Abrir menú de navegación'
         >
           <span className='navbar-toggler-icon'></span>
         </button>
@@ -58,8 +59,10 @@ export const Navigation: React.FC = () => {
                       ? 'bg-primary text-white fw-semibold'
                       : 'text-muted hover:text-primary'
                   }`}
+                  aria-label={`Ir a ${item.label}`}
+                  aria-current={location.pathname === item.path ? 'page' : undefined}
                 >
-                  <span className='me-2 fs-5'>{item.icon}</span>
+                  <span className='me-2 fs-5' aria-hidden='true'>{item.icon}</span>
                   <span>{item.label}</span>
                 </Link>
               </li>

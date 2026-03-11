@@ -780,8 +780,11 @@ body {
     z-index: 1000;
   }
 
-  .skip-link:focus {
+  .skip-link:focus,
+  .skip-link:focus-visible {
     top: 6px;
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
   }
 
   /* Screen reader only text */

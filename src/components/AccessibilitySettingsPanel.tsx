@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
 
 interface AccessibilitySettingsPanelProps {
@@ -9,6 +9,9 @@ export const AccessibilitySettingsPanel: React.FC<AccessibilitySettingsPanelProp
   className = ''
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const previousFocusedElementRef = useRef<HTMLElement | null>(null);
+  const panelId = 'accessibility-settings-panel';
   const { 
     highContrast, 
     setHighContrast, 
@@ -21,6 +24,70 @@ export const AccessibilitySettingsPanel: React.FC<AccessibilitySettingsPanelProp
   } = useAccessibility();
 
   const togglePanel = () => setIsOpen(!isOpen);
+
+  useEffect(() => {
+    if (!isOpen) {
+      if (previousFocusedElementRef.current) {
+        previousFocusedElementRef.current.focus();
+        previousFocusedElementRef.current = null;
+      }
+      return;
+    }
+
+    previousFocusedElementRef.current = document.activeElement as HTMLElement;
+    const selector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = Array.from(
+      panelRef.current?.querySelectorAll(selector) || []
+    ) as HTMLElement[];
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus();
+    } else {
+      panelRef.current?.focus();
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setIsOpen(false);
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const activeFocusable = Array.from(
+        panelRef.current?.querySelectorAll(selector) || []
+      ) as HTMLElement[];
+
+      if (activeFocusable.length === 0) {
+        event.preventDefault();
+        panelRef.current?.focus();
+        return;
+      }
+
+      const firstElement = activeFocusable[0];
+      const lastElement = activeFocusable[activeFocusable.length - 1];
+      const isFocusInsidePanel = panelRef.current?.contains(document.activeElement) ?? false;
+
+      if (!isFocusInsidePanel) {
+        event.preventDefault();
+        (event.shiftKey ? lastElement : firstElement).focus();
+        return;
+      }
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
   const handleFontSizeChange = (newSize: 'small' | 'medium' | 'large' | 'xlarge') => {
     setFontSize(newSize);
@@ -54,11 +121,13 @@ export const AccessibilitySettingsPanel: React.FC<AccessibilitySettingsPanelProp
     <div className={`position-fixed bottom-0 end-0 p-3 z-50 ${className}`} style={{ bottom: '20px', right: '20px' }}>
       {/* Floating Action Button */}
       <button
+        type="button"
         onClick={togglePanel}
         className="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center"
         style={{ width: '60px', height: '60px' }}
         aria-label="Configuración de accesibilidad"
         aria-expanded={isOpen}
+        aria-controls={panelId}
       >
         <span className="fs-4">♿</span>
       </button>
@@ -66,14 +135,24 @@ export const AccessibilitySettingsPanel: React.FC<AccessibilitySettingsPanelProp
       {/* Settings Panel */}
       {isOpen && (
         <div className="position-absolute bottom-100 end-0 mb-3">
-          <div className="card card-custom shadow-custom-lg animate-fade-in" style={{ width: '320px' }}>
+          <div
+            className="card card-custom shadow-custom-lg animate-fade-in"
+            style={{ width: '320px' }}
+            id={panelId}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="accessibility-settings-title"
+            ref={panelRef}
+            tabIndex={-1}
+          >
             <div className="card-header bg-gradient-primary text-white border-0">
               <div className="d-flex align-items-center justify-content-between">
-                <h5 className="mb-0 fw-bold">
+                <h5 className="mb-0 fw-bold" id="accessibility-settings-title">
                   <span className="fs-5 me-2">⚙️</span>
                   Configuración de Accesibilidad
                 </h5>
                 <button
+                  type="button"
                   onClick={togglePanel}
                   className="btn btn-link text-white p-0"
                   aria-label="Cerrar configuración"
@@ -169,6 +248,7 @@ export const AccessibilitySettingsPanel: React.FC<AccessibilitySettingsPanelProp
 
               <div className="d-grid gap-2">
                 <button 
+                  type="button"
                   className="btn btn-outline-primary btn-custom"
                   onClick={() => window.location.href = '/profile'}
                 >

@@ -412,7 +412,11 @@ export const ProfilePage: React.FC = () => {
                         value={formData.bio}
                         onChange={(e) => setFormData({...formData, bio: e.target.value})}
                         disabled={!isEditing}
+                        aria-describedby="profile-bio-help"
                       />
+                      <small id="profile-bio-help" className="text-muted d-block mt-2">
+                        Describe tu perfil, fortalezas y adaptaciones que te ayudan en el trabajo.
+                      </small>
                     </div>
                   </div>
                   {isEditing && (
@@ -566,17 +570,22 @@ export const ProfilePage: React.FC = () => {
 
                 {/* Font Size */}
                 <div className="mb-3">
-                  <label className="form-label fw-semibold">Tamaño de Fuente</label>
+                  <label className="form-label fw-semibold" id="profile-font-size-label">Tamaño de Fuente</label>
                   <select
                     className="form-select"
                     value={fontSize}
                     onChange={(e) => setFontSize(e.target.value as 'small' | 'medium' | 'large' | 'xlarge')}
+                    aria-labelledby="profile-font-size-label"
+                    aria-describedby="profile-font-size-help"
                   >
                     <option value="small">Pequeño (14px)</option>
                     <option value="medium">Mediano (16px)</option>
                     <option value="large">Grande (18px)</option>
                     <option value="xlarge">Muy Grande (20px)</option>
                   </select>
+                  <small id="profile-font-size-help" className="text-muted d-block mt-2">
+                    Selecciona el tamaño de texto que te resulte más cómodo.
+                  </small>
                 </div>
 
                 {/* Color Scheme */}
@@ -586,6 +595,7 @@ export const ProfilePage: React.FC = () => {
                     className="form-select"
                     value={colorScheme}
                     onChange={(e) => handleColorSchemeChange(e.target.value as 'default' | 'high-contrast' | 'colorblind' | 'dark')}
+                    aria-label="Seleccionar esquema de color"
                   >
                     <option value="default">Predeterminado</option>
                     <option value="high-contrast">Alto Contraste</option>

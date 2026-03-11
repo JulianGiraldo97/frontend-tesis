@@ -97,7 +97,11 @@ export const LoginPage: React.FC = () => {
                         Recordarme
                       </label>
                     </div>
-                    <a href="#" className="text-decoration-none text-primary fw-semibold">
+                    <a
+                      href="#"
+                      className="text-decoration-none text-primary fw-semibold"
+                      aria-label="Recuperar contraseña"
+                    >
                       ¿Olvidaste tu contraseña?
                     </a>
                   </div>
@@ -122,7 +126,11 @@ export const LoginPage: React.FC = () => {
                   <div className="text-center mt-4">
                     <p className="text-muted mb-0">
                       ¿No tienes cuenta?{' '}
-                      <a href="#" className="text-decoration-none text-primary fw-semibold">
+                      <a
+                        href="#"
+                        className="text-decoration-none text-primary fw-semibold"
+                        aria-label="Crear una cuenta nueva"
+                      >
                         Crear cuenta
                       </a>
                     </p>
@@ -133,7 +141,7 @@ export const LoginPage: React.FC = () => {
 
             {/* Accessibility Features */}
             <div className="text-center mt-4 animate-fade-in">
-              <div className="d-inline-flex align-items-center gap-4 text-white-50 small">
+              <div className="d-inline-flex align-items-center gap-4 text-white small">
                 <span className="d-flex align-items-center">
                   <i className="bi bi-check-circle me-1"></i>
                   Accesible WCAG 2.1 AA

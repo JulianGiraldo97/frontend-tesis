@@ -130,19 +130,19 @@ export const AdminDashboard: React.FC = () => {
               </div>
               <div className="card-body">
                 <div className="d-grid gap-2">
-                  <button className="btn btn-primary">
+                  <button className="btn btn-primary" aria-label="Abrir gestión de usuarios">
                     <span className="fs-5 me-2">👥</span>
                     Gestionar Usuarios
                   </button>
-                  <button className="btn btn-success">
+                  <button className="btn btn-success" aria-label="Ver reportes del panel de administración">
                     <span className="fs-5 me-2">📊</span>
                     Ver Reportes
                   </button>
-                  <button className="btn btn-info">
+                  <button className="btn btn-info" aria-label="Abrir configuración administrativa">
                     <span className="fs-5 me-2">⚙️</span>
                     Configuración
                   </button>
-                  <button className="btn btn-warning">
+                  <button className="btn btn-warning" aria-label="Ejecutar auditoría de accesibilidad">
                     <span className="fs-5 me-2">🔍</span>
                     Auditoría de Accesibilidad
                   </button>

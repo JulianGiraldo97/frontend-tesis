@@ -278,7 +278,7 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
       )}
 
       {/* Debug info */}
-      <div className="ms-auto">
+      <div className="ms-auto" aria-hidden="true">
         <small className="text-muted">
           Estado: {isSupported ? 'Soportado' : 'No soportado'} | 
           Inicializado: {isInitialized ? 'Sí' : 'No'} | 

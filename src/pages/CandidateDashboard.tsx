@@ -33,9 +33,11 @@ interface Job {
   applications: number;
 }
 
+type CandidateDashboardTab = 'overview' | 'applications' | 'recommended';
+
 export const CandidateDashboard: React.FC = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState<CandidateDashboardTab>('overview');
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
@@ -200,6 +202,12 @@ export const CandidateDashboard: React.FC = () => {
     return getJobStatus(selectedJob.id);
   };
 
+  const activeSectionHeading: Record<CandidateDashboardTab, string> = {
+    overview: 'Resumen del panel',
+    applications: 'Postulaciones recientes',
+    recommended: 'Empleos recomendados',
+  };
+
   return (
     <div className="min-vh-100 bg-light">
       {/* Accessibility Notification */}
@@ -282,112 +290,159 @@ export const CandidateDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="row g-4">
-          {/* Left Column */}
-          <div className="col-lg-8">
-            {/* Recent Applications */}
-            <div className="card card-custom mb-4 animate-fade-in">
-              <div className="card-header bg-transparent border-0 pb-0">
-                <h3 className="h4 fw-bold mb-0">Postulaciones Recientes</h3>
-              </div>
-              <div className="card-body">
-                <div className="list-group list-group-flush">
-                  {[
-                    { company: 'Supermercado Inclusivo S.L.', position: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva', status: 'En revisión', date: 'Hace 2 días', color: 'primary' },
-                    { company: 'Centro de Atención Telefónica Inclusivo', position: 'Operador de Telefonía - Personas Sordas', status: 'Entrevista programada', date: 'Hace 1 semana', color: 'success' },
-                    { company: 'Empresa de Desarrollo de Software', position: 'Tester de Accesibilidad - Personas Ciegas', status: 'Rechazada', date: 'Hace 2 semanas', color: 'danger' },
-                    { company: 'Restaurante Inclusivo', position: 'Ayudante de Cocina - Personas con Discapacidad Cognitiva', status: 'Pendiente', date: 'Hace 3 semanas', color: 'warning' }
-                  ].map((app, index) => (
-                    <div key={index} className="list-group-item border-0 px-0 py-3">
-                      <div className="row align-items-center">
-                        <div className="col-md-6">
-                          <h6 className="fw-bold mb-1">{app.position}</h6>
-                          <p className="text-muted mb-0">{app.company}</p>
-                        </div>
-                        <div className="col-md-3">
-                          <span className={`badge bg-${app.color} rounded-pill`}>
-                            {app.status}
-                          </span>
-                        </div>
-                        <div className="col-md-3 text-md-end">
-                          <small className="text-muted">{app.date}</small>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="text-center mt-3">
-                  <button className="btn btn-outline-primary btn-custom">
-                    Ver todas las postulaciones
-                  </button>
-                </div>
-              </div>
+        {/* Tabs */}
+        <div className="card card-custom mb-4 animate-fade-in">
+          <div className="card-body p-3">
+            <div className="nav nav-pills gap-2" role="tablist" aria-label="Secciones del panel de candidata">
+              <button
+                type="button"
+                className={`btn ${activeTab === 'overview' ? 'btn-primary' : 'btn-outline-primary'}`}
+                role="tab"
+                aria-selected={activeTab === 'overview'}
+                aria-controls="candidate-dashboard-panel"
+                onClick={() => setActiveTab('overview')}
+              >
+                Resumen
+              </button>
+              <button
+                type="button"
+                className={`btn ${activeTab === 'applications' ? 'btn-primary' : 'btn-outline-primary'}`}
+                role="tab"
+                aria-selected={activeTab === 'applications'}
+                aria-controls="candidate-dashboard-panel"
+                onClick={() => setActiveTab('applications')}
+              >
+                Postulaciones
+              </button>
+              <button
+                type="button"
+                className={`btn ${activeTab === 'recommended' ? 'btn-primary' : 'btn-outline-primary'}`}
+                role="tab"
+                aria-selected={activeTab === 'recommended'}
+                aria-controls="candidate-dashboard-panel"
+                onClick={() => setActiveTab('recommended')}
+              >
+                Recomendados
+              </button>
             </div>
+          </div>
+        </div>
 
-            {/* Recommended Jobs */}
-            <div className="card card-custom animate-fade-in">
-              <div className="card-header bg-transparent border-0 pb-0">
-                <h3 className="h4 fw-bold mb-0">Empleos Recomendados</h3>
-              </div>
-              <div className="card-body">
-                <div className="row g-3">
-                  {recommendedJobs.map((job) => {
-                    const isApplied = appliedJobs.includes(job.id);
-                    const isSaved = savedJobs.includes(job.id);
-                    
-                    return (
-                      <div key={job.id} className="col-md-6">
-                        <div className="card border-0 shadow-sm h-100">
-                          <div className="card-body p-3">
-                            <div className="d-flex justify-content-between align-items-start mb-2">
-                              <h6 className="fw-bold mb-1">{job.title}</h6>
-                              <span className="badge bg-success rounded-pill">{job.match}</span>
+        {/* Main Content */}
+        <section id="candidate-dashboard-panel" role="tabpanel" aria-labelledby="candidate-active-section-heading">
+          <h2 id="candidate-active-section-heading" className="h3 fw-bold mb-4">
+            {activeSectionHeading[activeTab]}
+          </h2>
+          <div className="row g-4">
+            {/* Left Column */}
+            <div className={activeTab === 'overview' ? 'col-lg-8' : 'col-12'}>
+              {/* Recent Applications */}
+              {activeTab !== 'recommended' && (
+                <div className="card card-custom mb-4 animate-fade-in">
+                  <div className="card-header bg-transparent border-0 pb-0">
+                    <h3 className="h4 fw-bold mb-0">Postulaciones Recientes</h3>
+                  </div>
+                  <div className="card-body">
+                    <div className="list-group list-group-flush">
+                      {[
+                        { company: 'Supermercado Inclusivo S.L.', position: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva', status: 'En revisión', date: 'Hace 2 días', color: 'primary' },
+                        { company: 'Centro de Atención Telefónica Inclusivo', position: 'Operador de Telefonía - Personas Sordas', status: 'Entrevista programada', date: 'Hace 1 semana', color: 'success' },
+                        { company: 'Empresa de Desarrollo de Software', position: 'Tester de Accesibilidad - Personas Ciegas', status: 'Rechazada', date: 'Hace 2 semanas', color: 'danger' },
+                        { company: 'Restaurante Inclusivo', position: 'Ayudante de Cocina - Personas con Discapacidad Cognitiva', status: 'Pendiente', date: 'Hace 3 semanas', color: 'warning' }
+                      ].map((app, index) => (
+                        <div key={index} className="list-group-item border-0 px-0 py-3">
+                          <div className="row align-items-center">
+                            <div className="col-md-6">
+                              <h6 className="fw-bold mb-1">{app.position}</h6>
+                              <p className="text-muted mb-0">{app.company}</p>
                             </div>
-                            <p className="text-muted small mb-2">{job.company} • {job.location}</p>
-                            <p className="text-primary fw-semibold mb-3">{job.salary}</p>
-                            
-                            {/* Status badge if applied */}
-                            {isApplied && (
-                              <div className="mb-2">
-                                <span className="badge bg-primary rounded-pill">Postulado</span>
-                              </div>
-                            )}
-                            
-                            <div className="d-flex gap-2">
-                              <button 
-                                className={`btn ${isApplied ? 'btn-secondary' : 'btn-primary'} btn-sm flex-fill`}
-                                onClick={() => handleQuickApply(job.id)}
-                                disabled={isApplied}
-                              >
-                                <span className="fs-6 me-1">{isApplied ? '✅' : '📝'}</span>
-                                {isApplied ? 'Postulado' : 'Postularse'}
-                              </button>
-                              <button 
-                                className={`btn ${isSaved ? 'btn-success' : 'btn-outline-primary'} btn-sm`}
-                                onClick={() => handleQuickSave(job.id)}
-                              >
-                                <span className="fs-6">💾</span>
-                              </button>
-                              <button 
-                                className="btn btn-outline-secondary btn-sm"
-                                onClick={() => handleViewJobDetail(job.id)}
-                              >
-                                <span className="fs-6">👁️</span>
-                              </button>
+                            <div className="col-md-3">
+                              <span className={`badge bg-${app.color} rounded-pill`}>
+                                {app.status}
+                              </span>
+                            </div>
+                            <div className="col-md-3 text-md-end">
+                              <small className="text-muted">{app.date}</small>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      ))}
+                    </div>
+                    <div className="text-center mt-3">
+                      <button className="btn btn-outline-primary btn-custom">
+                        Ver todas las postulaciones
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
+              )}
 
-          {/* Right Column */}
-          <div className="col-lg-4">
+              {/* Recommended Jobs */}
+              {activeTab !== 'applications' && (
+                <div className="card card-custom animate-fade-in">
+                  <div className="card-header bg-transparent border-0 pb-0">
+                    <h3 className="h4 fw-bold mb-0">Empleos Recomendados</h3>
+                  </div>
+                  <div className="card-body">
+                    <div className="row g-3">
+                      {recommendedJobs.map((job) => {
+                        const isApplied = appliedJobs.includes(job.id);
+                        const isSaved = savedJobs.includes(job.id);
+                        
+                        return (
+                          <div key={job.id} className="col-md-6">
+                            <div className="card border-0 shadow-sm h-100">
+                              <div className="card-body p-3">
+                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                  <h6 className="fw-bold mb-1">{job.title}</h6>
+                                  <span className="badge bg-success rounded-pill">{job.match}</span>
+                                </div>
+                                <p className="text-muted small mb-2">{job.company} • {job.location}</p>
+                                <p className="text-primary fw-semibold mb-3">{job.salary}</p>
+                                
+                                {/* Status badge if applied */}
+                                {isApplied && (
+                                  <div className="mb-2">
+                                    <span className="badge bg-primary rounded-pill">Postulado</span>
+                                  </div>
+                                )}
+                                
+                                <div className="d-flex gap-2">
+                                  <button 
+                                    className={`btn ${isApplied ? 'btn-secondary' : 'btn-primary'} btn-sm flex-fill`}
+                                    onClick={() => handleQuickApply(job.id)}
+                                    disabled={isApplied}
+                                  >
+                                    <span className="fs-6 me-1">{isApplied ? '✅' : '📝'}</span>
+                                    {isApplied ? 'Postulado' : 'Postularse'}
+                                  </button>
+                                  <button 
+                                    className={`btn ${isSaved ? 'btn-success' : 'btn-outline-primary'} btn-sm`}
+                                    onClick={() => handleQuickSave(job.id)}
+                                  >
+                                    <span className="fs-6">💾</span>
+                                  </button>
+                                  <button 
+                                    className="btn btn-outline-secondary btn-sm"
+                                    onClick={() => handleViewJobDetail(job.id)}
+                                  >
+                                    <span className="fs-6">👁️</span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column */}
+            {activeTab === 'overview' && (
+              <div className="col-lg-4">
             {/* Profile Summary */}
             <div className="card card-custom mb-4 animate-fade-in">
               <div className="card-header bg-transparent border-0 pb-0">
@@ -476,7 +531,9 @@ export const CandidateDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+            )}
+          </div>
+        </section>
       </div>
 
       {/* Job Detail Modal */}

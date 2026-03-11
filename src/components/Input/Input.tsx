@@ -31,6 +31,8 @@ export const Input: React.FC<InputProps> = ({
 }) => {
   const inputId = id || name || `input-${Math.random().toString(36).substr(2, 9)}`;
   const errorId = error ? `${inputId}-error` : undefined;
+  const requiredHintId = required ? `${inputId}-required` : undefined;
+  const describedBy = [errorId, ariaDescribedby, requiredHintId].filter(Boolean).join(' ') || undefined;
   
   const baseClasses = 'block w-full px-4 py-3 rounded-lg border-2 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-base';
   const normalClasses = 'border-gray-300 focus:border-green-500 focus:ring-green-500';
@@ -57,9 +59,14 @@ export const Input: React.FC<InputProps> = ({
         required={required}
         disabled={disabled}
         className={classes}
-        aria-describedby={errorId || ariaDescribedby}
+        aria-describedby={describedBy}
         aria-invalid={error ? 'true' : 'false'}
       />
+      {required && (
+        <p id={requiredHintId} className="sr-only">
+          Campo obligatorio
+        </p>
+      )}
       {error && (
         <p id={errorId} className="mt-2 text-sm text-red-600 font-medium" role="alert">
           {error}
