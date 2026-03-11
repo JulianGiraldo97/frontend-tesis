@@ -28,7 +28,6 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
 
   const startReading = () => {
     if (!isSupported || !isInitialized || !selectedVoice) {
-      console.error('Speech Synthesis no está disponible, inicializado o no hay voz seleccionada');
       setError('El lector de pantalla no está listo');
       return;
     }
@@ -45,23 +44,19 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
       utterance.volume = volume;
       utterance.voice = selectedVoice;
 
-      console.log('Configurando utterance con voz:', selectedVoice.name, 'idioma:', selectedVoice.lang);
 
       // Configurar eventos
       utterance.onstart = () => {
-        console.log('Iniciando lectura...');
         setIsPaused(false);
         setError(null);
       };
 
       utterance.onend = () => {
-        console.log('Lectura completada');
         setIsPaused(false);
         onReadingComplete();
       };
 
       utterance.onerror = (event) => {
-        console.error('Error en la síntesis de voz:', event);
         setIsPaused(false);
         setError(`Error al leer: ${event.error}`);
         onReadingComplete();
@@ -72,10 +67,8 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
 
       // Iniciar lectura
       window.speechSynthesis.speak(utterance);
-      console.log('Comando de lectura enviado');
       
-    } catch (err) {
-      console.error('Error al iniciar la lectura:', err);
+    } catch {
       setError('Error al iniciar la lectura');
       onReadingComplete();
     }
@@ -88,9 +81,7 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
       window.speechSynthesis.cancel();
       setIsPaused(false);
       setError(null);
-      console.log('Lectura detenida');
-    } catch (err) {
-      console.error('Error al detener la lectura:', err);
+    } catch {
     }
   };
 
@@ -104,7 +95,6 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
         try {
           // Verificar si hay voces disponibles
           const voices = window.speechSynthesis.getVoices();
-          console.log('Voces disponibles:', voices.length);
           
           if (voices.length > 0) {
             // Seleccionar la mejor voz disponible
@@ -117,7 +107,6 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
             
             if (spanishVoice) {
               bestVoice = spanishVoice;
-              console.log('Voz en español encontrada:', spanishVoice.name, spanishVoice.lang);
             } else {
               // Si no hay voz en español, buscar una voz en inglés
               const englishVoice = voices.find(voice => 
@@ -125,18 +114,15 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
               );
               if (englishVoice) {
                 bestVoice = englishVoice;
-                console.log('Voz en inglés encontrada:', englishVoice.name, englishVoice.lang);
               }
             }
             
             setSelectedVoice(bestVoice);
             setIsInitialized(true);
-            console.log('Speech Synthesis inicializado correctamente con voz:', bestVoice.name);
           } else {
             // Esperar a que las voces se carguen
             window.speechSynthesis.onvoiceschanged = () => {
               const voices = window.speechSynthesis.getVoices();
-              console.log('Voces cargadas:', voices.length);
               
               if (voices.length > 0) {
                 let bestVoice = voices[0];
@@ -147,25 +133,21 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
                 
                 if (spanishVoice) {
                   bestVoice = spanishVoice;
-                  console.log('Voz en español encontrada:', spanishVoice.name, spanishVoice.lang);
                 } else {
                   const englishVoice = voices.find(voice => 
                     voice.lang.startsWith('en')
                   );
                   if (englishVoice) {
                     bestVoice = englishVoice;
-                    console.log('Voz en inglés encontrada:', englishVoice.name, englishVoice.lang);
                   }
                 }
                 
                 setSelectedVoice(bestVoice);
                 setIsInitialized(true);
-                console.log('Speech Synthesis inicializado correctamente con voz:', bestVoice.name);
               }
             };
           }
-        } catch (err) {
-          console.error('Error al inicializar Speech Synthesis:', err);
+        } catch {
           setError('Error al inicializar el lector de pantalla');
         }
       };
@@ -176,7 +158,6 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
       // También intentar después de un pequeño delay
       setTimeout(initSpeechSynthesis, 100);
     } else {
-      console.warn('Web Speech API no está disponible en este navegador');
       setError('Web Speech API no está disponible en este navegador');
     }
   }, []);
@@ -196,9 +177,7 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
     try {
       window.speechSynthesis.pause();
       setIsPaused(true);
-      console.log('Lectura pausada');
-    } catch (err) {
-      console.error('Error al pausar la lectura:', err);
+    } catch {
     }
   };
 
@@ -208,9 +187,7 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
     try {
       window.speechSynthesis.resume();
       setIsPaused(false);
-      console.log('Lectura reanudada');
-    } catch (err) {
-      console.error('Error al reanudar la lectura:', err);
+    } catch {
     }
   };
 
@@ -296,19 +273,16 @@ export const useScreenReader = () => {
   const [currentText, setCurrentText] = useState('');
 
   const startReading = (text: string) => {
-    console.log('Iniciando lectura con texto:', text.substring(0, 100) + '...');
     setCurrentText(text);
     setIsReading(true);
   };
 
   const stopReading = () => {
-    console.log('Deteniendo lectura');
     setIsReading(false);
     setCurrentText('');
   };
 
   const handleReadingComplete = () => {
-    console.log('Lectura completada');
     setIsReading(false);
   };
 

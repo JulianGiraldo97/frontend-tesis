@@ -2,206 +2,35 @@ import React, { useState } from 'react';
 import { AccessibilityNotification } from '../components/AccessibilityNotification';
 import { VacancyDetailModal } from '../components/VacancyDetailModal';
 import { CandidateCVModal } from '../components/CandidateCVModal';
-
-interface Vacancy {
-  id: string;
-  position: string;
-  company: string;
-  candidates: number;
-  status: string;
-  date: string;
-  color: string;
-  targetDisability: string;
-  salary: string;
-  location: string;
-  description?: string;
-  requirements?: string[];
-  benefits?: string[];
-}
-
-interface Application {
-  id: string;
-  name: string;
-  position: string;
-  match: string;
-  status: string;
-  time: string;
-  color: string;
-  disability: string;
-  experience: string;
-}
+import {
+  MockApplication,
+  MockVacancy,
+  applications as mockApplications,
+  vacancies as mockVacancies,
+} from '../data/mockData';
 
 export const EmployerDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('overview');
   const [notification, setNotification] = useState({
     message: '',
     type: 'info' as 'success' | 'info' | 'warning',
     isVisible: false
   });
-  const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
+  const [selectedVacancy, setSelectedVacancy] = useState<MockVacancy | null>(null);
   const [isVacancyModalOpen, setIsVacancyModalOpen] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] = useState<Application | null>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<MockApplication | null>(null);
   const [isCandidateModalOpen, setIsCandidateModalOpen] = useState(false);
 
-  // Mock data for vacancies
-  const [vacancies, setVacancies] = useState<Vacancy[]>([
-    {
-      id: '1',
-      position: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva',
-      company: 'Supermercado Inclusivo S.L.',
-      candidates: 8,
-      status: 'Activa',
-      date: 'Hace 2 días',
-      color: 'success',
-      targetDisability: 'Discapacidad Cognitiva',
-      salary: '€18,000 - €22,000',
-      location: 'Madrid, España',
-      description: 'Buscamos personas con discapacidad cognitiva para trabajar como acomodadores de cajas en nuestro supermercado. Tareas de organización, clasificación y mantenimiento del orden en las estanterías.',
-      requirements: [
-        'Motivación y ganas de trabajar',
-        'Capacidad de seguir instrucciones simples',
-        'Aptitud para tareas repetitivas',
-        'Trabajo en equipo',
-        'No requiere experiencia previa'
-      ],
-      benefits: [
-        'Apoyo personalizado continuo',
-        'Horario estructurado (mañana)',
-        'Formación adaptada',
-        'Entorno de trabajo tranquilo',
-        'Seguimiento profesional'
-      ]
-    },
-    {
-      id: '2',
-      position: 'Operador de Telefonía - Personas Sordas',
-      company: 'Centro de Atención Telefónica Inclusivo',
-      candidates: 5,
-      status: 'Activa',
-      date: 'Hace 1 semana',
-      color: 'success',
-      targetDisability: 'Discapacidad Auditiva',
-      salary: '€20,000 - €25,000',
-      location: 'Barcelona, España',
-      description: 'Buscamos personas sordas para trabajar como operadores de telefonía usando tecnologías de comunicación adaptadas.',
-      requirements: [
-        'Persona sorda con certificado de discapacidad',
-        'Buen nivel de escritura en español',
-        'Habilidades de comunicación escrita',
-        'Capacidad de trabajo en equipo',
-        'Formación básica en informática'
-      ],
-      benefits: [
-        'Tecnologías de comunicación adaptadas',
-        'Intérprete de lengua de señas disponible',
-        'Horario flexible',
-        'Seguro médico',
-        'Entorno de trabajo inclusivo'
-      ]
-    },
-    {
-      id: '3',
-      position: 'Tester de Accesibilidad - Personas Ciegas',
-      company: 'Empresa de Desarrollo de Software',
-      candidates: 12,
-      status: 'Cerrando',
-      date: 'Hace 2 semanas',
-      color: 'warning',
-      targetDisability: 'Discapacidad Visual',
-      salary: '€25,000 - €32,000',
-      location: 'Valencia, España',
-      description: 'Buscamos personas ciegas para trabajar como testers de accesibilidad. Evaluación de aplicaciones y sitios web usando lectores de pantalla.',
-      requirements: [
-        'Persona ciega con experiencia en lectores de pantalla',
-        'Conocimientos básicos de informática',
-        'Capacidad de reportar problemas de accesibilidad',
-        'Paciencia y atención al detalle',
-        'No requiere formación técnica previa'
-      ],
-      benefits: [
-        'Equipamiento adaptado completo',
-        'Formación en testing de accesibilidad',
-        'Trabajo remoto disponible',
-        'Horario flexible',
-        'Impacto directo en la accesibilidad digital'
-      ]
-    },
-    {
-      id: '4',
-      position: 'Ayudante de Cocina - Personas con Discapacidad Cognitiva',
-      company: 'Restaurante Inclusivo',
-      candidates: 15,
-      status: 'Activa',
-      date: 'Hace 3 semanas',
-      color: 'success',
-      targetDisability: 'Discapacidad Cognitiva',
-      salary: '€16,000 - €20,000',
-      location: 'Sevilla, España',
-      description: 'Buscamos personas con discapacidad cognitiva para trabajar como ayudantes de cocina. Tareas de limpieza y preparación básica.',
-      requirements: [
-        'Motivación y ganas de aprender',
-        'Capacidad de seguir instrucciones',
-        'Trabajo en equipo',
-        'Responsabilidad',
-        'No requiere experiencia previa'
-      ],
-      benefits: [
-        'Apoyo personalizado continuo',
-        'Horario de mañana',
-        'Formación en cocina básica',
-        'Comida incluida',
-        'Entorno de trabajo acogedor'
-      ]
-    }
-  ]);
+  const [vacancies, setVacancies] = useState<MockVacancy[]>(() =>
+    mockVacancies.map(vacancy => ({
+      ...vacancy,
+      requirements: vacancy.requirements ? [...vacancy.requirements] : undefined,
+      benefits: vacancy.benefits ? [...vacancy.benefits] : undefined,
+    }))
+  );
 
-  // Mock data for applications
-  const [applications, setApplications] = useState<Application[]>([
-    {
-      id: '1',
-      name: 'María González',
-      position: 'Acomodador de Cajas',
-      match: '98%',
-      status: 'Nueva',
-      time: 'Hace 1 hora',
-      color: 'success',
-      disability: 'Discapacidad Cognitiva',
-      experience: '2 años en organización'
-    },
-    {
-      id: '2',
-      name: 'Carlos Rodríguez',
-      position: 'Operador de Telefonía',
-      match: '92%',
-      status: 'En revisión',
-      time: 'Hace 3 horas',
-      color: 'primary',
-      disability: 'Discapacidad Auditiva',
-      experience: 'Experiencia en atención al cliente'
-    },
-    {
-      id: '3',
-      name: 'Ana Martínez',
-      position: 'Tester de Accesibilidad',
-      match: '95%',
-      status: 'Entrevista',
-      time: 'Hace 1 día',
-      color: 'info',
-      disability: 'Discapacidad Visual',
-      experience: '5 años usando lectores de pantalla'
-    },
-    {
-      id: '4',
-      name: 'Luis Pérez',
-      position: 'Ayudante de Cocina',
-      match: '90%',
-      status: 'Rechazada',
-      time: 'Hace 2 días',
-      color: 'danger',
-      disability: 'Discapacidad Cognitiva',
-      experience: 'Motivación y ganas de aprender'
-    }
-  ]);
+  const [applications] = useState<MockApplication[]>(() =>
+    mockApplications.map(application => ({ ...application }))
+  );
 
   const showNotification = (message: string, type: 'success' | 'info' | 'warning' = 'info') => {
     setNotification({

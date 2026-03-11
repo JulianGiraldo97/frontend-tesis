@@ -54,17 +54,17 @@ React 18 + TypeScript + Bootstrap 5 · Desplegado en GitHub Pages (`/frontend-te
 ## 2. Funcionalidad Mock
 
 ### Eliminar `console.log` de producción
-- [ ] `src/pages/LoginPage.tsx:15`
-- [ ] `src/pages/ApplicationPage.tsx:29`
-- [ ] `src/pages/ProfilePage.tsx:177`
-- [ ] `src/pages/JobSearchPage.tsx:191, 196, 208`
-- [ ] `src/components/ScreenReader.tsx` — 15+ sentencias `console.log/error` (líneas 31, 48, 52, 58, 64, 75, 78, 91-93, 107, 120, 128, 134, 139, 150, 157, 163, 168, 179, 199, 201, 211, 213, 299, 305, 311)
-- [ ] `src/components/CandidateCVModal.tsx:55, 75, 122`
-- [ ] `src/components/VacancyDetailModal.tsx:56, 81, 117`
-- [ ] `src/components/ScreenReaderTest.tsx:44`
+- [x] `src/pages/LoginPage.tsx:15`
+- [x] `src/pages/ApplicationPage.tsx:29`
+- [x] `src/pages/ProfilePage.tsx:177`
+- [x] `src/pages/JobSearchPage.tsx:191, 196, 208`
+- [x] `src/components/ScreenReader.tsx` — 15+ sentencias `console.log/error` (líneas 31, 48, 52, 58, 64, 75, 78, 91-93, 107, 120, 128, 134, 139, 150, 157, 163, 168, 179, 199, 201, 211, 213, 299, 305, 311)
+- [x] `src/components/CandidateCVModal.tsx:55, 75, 122`
+- [x] `src/components/VacancyDetailModal.tsx:56, 81, 117`
+- [x] `src/components/ScreenReaderTest.tsx:44`
 
 ### Centralizar datos mock
-- [ ] Crear `src/data/mockData.ts` y mover todos los arrays de prueba allí:
+- [x] Crear `src/data/mockData.ts` y mover todos los arrays de prueba allí:
   - `mockJobs` — `src/pages/JobSearchPage.tsx:30-187`
   - `recommendedJobs` — `src/pages/CandidateDashboard.tsx`
   - `savedJobs` / `jobDetails` — `src/pages/ProfilePage.tsx:56-172`
@@ -72,18 +72,18 @@ React 18 + TypeScript + Bootstrap 5 · Desplegado en GitHub Pages (`/frontend-te
   - métricas — `src/pages/AdminDashboard.tsx:23-42`
 
 ### Conectar formularios al AuthContext / servicios mock
-- [ ] `src/pages/LoginPage.tsx:9-18` — el submit solo hace `console.log`; debe llamar a `useAuth().login()`
-- [ ] `src/pages/ApplicationPage.tsx:27-30` — el submit no persiste datos; conectar a estado global o servicio mock
-- [ ] `src/pages/ProfilePage.tsx:174-178` — guardar cambios de perfil en el AuthContext o localStorage
-- [ ] `src/pages/JobSearchPage.tsx:194-209` — handlers de "Aplicar" y "Guardar empleo" solo actualizan estado local; conectar al contexto
+- [x] `src/pages/LoginPage.tsx:9-18` — el submit solo hace `console.log`; debe llamar a `useAuth().login()`
+- [x] `src/pages/ApplicationPage.tsx:27-30` — el submit no persiste datos; conectar a estado global o servicio mock
+- [x] `src/pages/ProfilePage.tsx:174-178` — guardar cambios de perfil en el AuthContext o localStorage
+- [x] `src/pages/JobSearchPage.tsx:194-209` — handlers de "Aplicar" y "Guardar empleo" solo actualizan estado local; conectar al contexto
 
 ### Completar contenido placeholder
-- [ ] `src/pages/JobDetailPage.tsx:33-73` — descripción, requisitos, beneficios y empresa ("TechCorp Inc.") son placeholders; vincular a datos mock reales
+- [x] `src/pages/JobDetailPage.tsx:33-73` — descripción, requisitos, beneficios y empresa ("TechCorp Inc.") son placeholders; vincular a datos mock reales
 
 ### Validación de formularios
-- [ ] `src/pages/ApplicationPage.tsx` — validar tipo y tamaño de archivo antes del submit
-- [ ] `src/context/AuthContext.tsx:86-109` — validar formato de email y fortaleza de contraseña en `register()`
-- [ ] `src/pages/ProfilePage.tsx` — validar campos antes de `handleSubmit`
+- [x] `src/pages/ApplicationPage.tsx` — validar tipo y tamaño de archivo antes del submit
+- [x] `src/context/AuthContext.tsx:86-109` — validar formato de email y fortaleza de contraseña en `register()`
+- [x] `src/pages/ProfilePage.tsx` — validar campos antes de `handleSubmit`
 
 ---
 

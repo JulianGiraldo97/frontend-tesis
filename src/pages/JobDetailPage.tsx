@@ -1,7 +1,12 @@
 import React from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/Button';
+import { mockJobs } from '../data/mockData';
 
 export const JobDetailPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const selectedJob = mockJobs.find(job => job.id === id) || mockJobs[0];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
@@ -9,11 +14,11 @@ export const JobDetailPage: React.FC = () => {
           <div className="flex justify-between items-center py-6">
             <div>
               <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
-                <a href="#" className="hover:text-gray-700" aria-label="Volver al listado de empleos">Empleos</a>
+                <Link to="/jobs" className="hover:text-gray-700" aria-label="Volver al listado de empleos">Empleos</Link>
                 <span className="mx-2">/</span>
-                <span>Desarrollador Frontend React</span>
+                <span>{selectedJob.title}</span>
               </nav>
-              <h1 className="text-3xl font-bold text-gray-900">Desarrollador Frontend React</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{selectedJob.title}</h1>
             </div>
             <Button>
               Postularse
@@ -33,35 +38,25 @@ export const JobDetailPage: React.FC = () => {
               <section className="bg-white shadow rounded-lg p-6 mb-6" aria-labelledby="job-description-heading">
                 <h2 id="job-description-heading" className="text-xl font-semibold text-gray-900 mb-4">Descripción del puesto</h2>
                 <p className="text-gray-600 mb-4">
-                  Buscamos un desarrollador Frontend con experiencia en React y TypeScript 
-                  para unirse a nuestro equipo de desarrollo de aplicaciones accesibles.
-                </p>
-                <p className="text-gray-600 mb-4">
-                  Como parte de nuestro equipo, trabajarás en proyectos que impactan 
-                  positivamente la vida de personas con discapacidades, creando 
-                  experiencias digitales inclusivas y accesibles.
+                  {selectedJob.description}
                 </p>
               </section>
 
               <section className="bg-white shadow rounded-lg p-6 mb-6" aria-labelledby="job-requirements-heading">
                 <h2 id="job-requirements-heading" className="text-xl font-semibold text-gray-900 mb-4">Requisitos</h2>
                 <ul className="list-disc list-inside space-y-2 text-gray-600">
-                  <li>Experiencia sólida en React y TypeScript</li>
-                  <li>Conocimientos de accesibilidad web (WCAG 2.1)</li>
-                  <li>Experiencia con testing y debugging</li>
-                  <li>Capacidad de trabajo en equipo</li>
-                  <li>Compromiso con la inclusión digital</li>
+                  {selectedJob.requirements.map((requirement, index) => (
+                    <li key={index}>{requirement}</li>
+                  ))}
                 </ul>
               </section>
 
               <section className="bg-white shadow rounded-lg p-6" aria-labelledby="job-benefits-heading">
                 <h2 id="job-benefits-heading" className="text-xl font-semibold text-gray-900 mb-4">Beneficios</h2>
                 <ul className="list-disc list-inside space-y-2 text-gray-600">
-                  <li>Salario competitivo</li>
-                  <li>Trabajo remoto o híbrido</li>
-                  <li>Horario flexible</li>
-                  <li>Capacitación continua</li>
-                  <li>Proyectos con impacto social</li>
+                  {selectedJob.benefits.map((benefit, index) => (
+                    <li key={index}>{benefit}</li>
+                  ))}
                 </ul>
               </section>
             </div>
@@ -74,27 +69,27 @@ export const JobDetailPage: React.FC = () => {
                 <dl className="space-y-4">
                   <div>
                     <dt className="font-medium text-gray-900">Empresa</dt>
-                    <dd className="text-sm text-gray-600">TechCorp Inc.</dd>
+                    <dd className="text-sm text-gray-600">{selectedJob.company}</dd>
                   </div>
                   <div>
                     <dt className="font-medium text-gray-900">Sector</dt>
-                    <dd className="text-sm text-gray-600">Empresa de tecnología</dd>
+                    <dd className="text-sm text-gray-600">Empresa inclusiva</dd>
                   </div>
                   <div>
                     <dt className="font-medium text-gray-900">Ubicación</dt>
-                    <dd className="text-sm text-gray-600">Madrid, España</dd>
+                    <dd className="text-sm text-gray-600">{selectedJob.location}</dd>
                   </div>
                   <div>
                     <dt className="font-medium text-gray-900">Tipo de contrato</dt>
-                    <dd className="text-sm text-gray-600">Tiempo completo</dd>
+                    <dd className="text-sm text-gray-600">{selectedJob.contractType}</dd>
                   </div>
                   <div>
                     <dt className="font-medium text-gray-900">Salario</dt>
-                    <dd className="text-sm text-gray-600">$45,000 - $60,000</dd>
+                    <dd className="text-sm text-gray-600">{selectedJob.salary}</dd>
                   </div>
                   <div>
                     <dt className="font-medium text-gray-900">Fecha de publicación</dt>
-                    <dd className="text-sm text-gray-600">15 de enero, 2024</dd>
+                    <dd className="text-sm text-gray-600">{selectedJob.postedDate}</dd>
                   </div>
                 </dl>
 

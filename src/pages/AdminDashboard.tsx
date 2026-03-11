@@ -1,45 +1,9 @@
 import React, { useState } from 'react';
 import { AccessibilitySettingsPanel } from '../components/AccessibilitySettingsPanel';
-
-interface MetricData {
-  label: string;
-  value: string;
-  color: string;
-}
-
-interface MetricSection {
-  title: string;
-  data: MetricData[];
-}
-
-interface Metrics {
-  accessibility: MetricSection;
-  users: MetricSection;
-}
+import { adminMetrics, AdminMetrics } from '../data/mockData';
 
 export const AdminDashboard: React.FC = () => {
-  const [selectedMetric, setSelectedMetric] = useState<keyof Metrics>('accessibility');
-
-  const metrics: Metrics = {
-    accessibility: {
-      title: 'Métricas de Accesibilidad',
-      data: [
-        { label: 'WCAG 2.1 AA Compliance', value: '98%', color: 'success' },
-        { label: 'Usuarios con Discapacidad', value: '1,247', color: 'info' },
-        { label: 'Tests de Accesibilidad', value: '156/160', color: 'warning' },
-        { label: 'Tiempo de Respuesta', value: '2.3s', color: 'primary' }
-      ]
-    },
-    users: {
-      title: 'Gestión de Usuarios',
-      data: [
-        { label: 'Usuarios Activos', value: '2,891', color: 'success' },
-        { label: 'Nuevos Registros', value: '156', color: 'info' },
-        { label: 'Solicitudes Pendientes', value: '23', color: 'warning' },
-        { label: 'Reportes de Accesibilidad', value: '45', color: 'primary' }
-      ]
-    }
-  };
+  const [selectedMetric, setSelectedMetric] = useState<keyof AdminMetrics>('accessibility');
 
   return (
     <div className="min-vh-100 bg-light">
@@ -109,9 +73,9 @@ export const AdminDashboard: React.FC = () => {
                 </ul>
               </div>
               <div className="card-body">
-                <h5 className="card-title">{metrics[selectedMetric].title}</h5>
+                <h5 className="card-title">{adminMetrics[selectedMetric].title}</h5>
                 <div className="row">
-                  {metrics[selectedMetric].data.map((metric, index) => (
+                  {adminMetrics[selectedMetric].data.map((metric, index) => (
                     <div key={index} className="col-md-6 mb-3">
                       <div className="d-flex justify-content-between align-items-center p-3 bg-light rounded">
                         <span className="text-muted">{metric.label}</span>

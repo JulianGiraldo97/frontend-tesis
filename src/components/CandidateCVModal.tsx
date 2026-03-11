@@ -52,7 +52,6 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
         const voices = window.speechSynthesis.getVoices();
         if (voices.length > 0) {
           setIsScreenReaderReady(true);
-          console.log('ScreenReader listo en modal de CV');
         } else {
           setTimeout(checkScreenReaderReady, 100);
         }
@@ -72,7 +71,6 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
 
   const handleReadCV = () => {
     if (!isScreenReaderReady) {
-      console.log('ScreenReader no está listo, esperando...');
       return;
     }
 
@@ -119,7 +117,6 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
       Entorno de trabajo tranquilo
     `;
 
-    console.log('Iniciando lectura de CV con texto:', text.substring(0, 200) + '...');
     setTextToRead(text);
     startReading(text);
   };

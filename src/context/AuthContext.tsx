@@ -26,6 +26,7 @@ interface AuthContextType {
   error: string | null;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
+  updateProfile: (data: Partial<Pick<User, 'name' | 'email'>>) => void;
   logout: () => void;
   clearError: () => void;
 }
@@ -38,16 +39,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isStrongPassword = (password: string): boolean => {
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    return password.length >= 8 && hasUpper && hasLower && hasNumber;
+  };
+
   // Check for existing session on mount
   useEffect(() => {
     const token = localStorage.getItem('auth-token');
     if (token) {
-      const mockUser: User = {
+      const persistedUser = localStorage.getItem('auth-user');
+      let mockUser: User = {
         id: '1',
         name: 'María González',
         email: 'maria.gonzalez@email.com',
-        role: 'candidate'
+        role: 'candidate',
       };
+      if (persistedUser) {
+        try {
+          mockUser = JSON.parse(persistedUser) as User;
+        } catch {
+          mockUser = {
+            id: '1',
+            name: 'María González',
+            email: 'maria.gonzalez@email.com',
+            role: 'candidate',
+          };
+        }
+      }
       setUser(mockUser);
       setIsAuthenticated(true);
     }
@@ -70,6 +96,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
         
         localStorage.setItem('auth-token', 'mock-token');
+        localStorage.setItem('auth-user', JSON.stringify(mockUser));
         setUser(mockUser);
         setIsAuthenticated(true);
       } else {
@@ -88,6 +115,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
 
     try {
+      if (!isValidEmail(userData.email)) {
+        throw new Error('El correo electrónico no tiene un formato válido');
+      }
+
+      if (!isStrongPassword(userData.password)) {
+        throw new Error(
+          'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número'
+        );
+      }
+
       // Mock registration - in real app this would be an API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -99,6 +136,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       };
       
       localStorage.setItem('auth-token', 'mock-token');
+      localStorage.setItem('auth-user', JSON.stringify(newUser));
       setUser(newUser);
       setIsAuthenticated(true);
     } catch (err) {
@@ -109,8 +147,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const updateProfile = (data: Partial<Pick<User, 'name' | 'email'>>): void => {
+    setUser(prev => {
+      if (!prev) return prev;
+      const updatedUser: User = {
+        ...prev,
+        ...data,
+      };
+      localStorage.setItem('auth-user', JSON.stringify(updatedUser));
+      return updatedUser;
+    });
+  };
+
   const logout = (): void => {
     localStorage.removeItem('auth-token');
+    localStorage.removeItem('auth-user');
     setUser(null);
     setIsAuthenticated(false);
     setError(null);
@@ -127,6 +178,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     error,
     login,
     register,
+    updateProfile,
     logout,
     clearError,
   };

@@ -55,7 +55,6 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
         const voices = window.speechSynthesis.getVoices();
         if (voices.length > 0) {
           setIsScreenReaderReady(true);
-          console.log('ScreenReader listo en modal de vacante');
         } else {
           setTimeout(checkScreenReaderReady, 100);
         }
@@ -144,7 +143,6 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
 
   const handleReadVacancy = () => {
     if (!isScreenReaderReady) {
-      console.log('ScreenReader no está listo, esperando...');
       return;
     }
 
@@ -180,7 +178,6 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
       Estadísticas: ${vacancy.candidates} candidatos han aplicado, ${Math.floor(vacancy.candidates * 0.3)} están en revisión, y ${Math.floor(vacancy.candidates * 0.1)} han sido invitados a entrevista.
     `;
 
-    console.log('Iniciando lectura de vacante con texto:', text.substring(0, 200) + '...');
     setTextToRead(text);
     startReading(text);
   };

@@ -2,43 +2,14 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { JobDetailModal } from '../components/JobDetailModal';
 import { AccessibilityNotification } from '../components/AccessibilityNotification';
-
-interface RecommendedJob {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  contractType: string;
-  description: string;
-  requirements: string[];
-  benefits: string[];
-  match: string;
-  postedDate: string;
-  applications: number;
-}
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  contractType: string;
-  description: string;
-  requirements: string[];
-  benefits: string[];
-  match: string;
-  postedDate: string;
-  applications: number;
-}
+import { MockJob, recommendedJobs } from '../data/mockData';
 
 type CandidateDashboardTab = 'overview' | 'applications' | 'recommended';
 
 export const CandidateDashboard: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<CandidateDashboardTab>('overview');
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<MockJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
@@ -47,88 +18,6 @@ export const CandidateDashboard: React.FC = () => {
     type: 'info' as 'success' | 'info' | 'warning',
     isVisible: false
   });
-
-  // Mock data for recommended jobs
-  const recommendedJobs: RecommendedJob[] = [
-    {
-      id: 'rec1',
-      title: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva',
-      company: 'Supermercado Inclusivo S.L.',
-      location: 'Madrid, España',
-      salary: '€18,000 - €22,000',
-      contractType: 'Tiempo completo',
-      description: 'Buscamos personas con discapacidad cognitiva para trabajar como acomodadores de cajas en nuestro supermercado. Tareas de organización, clasificación y mantenimiento del orden en las estanterías. Entorno de trabajo estructurado y apoyo continuo.',
-      requirements: [
-        'Motivación y ganas de trabajar',
-        'Capacidad de seguir instrucciones simples',
-        'Aptitud para tareas repetitivas',
-        'Trabajo en equipo',
-        'No requiere experiencia previa'
-      ],
-      benefits: [
-        'Apoyo personalizado continuo',
-        'Horario estructurado (mañana)',
-        'Formación adaptada',
-        'Entorno de trabajo tranquilo',
-        'Seguimiento profesional'
-      ],
-      match: '98%',
-      postedDate: 'Hace 1 día',
-      applications: 8
-    },
-    {
-      id: 'rec2',
-      title: 'Operador de Telefonía - Personas Sordas',
-      company: 'Centro de Atención Telefónica Inclusivo',
-      location: 'Barcelona, España',
-      salary: '€20,000 - €25,000',
-      contractType: 'Tiempo completo',
-      description: 'Buscamos personas sordas para trabajar como operadores de telefonía usando tecnologías de comunicación adaptadas. Atención al cliente a través de chat, email y videollamadas con intérprete.',
-      requirements: [
-        'Persona sorda con certificado de discapacidad',
-        'Buen nivel de escritura en español',
-        'Habilidades de comunicación escrita',
-        'Capacidad de trabajo en equipo',
-        'Formación básica en informática'
-      ],
-      benefits: [
-        'Tecnologías de comunicación adaptadas',
-        'Intérprete de lengua de señas disponible',
-        'Horario flexible',
-        'Seguro médico',
-        'Entorno de trabajo inclusivo'
-      ],
-      match: '92%',
-      postedDate: 'Hace 2 días',
-      applications: 5
-    },
-    {
-      id: 'rec3',
-      title: 'Tester de Accesibilidad - Personas Ciegas',
-      company: 'Empresa de Desarrollo de Software',
-      location: 'Valencia, España',
-      salary: '€25,000 - €32,000',
-      contractType: 'Tiempo completo',
-      description: 'Buscamos personas ciegas para trabajar como testers de accesibilidad. Evaluación de aplicaciones y sitios web usando lectores de pantalla y otras tecnologías asistivas.',
-      requirements: [
-        'Persona ciega con experiencia en lectores de pantalla',
-        'Conocimientos básicos de informática',
-        'Capacidad de reportar problemas de accesibilidad',
-        'Paciencia y atención al detalle',
-        'No requiere formación técnica previa'
-      ],
-      benefits: [
-        'Equipamiento adaptado completo',
-        'Formación en testing de accesibilidad',
-        'Trabajo remoto disponible',
-        'Horario flexible',
-        'Impacto directo en la accesibilidad digital'
-      ],
-      match: '95%',
-      postedDate: 'Hace 3 días',
-      applications: 12
-    }
-  ];
 
   const showNotification = (message: string, type: 'success' | 'info' | 'warning' = 'info') => {
     setNotification({

@@ -1,20 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { login, isLoading, error, clearError, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    return () => {
+      clearError();
+    };
+  }, [clearError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // Simular delay de login
-    setTimeout(() => {
-      console.log('Login attempt:', { email, password });
-      setIsLoading(false);
-    }, 2000);
+    await login({ email, password });
   };
 
   return (
@@ -42,6 +51,11 @@ export const LoginPage: React.FC = () => {
             <div className="card card-custom glass animate-fade-in">
               <div className="card-body p-5">
                 <form onSubmit={handleSubmit}>
+                  {error && (
+                    <div className="alert alert-danger" role="alert">
+                      {error}
+                    </div>
+                  )}
                   <div className="mb-4">
                     <label htmlFor="email" className="form-label fw-semibold text-dark">
                       Correo electrónico

@@ -41,7 +41,6 @@ export const ScreenReaderTest: React.FC = () => {
         
         Estadísticas: 15 candidatos han aplicado, 5 están en revisión, y 2 han sido invitados a entrevista.
       `;
-      console.log('Simulando lectura de modal con texto:', modalText.substring(0, 200) + '...');
       startReading(modalText);
     }, 100);
   };
@@ -100,7 +99,7 @@ export const ScreenReaderTest: React.FC = () => {
         <ol className="mb-0">
           <li>Haz clic en "Probar Lector de Pantalla" para verificar funcionamiento básico</li>
           <li>Si funciona, haz clic en "Simular Modal de Vacante" para probar el comportamiento del modal</li>
-          <li>Revisa la consola del navegador (F12) para ver logs detallados</li>
+          <li>Escucha la lectura completa y confirma que el estado cambie correctamente</li>
           <li>Si el test funciona pero el modal no, el problema está en la integración</li>
         </ol>
       </div>

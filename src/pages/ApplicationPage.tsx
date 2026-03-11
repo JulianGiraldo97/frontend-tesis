@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { useAuth } from '../context/AuthContext';
+import { saveSubmittedApplication } from '../services/mockStorage';
 
 export const ApplicationPage: React.FC = () => {
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const coverLetterHelpId = 'cover-letter-help';
   const resumeHelpId = 'resume-help';
+  const [fileError, setFileError] = useState('');
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -26,9 +32,62 @@ export const ApplicationPage: React.FC = () => {
     }
   };
 
+  const handleResumeChange = (file: File | null) => {
+    setFileError('');
+    if (!file) {
+      setFormData({ ...formData, resume: null });
+      return;
+    }
+
+    const allowedExtensions = ['pdf', 'doc', 'docx'];
+    const extension = file.name.split('.').pop()?.toLowerCase() || '';
+    const maxSizeInBytes = 5 * 1024 * 1024;
+
+    if (!allowedExtensions.includes(extension)) {
+      setFileError('El archivo debe ser PDF, DOC o DOCX');
+      setFormData({ ...formData, resume: null });
+      return;
+    }
+
+    if (file.size > maxSizeInBytes) {
+      setFileError('El archivo no puede superar 5MB');
+      setFormData({ ...formData, resume: null });
+      return;
+    }
+
+    setFormData({ ...formData, resume: file });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Application submitted:', formData);
+    setSubmitError('');
+    setSubmitMessage('');
+
+    if (!formData.resume) {
+      setFileError('Debes adjuntar un CV válido');
+      return;
+    }
+
+    try {
+      saveSubmittedApplication(user?.id || 'guest', {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        coverLetter: formData.coverLetter,
+        resumeFileName: formData.resume.name,
+      });
+      setSubmitMessage('Postulación enviada y guardada correctamente');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        coverLetter: '',
+        resume: null,
+      });
+      setCurrentStep(1);
+    } catch {
+      setSubmitError('No se pudo guardar la postulación. Intenta nuevamente.');
+    }
   };
 
   const steps = [
@@ -88,6 +147,16 @@ export const ApplicationPage: React.FC = () => {
           {/* Form */}
           <div className="bg-white shadow rounded-lg p-6">
             <form onSubmit={handleSubmit}>
+              {submitMessage && (
+                <div className="mb-4 rounded-md bg-green-100 p-3 text-sm text-green-700">
+                  {submitMessage}
+                </div>
+              )}
+              {submitError && (
+                <div className="mb-4 rounded-md bg-red-100 p-3 text-sm text-red-700">
+                  {submitError}
+                </div>
+              )}
               {currentStep === 1 && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-semibold text-gray-900">Información Personal</h2>
@@ -156,13 +225,16 @@ export const ApplicationPage: React.FC = () => {
                       type="file"
                       accept=".pdf,.doc,.docx"
                       className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
-                      onChange={(e) => setFormData({...formData, resume: e.target.files?.[0] || null})}
+                      onChange={(e) => handleResumeChange(e.target.files?.[0] || null)}
                       aria-describedby={resumeHelpId}
                       required
                     />
                     <p id={resumeHelpId} className="mt-1 text-sm text-gray-500">
                       Formatos aceptados: PDF, DOC, DOCX (máximo 5MB)
                     </p>
+                    {fileError && (
+                      <p className="mt-1 text-sm text-red-600">{fileError}</p>
+                    )}
                   </div>
                 </div>
               )}

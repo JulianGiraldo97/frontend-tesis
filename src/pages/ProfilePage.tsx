@@ -1,49 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { AccessibilityNotification } from '../components/AccessibilityNotification';
 import { SavedJobs } from '../components/SavedJobs';
 import { JobDetailModal } from '../components/JobDetailModal';
 import { ScreenReaderTest } from '../components/ScreenReaderTest';
-
-interface SavedJob {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  contractType: string;
-  match: string;
-  savedDate: string;
-  status: 'saved' | 'applied' | 'interviewed';
-}
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  contractType: string;
-  description: string;
-  requirements: string[];
-  benefits: string[];
-  match: string;
-  postedDate: string;
-  applications: number;
-}
+import { jobDetails, MockJob, MockSavedJob, savedJobs as mockSavedJobs } from '../data/mockData';
+import {
+  getStoredProfileData,
+  saveStoredProfileData,
+} from '../services/mockStorage';
 
 export const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const { highContrast, setHighContrast, easyReading, setEasyReading, fontSize, setFontSize, colorScheme, setColorScheme } = useAccessibility();
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<MockJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState({
     message: '',
     type: 'info' as 'success' | 'info' | 'warning',
     isVisible: false
   });
+  const [validationErrors, setValidationErrors] = useState<{
+    name?: string;
+    email?: string;
+    phone?: string;
+    location?: string;
+    bio?: string;
+  }>({});
   const [formData, setFormData] = useState({
     name: 'María González',
     email: 'maria.gonzalez@email.com',
@@ -52,129 +37,77 @@ export const ProfilePage: React.FC = () => {
     bio: 'Persona con discapacidad cognitiva buscando oportunidades laborales inclusivas. Motivada, responsable y con ganas de trabajar. Experiencia en tareas de organización y trabajo en equipo.'
   });
 
-  // Mock data for saved jobs
-  const [savedJobs, setSavedJobs] = useState<SavedJob[]>([
-    {
-      id: '1',
-      title: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva',
-      company: 'Supermercado Inclusivo S.L.',
-      location: 'Madrid, España',
-      salary: '€18,000 - €22,000',
-      contractType: 'Tiempo completo',
-      match: '98%',
-      savedDate: 'Hace 2 días',
-      status: 'saved'
-    },
-    {
-      id: '2',
-      title: 'Operador de Telefonía - Personas Sordas',
-      company: 'Centro de Atención Telefónica Inclusivo',
-      location: 'Barcelona, España',
-      salary: '€20,000 - €25,000',
-      contractType: 'Tiempo completo',
-      match: '92%',
-      savedDate: 'Hace 1 semana',
-      status: 'applied'
-    },
-    {
-      id: '3',
-      title: 'Tester de Accesibilidad - Personas Ciegas',
-      company: 'Empresa de Desarrollo de Software',
-      location: 'Valencia, España',
-      salary: '€25,000 - €32,000',
-      contractType: 'Tiempo completo',
-      match: '95%',
-      savedDate: 'Hace 2 semanas',
-      status: 'interviewed'
-    }
-  ]);
+  const [savedJobs, setSavedJobs] = useState<MockSavedJob[]>(() =>
+    mockSavedJobs.map(job => ({ ...job }))
+  );
 
-  // Mock data for job details (matching the saved jobs)
-  const jobDetails: Job[] = [
-    {
-      id: '1',
-      title: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva',
-      company: 'Supermercado Inclusivo S.L.',
-      location: 'Madrid, España',
-      salary: '€18,000 - €22,000',
-      contractType: 'Tiempo completo',
-      description: 'Buscamos personas con discapacidad cognitiva para trabajar como acomodadores de cajas en nuestro supermercado. Tareas de organización, clasificación y mantenimiento del orden en las estanterías. Entorno de trabajo estructurado y apoyo continuo.',
-      requirements: [
-        'Motivación y ganas de trabajar',
-        'Capacidad de seguir instrucciones simples',
-        'Aptitud para tareas repetitivas',
-        'Trabajo en equipo',
-        'No requiere experiencia previa'
-      ],
-      benefits: [
-        'Apoyo personalizado continuo',
-        'Horario estructurado (mañana)',
-        'Formación adaptada',
-        'Entorno de trabajo tranquilo',
-        'Seguimiento profesional'
-      ],
-      match: '98%',
-      postedDate: 'Hace 2 días',
-      applications: 8
-    },
-    {
-      id: '2',
-      title: 'Operador de Telefonía - Personas Sordas',
-      company: 'Centro de Atención Telefónica Inclusivo',
-      location: 'Barcelona, España',
-      salary: '€20,000 - €25,000',
-      contractType: 'Tiempo completo',
-      description: 'Buscamos personas sordas para trabajar como operadores de telefonía usando tecnologías de comunicación adaptadas. Atención al cliente a través de chat, email y videollamadas con intérprete.',
-      requirements: [
-        'Persona sorda con certificado de discapacidad',
-        'Buen nivel de escritura en español',
-        'Habilidades de comunicación escrita',
-        'Capacidad de trabajo en equipo',
-        'Formación básica en informática'
-      ],
-      benefits: [
-        'Tecnologías de comunicación adaptadas',
-        'Intérprete de lengua de señas disponible',
-        'Horario flexible',
-        'Seguro médico',
-        'Entorno de trabajo inclusivo'
-      ],
-      match: '92%',
-      postedDate: 'Hace 1 semana',
-      applications: 5
-    },
-    {
-      id: '3',
-      title: 'Tester de Accesibilidad - Personas Ciegas',
-      company: 'Empresa de Desarrollo de Software',
-      location: 'Valencia, España',
-      salary: '€25,000 - €32,000',
-      contractType: 'Tiempo completo',
-      description: 'Buscamos personas ciegas para trabajar como testers de accesibilidad. Evaluación de aplicaciones y sitios web usando lectores de pantalla y otras tecnologías asistivas.',
-      requirements: [
-        'Persona ciega con experiencia en lectores de pantalla',
-        'Conocimientos básicos de informática',
-        'Capacidad de reportar problemas de accesibilidad',
-        'Paciencia y atención al detalle',
-        'No requiere formación técnica previa'
-      ],
-      benefits: [
-        'Equipamiento adaptado completo',
-        'Formación en testing de accesibilidad',
-        'Trabajo remoto disponible',
-        'Horario flexible',
-        'Impacto directo en la accesibilidad digital'
-      ],
-      match: '95%',
-      postedDate: 'Hace 2 semanas',
-      applications: 12
+  useEffect(() => {
+    const userId = user?.id || 'guest';
+    const storedProfile = getStoredProfileData(userId);
+    if (storedProfile) {
+      setFormData(storedProfile);
+      return;
     }
-  ];
+
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+      }));
+    }
+  }, [user]);
+
+  const handleFormFieldChange = (
+    field: 'name' | 'email' | 'phone' | 'location' | 'bio',
+    value: string
+  ) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setValidationErrors(prev => ({ ...prev, [field]: undefined }));
+  };
+
+  const validateProfileForm = () => {
+    const errors: {
+      name?: string;
+      email?: string;
+      phone?: string;
+      location?: string;
+      bio?: string;
+    } = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[+\d\s()-]{7,20}$/;
+
+    if (!formData.name.trim()) errors.name = 'El nombre es obligatorio';
+    if (!formData.email.trim() || !emailRegex.test(formData.email)) {
+      errors.email = 'Correo electrónico inválido';
+    }
+    if (!formData.phone.trim() || !phoneRegex.test(formData.phone)) {
+      errors.phone = 'Teléfono inválido';
+    }
+    if (!formData.location.trim()) errors.location = 'La ubicación es obligatoria';
+    if (!formData.bio.trim() || formData.bio.trim().length < 20) {
+      errors.bio = 'La biografía debe tener al menos 20 caracteres';
+    }
+
+    return errors;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const errors = validateProfileForm();
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      showNotification('Revisa los campos del perfil antes de guardar', 'warning');
+      return;
+    }
+
+    updateProfile({
+      name: formData.name,
+      email: formData.email,
+    });
+    saveStoredProfileData(user?.id || 'guest', formData);
     setIsEditing(false);
-    console.log('Profile updated:', formData);
+    showNotification('Perfil actualizado correctamente', 'success');
   };
 
   const showNotification = (message: string, type: 'success' | 'info' | 'warning' = 'info') => {
@@ -282,7 +215,7 @@ export const ProfilePage: React.FC = () => {
       // Add to saved jobs if not already saved
       const jobDetail = jobDetails.find(job => job.id === jobId);
       if (jobDetail) {
-        const newSavedJob: SavedJob = {
+        const newSavedJob: MockSavedJob = {
           id: jobDetail.id,
           title: jobDetail.title,
           company: jobDetail.company,
@@ -358,9 +291,12 @@ export const ProfilePage: React.FC = () => {
                         className="form-control form-control-custom"
                         id="name"
                         value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        onChange={(e) => handleFormFieldChange('name', e.target.value)}
                         disabled={!isEditing}
                       />
+                      {validationErrors.name && (
+                        <small className="text-danger d-block mt-1">{validationErrors.name}</small>
+                      )}
                     </div>
                     <div className="col-md-6">
                       <label htmlFor="email" className="form-label fw-semibold">
@@ -371,9 +307,12 @@ export const ProfilePage: React.FC = () => {
                         className="form-control form-control-custom"
                         id="email"
                         value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        onChange={(e) => handleFormFieldChange('email', e.target.value)}
                         disabled={!isEditing}
                       />
+                      {validationErrors.email && (
+                        <small className="text-danger d-block mt-1">{validationErrors.email}</small>
+                      )}
                     </div>
                     <div className="col-md-6">
                       <label htmlFor="phone" className="form-label fw-semibold">
@@ -384,9 +323,12 @@ export const ProfilePage: React.FC = () => {
                         className="form-control form-control-custom"
                         id="phone"
                         value={formData.phone}
-                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        onChange={(e) => handleFormFieldChange('phone', e.target.value)}
                         disabled={!isEditing}
                       />
+                      {validationErrors.phone && (
+                        <small className="text-danger d-block mt-1">{validationErrors.phone}</small>
+                      )}
                     </div>
                     <div className="col-md-6">
                       <label htmlFor="location" className="form-label fw-semibold">
@@ -397,9 +339,12 @@ export const ProfilePage: React.FC = () => {
                         className="form-control form-control-custom"
                         id="location"
                         value={formData.location}
-                        onChange={(e) => setFormData({...formData, location: e.target.value})}
+                        onChange={(e) => handleFormFieldChange('location', e.target.value)}
                         disabled={!isEditing}
                       />
+                      {validationErrors.location && (
+                        <small className="text-danger d-block mt-1">{validationErrors.location}</small>
+                      )}
                     </div>
                     <div className="col-12">
                       <label htmlFor="bio" className="form-label fw-semibold">
@@ -410,10 +355,13 @@ export const ProfilePage: React.FC = () => {
                         id="bio"
                         rows={4}
                         value={formData.bio}
-                        onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                        onChange={(e) => handleFormFieldChange('bio', e.target.value)}
                         disabled={!isEditing}
                         aria-describedby="profile-bio-help"
                       />
+                      {validationErrors.bio && (
+                        <small className="text-danger d-block mt-1">{validationErrors.bio}</small>
+                      )}
                       <small id="profile-bio-help" className="text-muted d-block mt-2">
                         Describe tu perfil, fortalezas y adaptaciones que te ayudan en el trabajo.
                       </small>
@@ -542,7 +490,7 @@ export const ProfilePage: React.FC = () => {
                       className="form-check-input"
                       type="checkbox"
                       checked={highContrast}
-                      onChange={(e) => setHighContrast(e.target.checked)}
+                      onChange={handleHighContrastToggle}
                       id="highContrastSwitch"
                     />
                     <label className="form-check-label" htmlFor="highContrastSwitch">
@@ -559,7 +507,7 @@ export const ProfilePage: React.FC = () => {
                       className="form-check-input"
                       type="checkbox"
                       checked={easyReading}
-                      onChange={(e) => setEasyReading(e.target.checked)}
+                      onChange={handleEasyReadingToggle}
                       id="easyReadingSwitch"
                     />
                     <label className="form-check-label" htmlFor="easyReadingSwitch">
@@ -574,7 +522,7 @@ export const ProfilePage: React.FC = () => {
                   <select
                     className="form-select"
                     value={fontSize}
-                    onChange={(e) => setFontSize(e.target.value as 'small' | 'medium' | 'large' | 'xlarge')}
+                    onChange={(e) => handleFontSizeChange(e.target.value as 'small' | 'medium' | 'large' | 'xlarge')}
                     aria-labelledby="profile-font-size-label"
                     aria-describedby="profile-font-size-help"
                   >
@@ -584,7 +532,7 @@ export const ProfilePage: React.FC = () => {
                     <option value="xlarge">Muy Grande (20px)</option>
                   </select>
                   <small id="profile-font-size-help" className="text-muted d-block mt-2">
-                    Selecciona el tamaño de texto que te resulte más cómodo.
+                    Tamaño actual: {getFontSizeLabel(fontSize)}.
                   </small>
                 </div>
 
@@ -602,6 +550,9 @@ export const ProfilePage: React.FC = () => {
                     <option value="colorblind">Daltónico</option>
                     <option value="dark">Modo Oscuro</option>
                   </select>
+                  <small className="text-muted d-block mt-2">
+                    Esquema actual: {getColorSchemeLabel(colorScheme)}.
+                  </small>
                 </div>
               </div>
             </div>
