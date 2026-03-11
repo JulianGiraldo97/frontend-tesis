@@ -167,3 +167,9 @@ bundle-analyzer-report.html
 # Local configuration overrides
 config.local.js
 config.local.json
+
+# AI
+.agents/
+.claude/
+claude.md
+skills-lock.json
