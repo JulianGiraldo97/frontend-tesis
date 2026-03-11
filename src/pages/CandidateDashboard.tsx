@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { JobDetailModal } from '../components/JobDetailModal';
-import { AccessibilityNotification } from '../components/AccessibilityNotification';
+import { AccessibilityNotification, JobDetailModal } from '../components';
 import { MockJob, recommendedJobs } from '../data/mockData';
 
 type CandidateDashboardTab = 'overview' | 'applications' | 'recommended';

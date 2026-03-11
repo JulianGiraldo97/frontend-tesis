@@ -118,13 +118,12 @@ export const AccessibilitySettingsPanel: React.FC<AccessibilitySettingsPanelProp
   };
 
   return (
-    <div className={`position-fixed bottom-0 end-0 p-3 z-50 ${className}`} style={{ bottom: '20px', right: '20px' }}>
+    <div className={`position-fixed p-3 accessibility-panel-container ${className}`}>
       {/* Floating Action Button */}
       <button
         type="button"
         onClick={togglePanel}
-        className="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center"
-        style={{ width: '60px', height: '60px' }}
+        className="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center accessibility-panel-toggle"
         aria-label="Configuración de accesibilidad"
         aria-expanded={isOpen}
         aria-controls={panelId}
@@ -136,8 +135,7 @@ export const AccessibilitySettingsPanel: React.FC<AccessibilitySettingsPanelProp
       {isOpen && (
         <div className="position-absolute bottom-100 end-0 mb-3">
           <div
-            className="card card-custom shadow-custom-lg animate-fade-in"
-            style={{ width: '320px' }}
+            className="card card-custom shadow-custom-lg animate-fade-in accessibility-panel-card"
             id={panelId}
             role="dialog"
             aria-modal="true"

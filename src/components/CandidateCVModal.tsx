@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ScreenReader, useScreenReader } from './ScreenReader';
+import { ScreenReader } from './ScreenReader';
+import { useScreenReader } from '../hooks/useScreenReader';
+import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 
 interface Candidate {
   id: string;
@@ -32,35 +34,16 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
   onContact
 }) => {
   const { isReading, startReading, stopReading, handleReadingComplete } = useScreenReader();
-  const [isScreenReaderReady, setIsScreenReaderReady] = useState(false);
+  const { isReady: isScreenReaderReady } = useSpeechSynthesis(isOpen);
   const [textToRead, setTextToRead] = useState('');
 
   // Detener la lectura cuando se cierra el modal
   useEffect(() => {
     if (!isOpen) {
       stopReading();
-      setIsScreenReaderReady(false);
       setTextToRead('');
     }
   }, [isOpen, stopReading]);
-
-  // Verificar cuando el ScreenReader esté listo
-  useEffect(() => {
-    if (isOpen) {
-      // Esperar a que el ScreenReader se inicialice
-      const checkScreenReaderReady = () => {
-        const voices = window.speechSynthesis.getVoices();
-        if (voices.length > 0) {
-          setIsScreenReaderReady(true);
-        } else {
-          setTimeout(checkScreenReaderReady, 100);
-        }
-      };
-      
-      // Esperar un poco más para asegurar que las voces estén cargadas
-      setTimeout(checkScreenReaderReady, 200);
-    }
-  }, [isOpen]);
 
   if (!candidate || !isOpen) return null;
 

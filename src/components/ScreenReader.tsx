@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
+
+const VOICE_INIT_RETRY_DELAY_MS = 100;
 
 interface ScreenReaderProps {
   text: string;
@@ -26,7 +28,7 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const startReading = () => {
+  const startReading = useCallback(() => {
     if (!isSupported || !isInitialized || !selectedVoice) {
       setError('El lector de pantalla no está listo');
       return;
@@ -72,9 +74,9 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
       setError('Error al iniciar la lectura');
       onReadingComplete();
     }
-  };
+  }, [isSupported, isInitialized, selectedVoice, text, rate, pitch, volume, onReadingComplete]);
 
-  const stopReading = () => {
+  const stopReading = useCallback(() => {
     if (!isSupported) return;
     
     try {
@@ -83,7 +85,7 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
       setError(null);
     } catch {
     }
-  };
+  }, [isSupported]);
 
   useEffect(() => {
     // Verificar si la Web Speech API está disponible
@@ -156,7 +158,7 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
       initSpeechSynthesis();
       
       // También intentar después de un pequeño delay
-      setTimeout(initSpeechSynthesis, 100);
+      setTimeout(initSpeechSynthesis, VOICE_INIT_RETRY_DELAY_MS);
     } else {
       setError('Web Speech API no está disponible en este navegador');
     }
@@ -266,31 +268,3 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
     </div>
   );
 };
-
-// Hook personalizado para el lector de pantalla
-export const useScreenReader = () => {
-  const [isReading, setIsReading] = useState(false);
-  const [currentText, setCurrentText] = useState('');
-
-  const startReading = (text: string) => {
-    setCurrentText(text);
-    setIsReading(true);
-  };
-
-  const stopReading = () => {
-    setIsReading(false);
-    setCurrentText('');
-  };
-
-  const handleReadingComplete = () => {
-    setIsReading(false);
-  };
-
-  return {
-    isReading,
-    currentText,
-    startReading,
-    stopReading,
-    handleReadingComplete
-  };
-}; 

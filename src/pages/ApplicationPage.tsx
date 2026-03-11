@@ -103,9 +103,9 @@ export const ApplicationPage: React.FC = () => {
           <div className="flex justify-between items-center py-6">
             <div>
               <nav className="text-sm text-gray-500 mb-2">
-                <a href="#" className="hover:text-gray-700">Empleos</a>
+                <a href="/jobs" className="hover:text-gray-700">Empleos</a>
                 <span className="mx-2">/</span>
-                <a href="#" className="hover:text-gray-700">Desarrollador Frontend React</a>
+                <a href="/job/1" className="hover:text-gray-700">Desarrollador Frontend React</a>
                 <span className="mx-2">/</span>
                 <span>Postulación</span>
               </nav>

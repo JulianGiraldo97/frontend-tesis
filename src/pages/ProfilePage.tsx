@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
-import { AccessibilityNotification } from '../components/AccessibilityNotification';
-import { SavedJobs } from '../components/SavedJobs';
-import { JobDetailModal } from '../components/JobDetailModal';
-import { ScreenReaderTest } from '../components/ScreenReaderTest';
+import {
+  AccessibilityNotification,
+  JobDetailModal,
+  SavedJobs,
+  ScreenReaderTest,
+} from '../components';
 import { jobDetails, MockJob, MockSavedJob, savedJobs as mockSavedJobs } from '../data/mockData';
 import {
   getStoredProfileData,

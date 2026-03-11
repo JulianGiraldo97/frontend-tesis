@@ -32,13 +32,7 @@ export const AccessibilityNotification: React.FC<AccessibilityNotificationProps>
 
   return (
     <div
-      className={`alert ${getAlertClass()} alert-dismissible fade show position-fixed`}
-      style={{
-        top: '20px',
-        right: '20px',
-        zIndex: 9999,
-        minWidth: '300px'
-      }}
+      className={`alert ${getAlertClass()} alert-dismissible fade show position-fixed accessibility-toast`}
       role="alert"
       aria-live="assertive"
     >

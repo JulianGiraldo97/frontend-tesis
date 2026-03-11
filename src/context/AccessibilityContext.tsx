@@ -3,6 +3,13 @@ import React, { createContext, useState, ReactNode, useContext } from 'react';
 type FontSize = 'small' | 'medium' | 'large' | 'xlarge';
 type ColorScheme = 'default' | 'high-contrast' | 'colorblind' | 'dark';
 
+/**
+ * Valores globales de accesibilidad disponibles en toda la aplicación.
+ * - `highContrast`/`setHighContrast`: activa una paleta de alto contraste.
+ * - `easyReading`/`setEasyReading`: activa modo de lectura facilitada.
+ * - `fontSize`/`setFontSize`: tamaño de fuente global.
+ * - `colorScheme`/`setColorScheme`: esquema de color accesible.
+ */
 interface AccessibilityContextProps {
   highContrast: boolean;
   setHighContrast: (value: boolean) => void;

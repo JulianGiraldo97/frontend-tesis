@@ -36,6 +36,11 @@ export const useFocusManagement = ({
     }
   };
 
+  /**
+   * Mantiene el foco dentro de `elementRef` cuando el usuario navega con Tab.
+   * @param event Evento de teclado global o del contenedor.
+   * Si el foco está en el primer/último elemento interactivo, lo cicla al extremo opuesto.
+   */
   const trapFocus = (event: KeyboardEvent) => {
     const container = elementRef.current;
     if (!container) return;

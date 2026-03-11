@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { JobDetailModal } from '../components/JobDetailModal';
+import { JobDetailModal } from '../components';
 import { useAuth } from '../context/AuthContext';
 import { mockJobs, MockJob } from '../data/mockData';
 import {
@@ -7,11 +7,13 @@ import {
   saveJobInteractionState,
 } from '../services/mockStorage';
 
+type ContractTypeFilter = '' | 'full-time' | 'part-time' | 'contract' | 'freelance';
+
 export const JobSearchPage: React.FC = () => {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [location, setLocation] = useState('');
-  const [contractType, setContractType] = useState('');
+  const [contractType, setContractType] = useState<ContractTypeFilter>('');
   const [easyReading, setEasyReading] = useState(false);
   const [selectedJob, setSelectedJob] = useState<MockJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -147,7 +149,7 @@ export const JobSearchPage: React.FC = () => {
                     className="form-select form-control-custom"
                     id="contractType"
                     value={contractType}
-                    onChange={(e) => setContractType(e.target.value)}
+                    onChange={(e) => setContractType(e.target.value as ContractTypeFilter)}
                   >
                     <option value="">Todos los tipos</option>
                     <option value="full-time">Tiempo completo</option>

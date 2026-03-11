@@ -88,8 +88,7 @@ export const SavedJobs: React.FC<SavedJobsProps> = ({
                     <div className="col-md-8">
                       <div className="d-flex align-items-center mb-3">
                         <div
-                          className="bg-gradient-primary rounded-3 d-flex align-items-center justify-content-center me-3"
-                          style={{ width: '50px', height: '50px' }}
+                          className="bg-gradient-primary rounded-3 d-flex align-items-center justify-content-center me-3 saved-job-avatar"
                           aria-hidden="true"
                         >
                           <span className="text-white fw-bold fs-6">{job.company.charAt(0)}</span>

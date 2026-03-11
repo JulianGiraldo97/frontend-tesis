@@ -761,6 +761,37 @@ body {
   box-shadow: 0 0 0 0.2rem rgba(42, 127, 98, 0.25) !important;
 }
 
+.accessibility-panel-container {
+  bottom: 20px;
+  right: 20px;
+  z-index: 50;
+}
+
+.accessibility-panel-toggle {
+  width: 60px;
+  height: 60px;
+}
+
+.accessibility-panel-card {
+  width: 320px;
+}
+
+.saved-job-avatar {
+  width: 50px;
+  height: 50px;
+}
+
+.modal-backdrop-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.accessibility-toast {
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  min-width: 300px;
+}
+
 /* Accessibility styles */
 @layer base {
   html {

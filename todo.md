@@ -93,32 +93,32 @@ React 18 + TypeScript + Bootstrap 5 · Desplegado en GitHub Pages (`/frontend-te
 - [ ] `src/pages/ProfilePage.tsx` (625+ líneas) — extraer secciones en sub-componentes (`ProfileHeader`, `ProfileSkills`, `ProfileSettings`, etc.)
 - [ ] `src/pages/EmployerDashboard.tsx` (400+ líneas) — separar vistas de vacantes y candidatos
 - [ ] `src/pages/CandidateDashboard.tsx` (300+ líneas) — extraer pestañas en componentes propios
-- [ ] `src/components/ScreenReader.tsx` (322 líneas) — separar el hook `useScreenReader` del componente visual
+- [x] `src/components/ScreenReader.tsx` (322 líneas) — separar el hook `useScreenReader` del componente visual
 
 ### Extraer código duplicado
-- [ ] Lógica de inicialización de síntesis de voz (`speechSynthesis` + `setTimeout`) repetida en `VacancyDetailModal.tsx:50-64` y `CandidateCVModal.tsx:48-64` → extraer a hook reutilizable (e.g. `useSpeechSynthesis`)
+- [x] Lógica de inicialización de síntesis de voz (`speechSynthesis` + `setTimeout`) repetida en `VacancyDetailModal.tsx:50-64` y `CandidateCVModal.tsx:48-64` → extraer a hook reutilizable (e.g. `useSpeechSynthesis`)
 
 ### Estilos en línea → clases CSS
-- [ ] `src/components/AccessibilitySettingsPanel.tsx:54,59` — `style={{ bottom, right, width, height }}` → clase utilitaria
-- [ ] `src/components/SavedJobs.tsx:90` — `style={{ width: '50px', height: '50px' }}` → clase
-- [ ] `src/components/JobDetailModal.tsx:73` — `style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}` → clase Bootstrap o variable CSS
-- [ ] `src/components/AccessibilityNotification.tsx:36-41` — múltiples estilos en línea
+- [x] `src/components/AccessibilitySettingsPanel.tsx:54,59` — `style={{ bottom, right, width, height }}` → clase utilitaria
+- [x] `src/components/SavedJobs.tsx:90` — `style={{ width: '50px', height: '50px' }}` → clase
+- [x] `src/components/JobDetailModal.tsx:73` — `style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}` → clase Bootstrap o variable CSS
+- [x] `src/components/AccessibilityNotification.tsx:36-41` — múltiples estilos en línea
 
 ### Constantes en lugar de valores mágicos
-- [ ] `src/components/ScreenReader.tsx:177` — `setTimeout(..., 100)` → constante nombrada
-- [ ] `src/components/VacancyDetailModal.tsx:63` — `setTimeout(..., 200)` → constante nombrada
+- [x] `src/components/ScreenReader.tsx:177` — `setTimeout(..., 100)` → constante nombrada
+- [x] `src/components/VacancyDetailModal.tsx:63` — `setTimeout(..., 200)` → constante nombrada
 
 ### TypeScript: tipos más estrictos
 - [ ] `src/pages/EmployerDashboard.tsx:35` — `activeTab` como `string` → union type `'overview' | 'vacancies' | 'candidates'`
 - [ ] Revisar todos los `useState('')` que representan un enum y tiparlos correctamente
 
 ### Imports y barrel exports
-- [ ] Estandarizar imports: usar el barrel `src/components/index.ts` donde sea posible en lugar de rutas relativas directas
-- [ ] Revisar importaciones no utilizadas con ESLint (`no-unused-vars`, `@typescript-eslint/no-unused-vars`)
+- [x] Estandarizar imports: usar el barrel `src/components/index.ts` donde sea posible en lugar de rutas relativas directas
+- [x] Revisar importaciones no utilizadas con ESLint (`no-unused-vars`, `@typescript-eslint/no-unused-vars`)
 
 ### Documentación interna
-- [ ] `src/hooks/useFocusManagement.ts` — añadir JSDoc a `trapFocus` explicando parámetros y comportamiento
-- [ ] `src/context/AccessibilityContext.tsx` — documentar los valores expuestos por el contexto
+- [x] `src/hooks/useFocusManagement.ts` — añadir JSDoc a `trapFocus` explicando parámetros y comportamiento
+- [x] `src/context/AccessibilityContext.tsx` — documentar los valores expuestos por el contexto
 
 ---
 

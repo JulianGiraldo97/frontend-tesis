@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AccessibilitySettingsPanel } from '../components/AccessibilitySettingsPanel';
+import { AccessibilitySettingsPanel } from '../components';
 import { adminMetrics, AdminMetrics } from '../data/mockData';
 
 export const AdminDashboard: React.FC = () => {

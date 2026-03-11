@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { AccessibilityNotification } from '../components/AccessibilityNotification';
-import { VacancyDetailModal } from '../components/VacancyDetailModal';
-import { CandidateCVModal } from '../components/CandidateCVModal';
+import {
+  AccessibilityNotification,
+  CandidateCVModal,
+  VacancyDetailModal,
+} from '../components';
 import {
   MockApplication,
   MockVacancy,

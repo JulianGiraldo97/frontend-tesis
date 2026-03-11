@@ -112,7 +112,7 @@ export const LoginPage: React.FC = () => {
                       </label>
                     </div>
                     <a
-                      href="#"
+                      href="/forgot-password"
                       className="text-decoration-none text-primary fw-semibold"
                       aria-label="Recuperar contraseña"
                     >
@@ -141,7 +141,7 @@ export const LoginPage: React.FC = () => {
                     <p className="text-muted mb-0">
                       ¿No tienes cuenta?{' '}
                       <a
-                        href="#"
+                        href="/register"
                         className="text-decoration-none text-primary fw-semibold"
                         aria-label="Crear una cuenta nueva"
                       >

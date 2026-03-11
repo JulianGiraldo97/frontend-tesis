@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ScreenReader, useScreenReader } from './ScreenReader';
+import { ScreenReader } from './ScreenReader';
+import { useScreenReader } from '../hooks/useScreenReader';
 
 export const ScreenReaderTest: React.FC = () => {
   const { isReading, startReading, handleReadingComplete } = useScreenReader();

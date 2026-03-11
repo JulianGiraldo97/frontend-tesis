@@ -138,8 +138,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
 
   return (
     <div
-      className="modal fade show d-block"
-      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+      className="modal fade show d-block modal-backdrop-overlay"
       role="dialog"
       aria-modal="true"
       aria-labelledby="job-detail-modal-title"
