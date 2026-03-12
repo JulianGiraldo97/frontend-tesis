@@ -150,10 +150,10 @@ Derivadas de la parte técnica de la tesis (requerimientos + arquitectura), enfo
 - [x] `docs/traceability-frontend.md` — matriz RF/RNF → componente UI → evidencia (test, checklist, auditoría)
 
 ### 4.4 Rendimiento y compatibilidad (RNF006, RNF009)
-- [ ] `src/AppRouter.tsx` + `src/pages/*` — aplicar code splitting con `React.lazy`/`Suspense` para vistas pesadas (`ProfilePage`, `EmployerDashboard`, `AdminDashboard`)
-- [ ] `src/index.tsx` + `docs/performance/` — medir baseline de Web Vitals (LCP, INP, CLS) y definir umbrales por pantalla crítica
-- [ ] `docs/compatibility-matrix.md` — crear matriz de compatibilidad (Chrome/Edge/Firefox/Safari + NVDA/VoiceOver) y protocolo de smoke test por release
-- [ ] `src/pages/JobSearchPage.tsx` + `src/pages/EmployerDashboard.tsx` — optimizar rendimiento de listados con paginación/virtualización ligera y mejoras de render
+- [x] `src/AppRouter.tsx` + `src/pages/*` — aplicar code splitting con `React.lazy`/`Suspense` para vistas pesadas (`ProfilePage`, `EmployerDashboard`, `AdminDashboard`)
+- [x] `src/index.tsx` + `docs/performance/` — medir baseline de Web Vitals (LCP, INP, CLS) y definir umbrales por pantalla crítica
+- [x] `docs/compatibility-matrix.md` — crear matriz de compatibilidad (Chrome/Edge/Firefox/Safari + NVDA/VoiceOver) y protocolo de smoke test por release
+- [x] `src/pages/JobSearchPage.tsx` + `src/pages/EmployerDashboard.tsx` — optimizar rendimiento de listados con paginación/virtualización ligera y mejoras de render
 
 ---
 

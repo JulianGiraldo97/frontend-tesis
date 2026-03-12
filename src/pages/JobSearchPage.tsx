@@ -9,6 +9,7 @@ import {
 } from '../services/mockStorage';
 
 type ContractTypeFilter = '' | 'full-time' | 'part-time' | 'contract' | 'freelance';
+const JOBS_PAGE_SIZE = 4;
 
 const normalizeContractType = (contractLabel: string): ContractTypeFilter => {
   const normalized = contractLabel.toLowerCase();
@@ -33,6 +34,7 @@ export const JobSearchPage: React.FC = () => {
   const [easyReading, setEasyReading] = useState(searchParams.get('easy') === '1');
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
   const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
+  const [visibleJobsCount, setVisibleJobsCount] = useState(JOBS_PAGE_SIZE);
 
   useEffect(() => {
     const userId = user?.id || 'guest';
@@ -128,6 +130,17 @@ export const JobSearchPage: React.FC = () => {
       return matchesTerm && matchesLocation && matchesContract;
     });
   }, [searchTerm, location, contractType]);
+
+  useEffect(() => {
+    setVisibleJobsCount(JOBS_PAGE_SIZE);
+  }, [searchTerm, location, contractType, easyReading]);
+
+  const visibleJobs = useMemo(
+    () => filteredJobs.slice(0, visibleJobsCount),
+    [filteredJobs, visibleJobsCount]
+  );
+
+  const hasMoreJobs = visibleJobsCount < filteredJobs.length;
 
   return (
     <div className="min-vh-100 bg-light">
@@ -262,7 +275,8 @@ export const JobSearchPage: React.FC = () => {
 
         <div className="mb-4" role="status" aria-live="polite">
           <p className="text-muted mb-0">
-            Se encontraron <strong>{filteredJobs.length}</strong> vacantes con los filtros actuales.
+            Mostrando <strong>{visibleJobs.length}</strong> de{' '}
+            <strong>{filteredJobs.length}</strong> vacantes con los filtros actuales.
           </p>
         </div>
 
@@ -275,7 +289,7 @@ export const JobSearchPage: React.FC = () => {
             </div>
           )}
 
-          {filteredJobs.map((job) => {
+          {visibleJobs.map((job) => {
             const isApplied = appliedJobs.includes(job.id);
             const isSaved = savedJobs.includes(job.id);
             const isClosed = closedJobIds.includes(job.id);
@@ -363,15 +377,18 @@ export const JobSearchPage: React.FC = () => {
           })}
         </div>
 
-        <div className="text-center mt-5">
-          <button
-            className="btn btn-outline-primary btn-custom px-5 py-3"
-            aria-label="Cargar más empleos"
-          >
-            <span className="fs-5 me-2">📄</span>
-            Cargar más empleos
-          </button>
-        </div>
+        {hasMoreJobs && (
+          <div className="text-center mt-5">
+            <button
+              className="btn btn-outline-primary btn-custom px-5 py-3"
+              aria-label="Cargar más empleos"
+              onClick={() => setVisibleJobsCount(prev => prev + JOBS_PAGE_SIZE)}
+            >
+              <span className="fs-5 me-2">📄</span>
+              Cargar más empleos
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

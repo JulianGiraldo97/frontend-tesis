@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   AccessibilityNotification,
   CandidateCVModal,
@@ -21,6 +21,8 @@ type ApplicationStatusFilter =
   | 'Rechazada';
 
 type ApplicationSort = 'recent' | 'match-desc' | 'name-asc';
+const VACANCIES_PAGE_SIZE = 3;
+const APPLICATIONS_PAGE_SIZE = 4;
 
 interface SentFeedback {
   id: string;
@@ -57,6 +59,8 @@ export const EmployerDashboard: React.FC = () => {
   const [selectedVacancyId, setSelectedVacancyId] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<ApplicationStatusFilter>('all');
   const [sortBy, setSortBy] = useState<ApplicationSort>('recent');
+  const [vacanciesPage, setVacanciesPage] = useState(1);
+  const [applicationsPage, setApplicationsPage] = useState(1);
 
   const [composerCandidate, setComposerCandidate] = useState<MockApplication | null>(null);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(
@@ -136,6 +140,41 @@ export const EmployerDashboard: React.FC = () => {
     sorted.sort((a, b) => Number(b.id) - Number(a.id));
     return sorted;
   }, [applications, selectedVacancyId, sortBy, statusFilter]);
+
+  const vacanciesTotalPages = Math.max(
+    1,
+    Math.ceil(vacancies.length / VACANCIES_PAGE_SIZE)
+  );
+  const applicationsTotalPages = Math.max(
+    1,
+    Math.ceil(filteredApplications.length / APPLICATIONS_PAGE_SIZE)
+  );
+
+  const paginatedVacancies = useMemo(() => {
+    const start = (vacanciesPage - 1) * VACANCIES_PAGE_SIZE;
+    return vacancies.slice(start, start + VACANCIES_PAGE_SIZE);
+  }, [vacancies, vacanciesPage]);
+
+  const paginatedApplications = useMemo(() => {
+    const start = (applicationsPage - 1) * APPLICATIONS_PAGE_SIZE;
+    return filteredApplications.slice(start, start + APPLICATIONS_PAGE_SIZE);
+  }, [applicationsPage, filteredApplications]);
+
+  useEffect(() => {
+    setApplicationsPage(1);
+  }, [selectedVacancyId, statusFilter, sortBy]);
+
+  useEffect(() => {
+    if (vacanciesPage > vacanciesTotalPages) {
+      setVacanciesPage(vacanciesTotalPages);
+    }
+  }, [vacanciesPage, vacanciesTotalPages]);
+
+  useEffect(() => {
+    if (applicationsPage > applicationsTotalPages) {
+      setApplicationsPage(applicationsTotalPages);
+    }
+  }, [applicationsPage, applicationsTotalPages]);
 
   const handleViewVacancy = (vacancyId: string) => {
     const vacancy = vacancies.find(v => v.id === vacancyId);
@@ -341,7 +380,7 @@ export const EmployerDashboard: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {vacancies.map(vacancy => (
+                      {paginatedVacancies.map(vacancy => (
                         <tr key={vacancy.id}>
                           <td>
                             <p className="fw-bold mb-1">{vacancy.position}</p>
@@ -410,6 +449,34 @@ export const EmployerDashboard: React.FC = () => {
                     </tbody>
                   </table>
                 </div>
+
+                <div className='d-flex justify-content-between align-items-center mt-3'>
+                  <small className='text-muted'>
+                    Página {vacanciesPage} de {vacanciesTotalPages}
+                  </small>
+                  <div className='btn-group'>
+                    <button
+                      className='btn btn-outline-secondary btn-sm'
+                      onClick={() => setVacanciesPage(prev => Math.max(1, prev - 1))}
+                      disabled={vacanciesPage === 1}
+                      aria-label='Ver página anterior de vacantes'
+                    >
+                      Anterior
+                    </button>
+                    <button
+                      className='btn btn-outline-secondary btn-sm'
+                      onClick={() =>
+                        setVacanciesPage(prev =>
+                          Math.min(vacanciesTotalPages, prev + 1)
+                        )
+                      }
+                      disabled={vacanciesPage === vacanciesTotalPages}
+                      aria-label='Ver página siguiente de vacantes'
+                    >
+                      Siguiente
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -458,7 +525,8 @@ export const EmployerDashboard: React.FC = () => {
               </div>
               <div className="card-body">
                 <p className="text-muted" role="status" aria-live="polite">
-                  {filteredApplications.length} postulaciones encontradas con los filtros actuales.
+                  Mostrando {paginatedApplications.length} de {filteredApplications.length}{' '}
+                  postulaciones con los filtros actuales.
                 </p>
 
                 {filteredApplications.length === 0 ? (
@@ -467,7 +535,7 @@ export const EmployerDashboard: React.FC = () => {
                   </div>
                 ) : (
                   <div className="row g-3">
-                    {filteredApplications.map(application => (
+                    {paginatedApplications.map(application => (
                       <div key={application.id} className="col-md-6">
                         <div className="card border-0 shadow-sm h-100">
                           <div className="card-body p-3">
@@ -523,6 +591,36 @@ export const EmployerDashboard: React.FC = () => {
                     ))}
                   </div>
                 )}
+
+                <div className='d-flex justify-content-between align-items-center mt-3'>
+                  <small className='text-muted'>
+                    Página {applicationsPage} de {applicationsTotalPages}
+                  </small>
+                  <div className='btn-group'>
+                    <button
+                      className='btn btn-outline-secondary btn-sm'
+                      onClick={() =>
+                        setApplicationsPage(prev => Math.max(1, prev - 1))
+                      }
+                      disabled={applicationsPage === 1}
+                      aria-label='Ver página anterior de postulaciones'
+                    >
+                      Anterior
+                    </button>
+                    <button
+                      className='btn btn-outline-secondary btn-sm'
+                      onClick={() =>
+                        setApplicationsPage(prev =>
+                          Math.min(applicationsTotalPages, prev + 1)
+                        )
+                      }
+                      disabled={applicationsPage === applicationsTotalPages}
+                      aria-label='Ver página siguiente de postulaciones'
+                    >
+                      Siguiente
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { AuthProvider } from './context/AuthContext';
 import { App } from './App';
+import reportWebVitals from './reportWebVitals';
+import { recordWebVitalMetric } from './performance/webVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/test.css';
 import './styles/globals.css';
@@ -22,4 +24,6 @@ root.render(
       </AccessibilityProvider>
     </BrowserRouter>
   </React.StrictMode>
-); 
+);
+
+reportWebVitals(recordWebVitalMetric);

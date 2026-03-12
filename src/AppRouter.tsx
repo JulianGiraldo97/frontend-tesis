@@ -1,16 +1,57 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Navigation } from './components/Navigation';
 import { SkipLink } from './components/SkipLink/SkipLink';
+import { LoadingSpinner } from './components';
 import { LoginPage } from './pages/LoginPage';
-import { CandidateDashboard } from './pages/CandidateDashboard';
-import { JobSearchPage } from './pages/JobSearchPage';
-import { JobDetailPage } from './pages/JobDetailPage';
-import { ApplicationPage } from './pages/ApplicationPage';
-import { EmployerDashboard } from './pages/EmployerDashboard';
-import { AdminDashboard } from './pages/AdminDashboard';
-import { ProfilePage } from './pages/ProfilePage';
-import { ProfileBuilder } from './pages/ProfileBuilder';
+
+const CandidateDashboard = lazy(() =>
+  import('./pages/CandidateDashboard').then(module => ({
+    default: module.CandidateDashboard,
+  }))
+);
+
+const JobSearchPage = lazy(() =>
+  import('./pages/JobSearchPage').then(module => ({
+    default: module.JobSearchPage,
+  }))
+);
+
+const JobDetailPage = lazy(() =>
+  import('./pages/JobDetailPage').then(module => ({
+    default: module.JobDetailPage,
+  }))
+);
+
+const ApplicationPage = lazy(() =>
+  import('./pages/ApplicationPage').then(module => ({
+    default: module.ApplicationPage,
+  }))
+);
+
+const EmployerDashboard = lazy(() =>
+  import('./pages/EmployerDashboard').then(module => ({
+    default: module.EmployerDashboard,
+  }))
+);
+
+const AdminDashboard = lazy(() =>
+  import('./pages/AdminDashboard').then(module => ({
+    default: module.AdminDashboard,
+  }))
+);
+
+const ProfilePage = lazy(() =>
+  import('./pages/ProfilePage').then(module => ({
+    default: module.ProfilePage,
+  }))
+);
+
+const ProfileBuilder = lazy(() =>
+  import('./pages/ProfileBuilder').then(module => ({
+    default: module.ProfileBuilder,
+  }))
+);
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -18,7 +59,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <SkipLink />
       <Navigation />
       <main className='flex-grow-1' id='main-content' tabIndex={-1}>
-        {children}
+        <Suspense fallback={<LoadingSpinner text='Cargando vista...' />}>
+          {children}
+        </Suspense>
       </main>
     </div>
   );
