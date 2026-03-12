@@ -266,7 +266,7 @@ export const EmployerDashboard: React.FC = () => {
                 >
                   <span className="fs-2 text-primary">📋</span>
                 </div>
-                <h3 className="h2 fw-bold text-primary mb-2">{vacancies.length}</h3>
+                <p className="h2 fw-bold text-primary mb-2">{vacancies.length}</p>
                 <p className="text-muted mb-0">Vacantes Activas</p>
               </div>
             </div>
@@ -280,7 +280,7 @@ export const EmployerDashboard: React.FC = () => {
                 >
                   <span className="fs-2 text-success">👥</span>
                 </div>
-                <h3 className="h2 fw-bold text-success mb-2">{applications.length}</h3>
+                <p className="h2 fw-bold text-success mb-2">{applications.length}</p>
                 <p className="text-muted mb-0">Candidatos</p>
               </div>
             </div>
@@ -294,9 +294,9 @@ export const EmployerDashboard: React.FC = () => {
                 >
                   <span className="fs-2 text-info">📝</span>
                 </div>
-                <h3 className="h2 fw-bold text-info mb-2">
+                <p className="h2 fw-bold text-info mb-2">
                   {applications.filter(app => app.status === 'Nueva').length}
-                </h3>
+                </p>
                 <p className="text-muted mb-0">Postulaciones Nuevas</p>
               </div>
             </div>
@@ -310,7 +310,7 @@ export const EmployerDashboard: React.FC = () => {
                 >
                   <span className="fs-2 text-warning">✅</span>
                 </div>
-                <h3 className="h2 fw-bold text-warning mb-2">{sentFeedback.length}</h3>
+                <p className="h2 fw-bold text-warning mb-2">{sentFeedback.length}</p>
                 <p className="text-muted mb-0">Mensajes Enviados</p>
               </div>
             </div>
@@ -321,7 +321,7 @@ export const EmployerDashboard: React.FC = () => {
           <div className="col-lg-8">
             <div className="card card-custom mb-4 animate-fade-in">
               <div className="card-header bg-transparent border-0 pb-0 d-flex justify-content-between align-items-center">
-                <h3 className="h4 fw-bold mb-0">Vacantes Activas</h3>
+                <h2 className="h4 fw-bold mb-0">Vacantes Activas</h2>
                 <button className="btn btn-primary btn-custom" aria-label="Crear una nueva vacante inclusiva">
                   <span className="fs-5 me-2">➕</span>
                   Crear Vacante Inclusiva
@@ -344,7 +344,7 @@ export const EmployerDashboard: React.FC = () => {
                       {vacancies.map(vacancy => (
                         <tr key={vacancy.id}>
                           <td>
-                            <h6 className="fw-bold mb-1">{vacancy.position}</h6>
+                            <p className="fw-bold mb-1">{vacancy.position}</p>
                             <small className="text-muted">{vacancy.company}</small>
                             <br />
                             <small className="text-primary">{vacancy.salary}</small>
@@ -416,7 +416,7 @@ export const EmployerDashboard: React.FC = () => {
             <div className="card card-custom animate-fade-in">
               <div className="card-header bg-transparent border-0 pb-0">
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                  <h3 className="h4 fw-bold mb-0">Postulaciones por Vacante</h3>
+                  <h2 className="h4 fw-bold mb-0">Postulaciones por Vacante</h2>
                   <div className="d-flex flex-wrap gap-2">
                     <select
                       className="form-select form-select-sm"
@@ -479,7 +479,7 @@ export const EmployerDashboard: React.FC = () => {
                                 <span className="text-white fw-bold">{application.name.charAt(0)}</span>
                               </div>
                               <div className="flex-grow-1">
-                                <h6 className="fw-bold mb-1">{application.name}</h6>
+                                <p className="fw-bold mb-1">{application.name}</p>
                                 <small className="text-muted">{application.position}</small>
                                 <br />
                                 <small className="text-info">{application.disability}</small>
@@ -530,7 +530,7 @@ export const EmployerDashboard: React.FC = () => {
           <div className="col-lg-4">
             <div className="card card-custom mb-4 animate-fade-in">
               <div className="card-header bg-transparent border-0 pb-0">
-                <h3 className="h4 fw-bold mb-0">Retroalimentación Accesible</h3>
+                <h2 className="h4 fw-bold mb-0">Retroalimentación Accesible</h2>
               </div>
               <div className="card-body">
                 {!composerCandidate ? (
@@ -613,7 +613,7 @@ export const EmployerDashboard: React.FC = () => {
 
             <div className="card card-custom animate-fade-in">
               <div className="card-header bg-transparent border-0 pb-0">
-                <h3 className="h4 fw-bold mb-0">Notificaciones</h3>
+                <h2 className="h4 fw-bold mb-0">Notificaciones</h2>
               </div>
               <div className="card-body">
                 <div className="list-group list-group-flush">

@@ -4,6 +4,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -12,7 +13,6 @@
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "bootstrap": "^5.3.0",
-    "@popperjs/core": "^2.11.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
@@ -21,18 +21,25 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@types/jest-axe": "^3.5.9",
+    "axe-core": "^4.11.1",
     "eslint": "^8.19.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "jest-axe": "^10.0.0",
     "prettier": "^2.7.1"
   },
   "scripts": {
-    "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
-    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:ci": "react-scripts test --watchAll=false --coverage --ci",
+    "test:accessibility": "react-scripts test --watchAll=false --ci --testPathPattern=.a11y.test.tsx",
+    "axe:ci": "npm run test:accessibility",
     "eject": "react-scripts eject",
     "lint": "eslint src --ext .ts,.tsx",
+    "lint:strict": "eslint src --ext .ts,.tsx --max-warnings=0",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "type-check": "tsc --noEmit",
@@ -56,4 +63,4 @@
       "last 1 safari version"
     ]
   }
-} 
+}

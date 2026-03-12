@@ -13,3 +13,4 @@ export { ScreenReader } from './ScreenReader';
 export { ScreenReaderTest } from './ScreenReaderTest';
 export { TranscriptPanel } from './TranscriptPanel';
 export { useScreenReader } from '../hooks/useScreenReader';
+export * as A11yBase from './base';

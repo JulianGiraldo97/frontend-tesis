@@ -198,10 +198,11 @@ export const ProfileBuilder: React.FC = () => {
         Completa cada paso. Tu progreso se guarda automáticamente en este navegador.
       </p>
 
-      <div className="progress mb-4" aria-label="Progreso del formulario">
+      <div className="progress mb-4">
         <div
           className="progress-bar"
           role="progressbar"
+          aria-label="Progreso del formulario"
           style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
           aria-valuenow={(step / TOTAL_STEPS) * 100}
           aria-valuemin={0}

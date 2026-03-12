@@ -143,11 +143,11 @@ Derivadas de la parte técnica de la tesis (requerimientos + arquitectura), enfo
 - [x] `scripts/` + `docs/` — checklist manual de teclado/NVDA/VoiceOver para registro, login, búsqueda, postulación y gestión de vacantes
 
 ### 4.3 Arquitectura frontend y gobernanza
-- [ ] `src/components/` — definir catálogo de componentes base accesibles (`Input`, `Button`, `Modal`, `Select`, `Toast`) para accesibilidad por defecto
-- [ ] `src/pages/*.tsx` + `src/components/*.tsx` — agregar pruebas de accesibilidad con `jest-axe` en flujos críticos (registro, login, búsqueda, postulación, vacantes)
-- [ ] `.github/workflows/` + `package.json` — activar gate de accesibilidad en CI (`eslint-plugin-jsx-a11y` + auditoría automática) y eliminar dependencia operativa de `DISABLE_ESLINT_PLUGIN=true`
-- [ ] `docs/adr/` — registrar ADRs de frontend (foco en SPA, anuncios SR, lectura fácil y estrategia de componentes)
-- [ ] `docs/traceability-frontend.md` — matriz RF/RNF → componente UI → evidencia (test, checklist, auditoría)
+- [x] `src/components/` — definir catálogo de componentes base accesibles (`Input`, `Button`, `Modal`, `Select`, `Toast`) para accesibilidad por defecto
+- [x] `src/pages/*.tsx` + `src/components/*.tsx` — agregar pruebas de accesibilidad con `jest-axe` en flujos críticos (registro, login, búsqueda, postulación, vacantes)
+- [x] `.github/workflows/` + `package.json` — activar gate de accesibilidad en CI (`eslint-plugin-jsx-a11y` + auditoría automática) y eliminar dependencia operativa de `DISABLE_ESLINT_PLUGIN=true`
+- [x] `docs/adr/` — registrar ADRs de frontend (foco en SPA, anuncios SR, lectura fácil y estrategia de componentes)
+- [x] `docs/traceability-frontend.md` — matriz RF/RNF → componente UI → evidencia (test, checklist, auditoría)
 
 ### 4.4 Rendimiento y compatibilidad (RNF006, RNF009)
 - [ ] `src/AppRouter.tsx` + `src/pages/*` — aplicar code splitting con `React.lazy`/`Suspense` para vistas pesadas (`ProfilePage`, `EmployerDashboard`, `AdminDashboard`)
