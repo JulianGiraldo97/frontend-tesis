@@ -4,6 +4,7 @@ import {
   CandidateCVModal,
   VacancyDetailModal,
 } from '../components';
+import { useAccessibility } from '../context/AccessibilityContext';
 import {
   feedbackTemplates,
   MockApplication,
@@ -30,6 +31,7 @@ interface SentFeedback {
 }
 
 export const EmployerDashboard: React.FC = () => {
+  const { getReadableText } = useAccessibility();
   const [notification, setNotification] = useState({
     message: '',
     type: 'info' as 'success' | 'info' | 'warning',
@@ -72,6 +74,24 @@ export const EmployerDashboard: React.FC = () => {
       type,
       isVisible: true,
     });
+  };
+
+  const downloadFeedbackTranscript = () => {
+    if (!composerCandidate || !feedbackMessage.trim()) {
+      showNotification('No hay contenido para descargar en la transcripción.', 'warning');
+      return;
+    }
+
+    const transcript = `Retroalimentación para ${composerCandidate.name}\nVacante: ${composerCandidate.position}\n\n${feedbackMessage.trim()}`;
+    const blob = new Blob([transcript], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `retroalimentacion-${composerCandidate.id}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const getVacancyName = (vacancyId: string) => {
@@ -557,7 +577,7 @@ export const EmployerDashboard: React.FC = () => {
                         aria-describedby="feedback-help"
                       />
                       <small id="feedback-help" className="text-muted d-block mt-2">
-                        Usa frases cortas, lenguaje directo y evita tecnicismos para mejorar comprensión.
+                        {getReadableText('employer.feedback.help')}
                       </small>
                     </div>
 
@@ -569,6 +589,12 @@ export const EmployerDashboard: React.FC = () => {
                     <div className="d-flex gap-2">
                       <button className="btn btn-primary btn-custom" onClick={handleSendFeedback}>
                         Enviar retroalimentación
+                      </button>
+                      <button
+                        className="btn btn-outline-primary btn-custom"
+                        onClick={downloadFeedbackTranscript}
+                      >
+                        Descargar transcripción
                       </button>
                       <button
                         className="btn btn-outline-secondary btn-custom"

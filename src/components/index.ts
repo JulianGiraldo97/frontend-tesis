@@ -11,4 +11,5 @@ export { VacancyDetailModal } from './VacancyDetailModal';
 export { CandidateCVModal } from './CandidateCVModal';
 export { ScreenReader } from './ScreenReader';
 export { ScreenReaderTest } from './ScreenReaderTest';
+export { TranscriptPanel } from './TranscriptPanel';
 export { useScreenReader } from '../hooks/useScreenReader';

@@ -1,4 +1,14 @@
-import React, { createContext, useState, ReactNode, useContext } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  ReactNode,
+} from 'react';
+import {
+  easyReadingTexts,
+  EasyReadingTextKey,
+} from '../data/easyReadingTexts';
 
 type FontSize = 'small' | 'medium' | 'large' | 'xlarge';
 type ColorScheme = 'default' | 'high-contrast' | 'colorblind' | 'dark';
@@ -19,6 +29,10 @@ interface AccessibilityContextProps {
   setFontSize: (size: FontSize) => void;
   colorScheme: ColorScheme;
   setColorScheme: (scheme: ColorScheme) => void;
+  getReadableText: (
+    key: EasyReadingTextKey,
+    fallback?: string
+  ) => string;
 }
 
 export const AccessibilityContext = createContext<AccessibilityContextProps | undefined>(undefined);
@@ -28,6 +42,15 @@ export const AccessibilityProvider: React.FC<{ children: ReactNode }> = ({ child
   const [easyReading, setEasyReading] = useState(false);
   const [fontSize, setFontSize] = useState<FontSize>('medium');
   const [colorScheme, setColorScheme] = useState<ColorScheme>('default');
+  const getReadableText = useCallback(
+    (key: EasyReadingTextKey, fallback?: string) => {
+      const entry = easyReadingTexts[key];
+      if (!entry) return fallback || '';
+      if (easyReading) return entry.easyText;
+      return entry.defaultText || fallback || '';
+    },
+    [easyReading]
+  );
 
   return (
     <AccessibilityContext.Provider value={{ 
@@ -38,7 +61,8 @@ export const AccessibilityProvider: React.FC<{ children: ReactNode }> = ({ child
       fontSize,
       setFontSize,
       colorScheme,
-      setColorScheme
+      setColorScheme,
+      getReadableText,
     }}>
       {children}
     </AccessibilityContext.Provider>

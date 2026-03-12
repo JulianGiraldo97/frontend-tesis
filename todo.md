@@ -137,10 +137,10 @@ Derivadas de la parte técnica de la tesis (requerimientos + arquitectura), enfo
 - [x] `src/pages/AdminDashboard.tsx` — timeline de trazabilidad de acciones administrativas (`quién`, `qué`, `cuándo`) consumiendo mock data (RF008)
 
 ### 4.2 Accesibilidad avanzada (objetivo WCAG 2.2 AA)
-- [ ] `src/AppRouter.tsx` — anunciar cambios de ruta en `aria-live` y mover foco al `h1` principal en cada navegación SPA
-- [ ] `src/context/AccessibilityContext.tsx` + `src/data/` — implementar modo global de lectura fácil para labels/mensajes críticos (UC14)
-- [ ] `src/components/*` + `src/pages/*` — añadir soporte de subtítulos/transcripción descargable para contenidos multimedia de ayuda o retroalimentación (UC13)
-- [ ] `scripts/` + `docs/` — checklist manual de teclado/NVDA/VoiceOver para registro, login, búsqueda, postulación y gestión de vacantes
+- [x] `src/AppRouter.tsx` — anunciar cambios de ruta en `aria-live` y mover foco al `h1` principal en cada navegación SPA
+- [x] `src/context/AccessibilityContext.tsx` + `src/data/` — implementar modo global de lectura fácil para labels/mensajes críticos (UC14)
+- [x] `src/components/*` + `src/pages/*` — añadir soporte de subtítulos/transcripción descargable para contenidos multimedia de ayuda o retroalimentación (UC13)
+- [x] `scripts/` + `docs/` — checklist manual de teclado/NVDA/VoiceOver para registro, login, búsqueda, postulación y gestión de vacantes
 
 ### 4.3 Arquitectura frontend y gobernanza
 - [ ] `src/components/` — definir catálogo de componentes base accesibles (`Input`, `Button`, `Modal`, `Select`, `Toast`) para accesibilidad por defecto

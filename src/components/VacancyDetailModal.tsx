@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScreenReader } from './ScreenReader';
+import { TranscriptPanel } from './TranscriptPanel';
 import { useScreenReader } from '../hooks/useScreenReader';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 
@@ -114,6 +115,35 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
 
   if (!vacancy || !isOpen) return null;
 
+  const vacancyTranscript = `
+Vacante: ${vacancy.position}
+Empresa: ${vacancy.company}
+Ubicación: ${vacancy.location}
+Salario: ${vacancy.salary}
+Estado: ${vacancy.status}
+Candidatos: ${vacancy.candidates}
+Discapacidad objetivo: ${vacancy.targetDisability}
+Fecha de publicación: ${vacancy.date}
+
+Descripción: ${vacancy.description || `Buscamos personas con ${vacancy.targetDisability.toLowerCase()} para trabajar en este puesto. El entorno de trabajo está adaptado y se proporciona apoyo personalizado según las necesidades.`}
+
+Requisitos: ${(vacancy.requirements || [
+  'Motivación y ganas de trabajar',
+  'Capacidad de seguir instrucciones simples',
+  'Aptitud para tareas repetitivas',
+  'Trabajo en equipo',
+  'No requiere experiencia previa'
+]).join('. ')}
+
+Beneficios y adaptaciones: ${(vacancy.benefits || [
+  'Apoyo personalizado continuo',
+  'Horario estructurado',
+  'Formación adaptada',
+  'Entorno de trabajo inclusivo',
+  'Seguimiento profesional'
+]).join('. ')}
+`;
+
   const handleEdit = () => {
     onEdit(vacancy.id);
     onClose();
@@ -129,40 +159,8 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
       return;
     }
 
-    // Crear el texto a leer
-    const text = `
-      Vacante: ${vacancy.position}
-      Empresa: ${vacancy.company}
-      Ubicación: ${vacancy.location}
-      Salario: ${vacancy.salary}
-      Estado: ${vacancy.status}
-      Candidatos: ${vacancy.candidates}
-      Discapacidad objetivo: ${vacancy.targetDisability}
-      Fecha de publicación: ${vacancy.date}
-      
-      Descripción: ${vacancy.description || `Buscamos personas con ${vacancy.targetDisability.toLowerCase()} para trabajar en este puesto. El entorno de trabajo está adaptado y se proporciona apoyo personalizado según las necesidades.`}
-      
-      Requisitos: ${(vacancy.requirements || [
-        'Motivación y ganas de trabajar',
-        'Capacidad de seguir instrucciones simples',
-        'Aptitud para tareas repetitivas',
-        'Trabajo en equipo',
-        'No requiere experiencia previa'
-      ]).join('. ')}
-      
-      Beneficios y adaptaciones: ${(vacancy.benefits || [
-        'Apoyo personalizado continuo',
-        'Horario estructurado',
-        'Formación adaptada',
-        'Entorno de trabajo inclusivo',
-        'Seguimiento profesional'
-      ]).join('. ')}
-      
-      Estadísticas: ${vacancy.candidates} candidatos han aplicado, ${Math.floor(vacancy.candidates * 0.3)} están en revisión, y ${Math.floor(vacancy.candidates * 0.1)} han sido invitados a entrevista.
-    `;
-
-    setTextToRead(text);
-    startReading(text);
+    setTextToRead(vacancyTranscript);
+    startReading(vacancyTranscript);
   };
 
   return (
@@ -221,6 +219,14 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
                 El lector de pantalla leerá toda la información de la vacante en voz alta para facilitar el acceso a personas con discapacidad visual.
                 {!isScreenReaderReady && " ⏳ Inicializando..."}
               </small>
+            </div>
+
+            <div className="mb-4">
+              <TranscriptPanel
+                title="Subtítulos y transcripción de la vacante"
+                transcript={vacancyTranscript}
+                fileName={`transcripcion-vacante-${vacancy.id}.txt`}
+              />
             </div>
 
             {/* Vacancy Header */}

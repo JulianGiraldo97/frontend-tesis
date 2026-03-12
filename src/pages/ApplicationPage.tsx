@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { useAccessibility } from '../context/AccessibilityContext';
 import { useAuth } from '../context/AuthContext';
 import { closedJobIds, mockJobs } from '../data/mockData';
 import {
@@ -15,6 +16,7 @@ import {
 export const ApplicationPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const { getReadableText } = useAccessibility();
   const selectedJob = mockJobs.find(job => job.id === id) || mockJobs[0];
   const userId = user?.id || 'guest';
 
@@ -138,9 +140,9 @@ export const ApplicationPage: React.FC = () => {
     if (!applicationBlockedReason) return null;
 
     const messageByReason = {
-      applied: 'Ya te postulaste a esta vacante. Puedes revisar el estado en tu perfil.',
-      closed: 'La vacante está cerrada y no acepta nuevas postulaciones.',
-      'incomplete-profile': 'Tu perfil está incompleto. Debes completar tus datos antes de postularte.',
+      applied: getReadableText('application.block.applied'),
+      closed: getReadableText('application.block.closed'),
+      'incomplete-profile': getReadableText('application.block.incompleteProfile'),
     } as const;
 
     const actionByReason = {

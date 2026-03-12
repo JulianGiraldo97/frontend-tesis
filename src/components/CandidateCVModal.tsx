@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ScreenReader } from './ScreenReader';
+import { TranscriptPanel } from './TranscriptPanel';
 import { useScreenReader } from '../hooks/useScreenReader';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 
@@ -47,6 +48,48 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
 
   if (!candidate || !isOpen) return null;
 
+  const candidateTranscript = `
+CV de ${candidate.name}
+
+Información Personal:
+Nombre: ${candidate.name}
+Discapacidad: ${candidate.disability}
+Email: ${candidate.email || 'maria.gonzalez@email.com'}
+Teléfono: ${candidate.phone || '+34 600 123 456'}
+Ubicación: Madrid, España
+Disponibilidad: Inmediata
+
+Posición aplicada: ${candidate.position}
+Coincidencia: ${candidate.match}
+Estado: ${candidate.status}
+Fecha de postulación: ${candidate.time}
+
+Experiencia: ${candidate.experience}
+
+Experiencia Relevante:
+Organización y clasificación de productos
+Trabajo en equipo y colaboración
+Seguimiento de instrucciones y procedimientos
+Mantenimiento del orden y limpieza
+
+Educación:
+Formación Básica
+Educación Secundaria Obligatoria
+Centro de Educación Especial - Madrid
+
+Habilidades y Fortalezas:
+Trabajo en Equipo, Organización, Responsabilidad, Motivación, Puntualidad, Aprendizaje Continuo
+
+Intereses Personales:
+Música, Deportes, Arte, Cocina
+
+Adaptaciones Recomendadas:
+Apoyo personalizado continuo
+Horario estructurado y predecible
+Instrucciones claras y paso a paso
+Entorno de trabajo tranquilo
+`;
+
   const handleContact = () => {
     onContact(candidate.id);
     onClose();
@@ -57,51 +100,8 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
       return;
     }
 
-    // Crear el texto a leer
-    const text = `
-      CV de ${candidate.name}
-      
-      Información Personal:
-      Nombre: ${candidate.name}
-      Discapacidad: ${candidate.disability}
-      Email: ${candidate.email || 'maria.gonzalez@email.com'}
-      Teléfono: ${candidate.phone || '+34 600 123 456'}
-      Ubicación: Madrid, España
-      Disponibilidad: Inmediata
-      
-      Posición aplicada: ${candidate.position}
-      Coincidencia: ${candidate.match}
-      Estado: ${candidate.status}
-      Fecha de postulación: ${candidate.time}
-      
-      Experiencia: ${candidate.experience}
-      
-      Experiencia Relevante:
-      Organización y clasificación de productos
-      Trabajo en equipo y colaboración
-      Seguimiento de instrucciones y procedimientos
-      Mantenimiento del orden y limpieza
-      
-      Educación:
-      Formación Básica
-      Educación Secundaria Obligatoria
-      Centro de Educación Especial - Madrid
-      
-      Habilidades y Fortalezas:
-      Trabajo en Equipo, Organización, Responsabilidad, Motivación, Puntualidad, Aprendizaje Continuo
-      
-      Intereses Personales:
-      Música, Deportes, Arte, Cocina
-      
-      Adaptaciones Recomendadas:
-      Apoyo personalizado continuo
-      Horario estructurado y predecible
-      Instrucciones claras y paso a paso
-      Entorno de trabajo tranquilo
-    `;
-
-    setTextToRead(text);
-    startReading(text);
+    setTextToRead(candidateTranscript);
+    startReading(candidateTranscript);
   };
 
   return (
@@ -152,6 +152,14 @@ export const CandidateCVModal: React.FC<CandidateCVModalProps> = ({
                 El lector de pantalla leerá toda la información del CV en voz alta para facilitar el acceso a personas con discapacidad visual.
                 {!isScreenReaderReady && " ⏳ Inicializando..."}
               </small>
+            </div>
+
+            <div className="mb-4">
+              <TranscriptPanel
+                title="Subtítulos y transcripción del CV"
+                transcript={candidateTranscript}
+                fileName={`transcripcion-cv-${candidate.id}.txt`}
+              />
             </div>
 
             {/* Candidate Header */}

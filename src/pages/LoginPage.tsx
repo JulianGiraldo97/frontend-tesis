@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, isLoading, error, clearError, isAuthenticated } = useAuth();
+  const { getReadableText } = useAccessibility();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -110,10 +112,10 @@ export const LoginPage: React.FC = () => {
                 Emplea+
               </h1>
               <h2 className="h3 fw-bold text-white mb-3">
-                Bienvenido de vuelta
+                {getReadableText('login.welcome')}
               </h2>
               <p className="text-white-50 fs-5">
-                Tu plataforma de intermediación laboral accesible e inclusiva
+                {getReadableText('login.subtitle')}
               </p>
             </div>
 
@@ -133,7 +135,7 @@ export const LoginPage: React.FC = () => {
                   )}
                   <div className="mb-4">
                     <label htmlFor="email" className="form-label fw-semibold text-dark">
-                      Correo electrónico
+                      {getReadableText('login.emailLabel')}
                     </label>
                     <input
                       ref={emailInputRef}
@@ -157,7 +159,7 @@ export const LoginPage: React.FC = () => {
 
                   <div className="mb-4">
                     <label htmlFor="password" className="form-label fw-semibold text-dark">
-                      Contraseña
+                      {getReadableText('login.passwordLabel')}
                     </label>
                     <div className="position-relative">
                       <input
@@ -214,7 +216,7 @@ export const LoginPage: React.FC = () => {
                       }}
                       aria-label="Recuperar contraseña"
                     >
-                      ¿Olvidaste tu contraseña?
+                      {getReadableText('login.forgotPassword')}
                     </button>
                   </div>
 
@@ -231,7 +233,7 @@ export const LoginPage: React.FC = () => {
                         Iniciando sesión...
                       </div>
                     ) : (
-                      'Iniciar sesión'
+                      getReadableText('login.signIn')
                     )}
                   </button>
 
@@ -252,7 +254,7 @@ export const LoginPage: React.FC = () => {
                   <form onSubmit={handleRecoverySubmit} noValidate>
                     <h3 className="h5 fw-bold mb-3 text-dark">Recuperar acceso</h3>
                     <p className="text-muted mb-4">
-                      Ingresa el correo de tu cuenta. Te enviaremos un enlace para restablecer la contraseña.
+                      {getReadableText('login.recoveryIntro')}
                     </p>
 
                     {recoveryStatus && (

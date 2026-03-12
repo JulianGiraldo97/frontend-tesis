@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 import { closedJobIds, mockJobs, MockJob } from '../data/mockData';
 import {
   getJobInteractionState,
@@ -20,6 +21,7 @@ const normalizeContractType = (contractLabel: string): ContractTypeFilter => {
 
 export const JobSearchPage: React.FC = () => {
   const { user } = useAuth();
+  const { getReadableText } = useAccessibility();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -161,7 +163,7 @@ export const JobSearchPage: React.FC = () => {
           <div className="card-body p-5">
             <h2 className="h3 fw-bold text-dark mb-4 d-flex align-items-center">
               <span className="fs-3 me-3">🔍</span>
-              Filtros de búsqueda
+              {getReadableText('jobs.searchFilters')}
             </h2>
 
             <form onSubmit={handleSearch}>
@@ -250,7 +252,7 @@ export const JobSearchPage: React.FC = () => {
                     aria-label="Buscar empleos con los filtros seleccionados"
                   >
                     <span className="fs-5 me-2">🔍</span>
-                    Buscar empleos
+                    {getReadableText('jobs.searchButton')}
                   </button>
                 </div>
               </div>
@@ -268,7 +270,7 @@ export const JobSearchPage: React.FC = () => {
           {filteredJobs.length === 0 && (
             <div className="col-12">
               <div className="alert alert-info" role="status">
-                No encontramos vacantes con esos filtros. Ajusta los criterios y vuelve a intentar.
+                {getReadableText('jobs.noResults')}
               </div>
             </div>
           )}
