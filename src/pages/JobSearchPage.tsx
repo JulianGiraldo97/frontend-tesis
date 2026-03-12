@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { JobDetailModal } from '../components';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { mockJobs, MockJob } from '../data/mockData';
+import { closedJobIds, mockJobs, MockJob } from '../data/mockData';
 import {
   getJobInteractionState,
   saveJobInteractionState,
@@ -9,14 +9,26 @@ import {
 
 type ContractTypeFilter = '' | 'full-time' | 'part-time' | 'contract' | 'freelance';
 
+const normalizeContractType = (contractLabel: string): ContractTypeFilter => {
+  const normalized = contractLabel.toLowerCase();
+  if (normalized.includes('completo')) return 'full-time';
+  if (normalized.includes('parcial')) return 'part-time';
+  if (normalized.includes('contrato')) return 'contract';
+  if (normalized.includes('freelance')) return 'freelance';
+  return '';
+};
+
 export const JobSearchPage: React.FC = () => {
   const { user } = useAuth();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [location, setLocation] = useState('');
-  const [contractType, setContractType] = useState<ContractTypeFilter>('');
-  const [easyReading, setEasyReading] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<MockJob | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
+  const [location, setLocation] = useState(searchParams.get('location') || '');
+  const [contractType, setContractType] = useState<ContractTypeFilter>(
+    (searchParams.get('contract') as ContractTypeFilter) || ''
+  );
+  const [easyReading, setEasyReading] = useState(searchParams.get('easy') === '1');
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
   const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
 
@@ -34,11 +46,37 @@ export const JobSearchPage: React.FC = () => {
     });
   }, [savedJobs, appliedJobs, user?.id]);
 
+  useEffect(() => {
+    setSearchTerm(searchParams.get('q') || '');
+    setLocation(searchParams.get('location') || '');
+    setContractType((searchParams.get('contract') as ContractTypeFilter) || '');
+    setEasyReading(searchParams.get('easy') === '1');
+  }, [searchParams]);
+
+  const updateQueryParams = (
+    nextSearchTerm: string,
+    nextLocation: string,
+    nextContractType: ContractTypeFilter,
+    nextEasyReading: boolean
+  ) => {
+    const params = new URLSearchParams();
+    if (nextSearchTerm.trim()) params.set('q', nextSearchTerm.trim());
+    if (nextLocation.trim()) params.set('location', nextLocation.trim());
+    if (nextContractType) params.set('contract', nextContractType);
+    if (nextEasyReading) params.set('easy', '1');
+    setSearchParams(params, { replace: true });
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    updateQueryParams(searchTerm, location, contractType, easyReading);
   };
 
   const handleApply = (jobId: string) => {
+    if (closedJobIds.includes(jobId)) {
+      return;
+    }
+
     setAppliedJobs(prev => {
       if (prev.includes(jobId)) return prev;
       return [...prev, jobId];
@@ -54,34 +92,48 @@ export const JobSearchPage: React.FC = () => {
   };
 
   const handleViewDetail = (job: MockJob) => {
-    setSelectedJob(job);
-    setIsModalOpen(true);
+    const params = new URLSearchParams();
+    if (searchTerm.trim()) params.set('q', searchTerm.trim());
+    if (location.trim()) params.set('location', location.trim());
+    if (contractType) params.set('contract', contractType);
+    if (easyReading) params.set('easy', '1');
+
+    const backTo = `/jobs${params.toString() ? `?${params.toString()}` : ''}`;
+    navigate(`/job/${job.id}`, {
+      state: {
+        backTo,
+      },
+    });
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedJob(null);
-  };
+  const filteredJobs = useMemo(() => {
+    const normalizedTerm = searchTerm.trim().toLowerCase();
+    const normalizedLocation = location.trim().toLowerCase();
 
-  const handleModalApply = (jobId: string) => {
-    handleApply(jobId);
-    handleCloseModal();
-  };
+    return mockJobs.filter(job => {
+      const matchesTerm =
+        !normalizedTerm ||
+        job.title.toLowerCase().includes(normalizedTerm) ||
+        job.company.toLowerCase().includes(normalizedTerm) ||
+        job.description.toLowerCase().includes(normalizedTerm);
 
-  const handleModalSave = (jobId: string) => {
-    handleSave(jobId);
-  };
+      const matchesLocation =
+        !normalizedLocation || job.location.toLowerCase().includes(normalizedLocation);
+
+      const matchesContract =
+        !contractType || normalizeContractType(job.contractType) === contractType;
+
+      return matchesTerm && matchesLocation && matchesContract;
+    });
+  }, [searchTerm, location, contractType]);
 
   return (
     <div className="min-vh-100 bg-light">
-      {/* Hero Section */}
       <div className="bg-gradient-primary text-white py-5">
         <div className="container">
           <div className="row justify-content-center text-center">
             <div className="col-lg-8">
-              <h1 className="display-4 fw-bold mb-4">
-                Encuentra tu empleo ideal
-              </h1>
+              <h1 className="display-4 fw-bold mb-4">Encuentra tu empleo ideal</h1>
               <p className="lead mb-5">
                 Plataforma accesible de intermediación laboral diseñada para todos
               </p>
@@ -105,7 +157,6 @@ export const JobSearchPage: React.FC = () => {
       </div>
 
       <div className="container py-5">
-        {/* Enhanced Search Filters */}
         <div className="card card-custom glass mb-5 animate-fade-in">
           <div className="card-body p-5">
             <h2 className="h3 fw-bold text-dark mb-4 d-flex align-items-center">
@@ -179,109 +230,137 @@ export const JobSearchPage: React.FC = () => {
                     <span>Accesible</span>
                   </div>
                 </div>
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-custom px-4 py-3"
-                  aria-label="Buscar empleos con los filtros seleccionados"
-                >
-                  <span className="fs-5 me-2">🔍</span>
-                  Buscar empleos
-                </button>
+                <div className="d-flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-custom px-4 py-3"
+                    onClick={() => {
+                      setSearchTerm('');
+                      setLocation('');
+                      setContractType('');
+                      setEasyReading(false);
+                      setSearchParams({}, { replace: true });
+                    }}
+                  >
+                    Limpiar filtros
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-custom px-4 py-3"
+                    aria-label="Buscar empleos con los filtros seleccionados"
+                  >
+                    <span className="fs-5 me-2">🔍</span>
+                    Buscar empleos
+                  </button>
+                </div>
               </div>
             </form>
           </div>
         </div>
 
-        {/* Job Listings */}
+        <div className="mb-4" role="status" aria-live="polite">
+          <p className="text-muted mb-0">
+            Se encontraron <strong>{filteredJobs.length}</strong> vacantes con los filtros actuales.
+          </p>
+        </div>
+
         <div className="row g-4">
-          {mockJobs.map((job) => (
-            <div key={job.id} className="col-12">
-              <div className="card card-custom animate-fade-in">
-                <div className="card-body p-4">
-                  <div className="row align-items-start">
-                    <div className="col-md-8">
-                      <div className="d-flex align-items-center mb-3">
-                        <div
-                          className="bg-gradient-primary rounded-3 d-flex align-items-center justify-content-center me-3"
-                          style={{ width: '60px', height: '60px' }}
-                          aria-hidden="true"
-                        >
-                          <span className="text-white fw-bold fs-5">{job.company.charAt(0)}</span>
+          {filteredJobs.length === 0 && (
+            <div className="col-12">
+              <div className="alert alert-info" role="status">
+                No encontramos vacantes con esos filtros. Ajusta los criterios y vuelve a intentar.
+              </div>
+            </div>
+          )}
+
+          {filteredJobs.map((job) => {
+            const isApplied = appliedJobs.includes(job.id);
+            const isSaved = savedJobs.includes(job.id);
+            const isClosed = closedJobIds.includes(job.id);
+
+            return (
+              <div key={job.id} className="col-12">
+                <div className="card card-custom animate-fade-in">
+                  <div className="card-body p-4">
+                    <div className="row align-items-start">
+                      <div className="col-md-8">
+                        <div className="d-flex align-items-center mb-3">
+                          <div
+                            className="bg-gradient-primary rounded-3 d-flex align-items-center justify-content-center me-3"
+                            style={{ width: '60px', height: '60px' }}
+                            aria-hidden="true"
+                          >
+                            <span className="text-white fw-bold fs-5">{job.company.charAt(0)}</span>
+                          </div>
+                          <div>
+                            <h3 className="h4 fw-bold text-dark mb-1">{job.title}</h3>
+                            <p className="text-muted fw-semibold mb-0">{job.company}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="h4 fw-bold text-dark mb-1">
-                            {job.title}
-                          </h3>
-                          <p className="text-muted fw-semibold mb-0">{job.company}</p>
-                        </div>
-                      </div>
 
-                      <div className="d-flex flex-wrap gap-4 mb-3 text-muted">
-                        <span className="d-flex align-items-center">
-                          <span className="fs-5 me-2">📍</span>
-                          <span>{job.location}</span>
-                        </span>
-                        <span className="d-flex align-items-center">
-                          <span className="fs-5 me-2">⏰</span>
-                          <span>{job.contractType}</span>
-                        </span>
-                        <span className="d-flex align-items-center">
-                          <span className="fs-5 me-2">💰</span>
-                          <span>{job.salary}</span>
-                        </span>
-                      </div>
-
-                      <p className="text-muted mb-3">
-                        {job.description}
-                      </p>
-
-                      <div className="d-flex flex-wrap gap-2">
-                        <span className="badge bg-primary rounded-pill px-3 py-2">React</span>
-                        <span className="badge bg-info rounded-pill px-3 py-2">TypeScript</span>
-                        <span className="badge bg-success rounded-pill px-3 py-2">Accesible</span>
-                        <span className="badge bg-warning rounded-pill px-3 py-2">WCAG 2.1</span>
-                      </div>
-                    </div>
-
-                    <div className="col-md-4 mt-3 mt-md-0">
-                      <div className="d-flex flex-column gap-2">
-                        <button
-                          className="btn btn-primary btn-custom"
-                          onClick={() => handleApply(job.id)}
-                          disabled={appliedJobs.includes(job.id)}
-                          aria-label={`${appliedJobs.includes(job.id) ? 'Ya postulado' : 'Postularse a'} ${job.title}`}
-                        >
-                          <span className="fs-5 me-2">
-                            {appliedJobs.includes(job.id) ? '✅' : '📝'}
+                        <div className="d-flex flex-wrap gap-4 mb-3 text-muted">
+                          <span className="d-flex align-items-center">
+                            <span className="fs-5 me-2">📍</span>
+                            <span>{job.location}</span>
                           </span>
-                          {appliedJobs.includes(job.id) ? 'Postulado' : 'Postularse'}
-                        </button>
-                        <button
-                          className={`btn ${savedJobs.includes(job.id) ? 'btn-success' : 'btn-outline-primary'} btn-custom`}
-                          onClick={() => handleSave(job.id)}
-                          aria-label={`${savedJobs.includes(job.id) ? 'Quitar de guardados' : 'Guardar'} ${job.title}`}
-                        >
-                          <span className="fs-5 me-2">💾</span>
-                          {savedJobs.includes(job.id) ? 'Guardado' : 'Guardar'}
-                        </button>
-                        <button
-                          className="btn btn-outline-secondary btn-custom"
-                          onClick={() => handleViewDetail(job)}
-                          aria-label={`Ver detalles del empleo ${job.title}`}
-                        >
-                          <span className="fs-5 me-2">👁️</span>
-                          Ver detalles
-                        </button>
+                          <span className="d-flex align-items-center">
+                            <span className="fs-5 me-2">⏰</span>
+                            <span>{job.contractType}</span>
+                          </span>
+                          <span className="d-flex align-items-center">
+                            <span className="fs-5 me-2">💰</span>
+                            <span>{job.salary}</span>
+                          </span>
+                        </div>
+
+                        <p className="text-muted mb-3">{job.description}</p>
+
+                        <div className="d-flex flex-wrap gap-2">
+                          <span className="badge bg-primary rounded-pill px-3 py-2">React</span>
+                          <span className="badge bg-info rounded-pill px-3 py-2">TypeScript</span>
+                          <span className="badge bg-success rounded-pill px-3 py-2">Accesible</span>
+                          <span className="badge bg-warning rounded-pill px-3 py-2">WCAG 2.1</span>
+                          {isClosed && <span className="badge bg-secondary rounded-pill px-3 py-2">Vacante cerrada</span>}
+                        </div>
+                      </div>
+
+                      <div className="col-md-4 mt-3 mt-md-0">
+                        <div className="d-flex flex-column gap-2">
+                          <button
+                            className="btn btn-primary btn-custom"
+                            onClick={() => handleApply(job.id)}
+                            disabled={isApplied || isClosed}
+                            aria-label={`${isApplied ? 'Ya postulado' : 'Postularse a'} ${job.title}`}
+                          >
+                            <span className="fs-5 me-2">{isApplied ? '✅' : '📝'}</span>
+                            {isApplied ? 'Postulado' : isClosed ? 'Vacante cerrada' : 'Postularse'}
+                          </button>
+                          <button
+                            className={`btn ${isSaved ? 'btn-success' : 'btn-outline-primary'} btn-custom`}
+                            onClick={() => handleSave(job.id)}
+                            aria-label={`${isSaved ? 'Quitar de guardados' : 'Guardar'} ${job.title}`}
+                          >
+                            <span className="fs-5 me-2">💾</span>
+                            {isSaved ? 'Guardado' : 'Guardar'}
+                          </button>
+                          <button
+                            className="btn btn-outline-secondary btn-custom"
+                            onClick={() => handleViewDetail(job)}
+                            aria-label={`Ver detalles del empleo ${job.title}`}
+                          >
+                            <span className="fs-5 me-2">👁️</span>
+                            Ver detalles
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Load more button */}
         <div className="text-center mt-5">
           <button
             className="btn btn-outline-primary btn-custom px-5 py-3"
@@ -292,17 +371,6 @@ export const JobSearchPage: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {/* Job Detail Modal */}
-      <JobDetailModal
-        job={selectedJob}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onApply={handleModalApply}
-        onSave={handleModalSave}
-        isSaved={selectedJob ? savedJobs.includes(selectedJob.id) : false}
-        jobStatus={selectedJob && appliedJobs.includes(selectedJob.id) ? 'applied' : 'saved'}
-      />
     </div>
   );
-}; 
+};

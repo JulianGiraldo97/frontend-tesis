@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import {
@@ -9,6 +10,7 @@ import {
 } from '../components';
 import { jobDetails, MockJob, MockSavedJob, savedJobs as mockSavedJobs } from '../data/mockData';
 import {
+  getResumeDraftData,
   getStoredProfileData,
   saveStoredProfileData,
 } from '../services/mockStorage';
@@ -42,6 +44,10 @@ export const ProfilePage: React.FC = () => {
   const [savedJobs, setSavedJobs] = useState<MockSavedJob[]>(() =>
     mockSavedJobs.map(job => ({ ...job }))
   );
+  const [resumeDraftState, setResumeDraftState] = useState<{
+    step: number;
+    updatedAt: string;
+  } | null>(null);
 
   useEffect(() => {
     const userId = user?.id || 'guest';
@@ -59,6 +65,25 @@ export const ProfilePage: React.FC = () => {
       }));
     }
   }, [user]);
+
+  useEffect(() => {
+    const refreshDraft = () => {
+      const draft = getResumeDraftData(user?.id || 'guest');
+      if (!draft) {
+        setResumeDraftState(null);
+        return;
+      }
+
+      setResumeDraftState({
+        step: draft.step,
+        updatedAt: draft.updatedAt,
+      });
+    };
+
+    refreshDraft();
+    window.addEventListener('focus', refreshDraft);
+    return () => window.removeEventListener('focus', refreshDraft);
+  }, [user?.id]);
 
   const handleFormFieldChange = (
     field: 'name' | 'email' | 'phone' | 'location' | 'bio',
@@ -384,6 +409,38 @@ export const ProfilePage: React.FC = () => {
                     </div>
                   )}
                 </form>
+              </div>
+            </div>
+
+            <div className="card card-custom mb-4 animate-fade-in">
+              <div className="card-header bg-transparent border-0 pb-0">
+                <h3 className="h4 fw-bold mb-0">Hoja de Vida Guiada</h3>
+              </div>
+              <div className="card-body">
+                <p className="text-muted mb-2">
+                  Completa tu perfil por pasos. El progreso se guarda automáticamente en tu navegador.
+                </p>
+                {resumeDraftState ? (
+                  <div className="alert alert-info mb-3" role="status">
+                    Progreso actual: paso {resumeDraftState.step} de 4. Última actualización:{' '}
+                    {new Date(resumeDraftState.updatedAt).toLocaleString('es-ES')}.
+                  </div>
+                ) : (
+                  <div className="alert alert-secondary mb-3" role="status">
+                    Aún no tienes un borrador de hoja de vida. Puedes empezar ahora.
+                  </div>
+                )}
+                <Link
+                  to="/profile-builder"
+                  className="btn btn-primary btn-custom"
+                  aria-label={
+                    resumeDraftState
+                      ? `Continuar hoja de vida guiada desde el paso ${resumeDraftState.step}`
+                      : 'Iniciar hoja de vida guiada'
+                  }
+                >
+                  {resumeDraftState ? 'Continuar hoja de vida guiada' : 'Iniciar hoja de vida guiada'}
+                </Link>
               </div>
             </div>
 

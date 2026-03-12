@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export const LoginPage: React.FC = () => {
@@ -8,6 +8,16 @@ export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [showRecoveryForm, setShowRecoveryForm] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [recoveryError, setRecoveryError] = useState('');
+  const [recoveryStatus, setRecoveryStatus] = useState('');
+
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const recoveryEmailRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -21,9 +31,69 @@ export const LoginPage: React.FC = () => {
     };
   }, [clearError]);
 
+  useEffect(() => {
+    if (showRecoveryForm) {
+      recoveryEmailRef.current?.focus();
+    }
+  }, [showRecoveryForm]);
+
+  const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setEmailError('');
+    setPasswordError('');
+    setRecoveryStatus('');
+    clearError();
+
+    if (!email.trim()) {
+      setEmailError('Ingresa tu correo electrónico.');
+      emailInputRef.current?.focus();
+      return;
+    }
+
+    if (!isValidEmail(email.trim())) {
+      setEmailError('El formato de correo no es válido.');
+      emailInputRef.current?.focus();
+      return;
+    }
+
+    if (!password.trim()) {
+      setPasswordError('Ingresa tu contraseña.');
+      passwordInputRef.current?.focus();
+      return;
+    }
+
     await login({ email, password });
+  };
+
+  const handleRecoverySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setRecoveryError('');
+    setRecoveryStatus('');
+
+    if (!recoveryEmail.trim()) {
+      setRecoveryError('Ingresa el correo de tu cuenta para recuperar acceso.');
+      recoveryEmailRef.current?.focus();
+      return;
+    }
+
+    if (!isValidEmail(recoveryEmail.trim())) {
+      setRecoveryError('El correo no tiene un formato válido.');
+      recoveryEmailRef.current?.focus();
+      return;
+    }
+
+    if (recoveryEmail.trim().toLowerCase() === 'demo@example.com') {
+      setRecoveryStatus(
+        'Enlace de recuperación enviado a demo@example.com. Revisa tu bandeja de entrada.'
+      );
+      return;
+    }
+
+    setRecoveryError(
+      'No encontramos una cuenta con ese correo. Si ya estás registrado, verifica el correo o inicia sesión con tus credenciales.'
+    );
   };
 
   return (
@@ -50,6 +120,11 @@ export const LoginPage: React.FC = () => {
             {/* Login Form */}
             <div className="card card-custom glass animate-fade-in">
               <div className="card-body p-5">
+                <p className="visually-hidden" aria-live="polite">
+                  {recoveryStatus || error || emailError || passwordError || recoveryError}
+                </p>
+
+                {!showRecoveryForm ? (
                 <form onSubmit={handleSubmit}>
                   {error && (
                     <div className="alert alert-danger" role="alert">
@@ -61,14 +136,23 @@ export const LoginPage: React.FC = () => {
                       Correo electrónico
                     </label>
                     <input
+                      ref={emailInputRef}
                       type="email"
-                      className="form-control form-control-custom"
+                      className={`form-control form-control-custom ${emailError ? 'is-invalid' : ''}`}
                       id="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setEmailError('');
+                      }}
                       placeholder="tu@email.com"
                       required
                     />
+                    {emailError && (
+                      <div className="invalid-feedback d-block" role="alert">
+                        {emailError}
+                      </div>
+                    )}
                   </div>
 
                   <div className="mb-4">
@@ -77,11 +161,15 @@ export const LoginPage: React.FC = () => {
                     </label>
                     <div className="position-relative">
                       <input
+                        ref={passwordInputRef}
                         type={showPassword ? 'text' : 'password'}
-                        className="form-control form-control-custom"
+                        className={`form-control form-control-custom ${passwordError ? 'is-invalid' : ''}`}
                         id="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          setPasswordError('');
+                        }}
                         placeholder="••••••••"
                         required
                       />
@@ -98,6 +186,11 @@ export const LoginPage: React.FC = () => {
                         )}
                       </button>
                     </div>
+                    {passwordError && (
+                      <div className="invalid-feedback d-block" role="alert">
+                        {passwordError}
+                      </div>
+                    )}
                   </div>
 
                   <div className="d-flex justify-content-between align-items-center mb-4">
@@ -111,13 +204,18 @@ export const LoginPage: React.FC = () => {
                         Recordarme
                       </label>
                     </div>
-                    <a
-                      href="/forgot-password"
-                      className="text-decoration-none text-primary fw-semibold"
+                    <button
+                      type="button"
+                      className="btn btn-link p-0 text-decoration-none text-primary fw-semibold"
+                      onClick={() => {
+                        setShowRecoveryForm(true);
+                        setRecoveryError('');
+                        setRecoveryStatus('');
+                      }}
                       aria-label="Recuperar contraseña"
                     >
                       ¿Olvidaste tu contraseña?
-                    </a>
+                    </button>
                   </div>
 
                   <button
@@ -150,6 +248,71 @@ export const LoginPage: React.FC = () => {
                     </p>
                   </div>
                 </form>
+                ) : (
+                  <form onSubmit={handleRecoverySubmit} noValidate>
+                    <h3 className="h5 fw-bold mb-3 text-dark">Recuperar acceso</h3>
+                    <p className="text-muted mb-4">
+                      Ingresa el correo de tu cuenta. Te enviaremos un enlace para restablecer la contraseña.
+                    </p>
+
+                    {recoveryStatus && (
+                      <div className="alert alert-success" role="status">
+                        {recoveryStatus}
+                      </div>
+                    )}
+                    {recoveryError && (
+                      <div className="alert alert-warning" role="alert">
+                        {recoveryError}
+                      </div>
+                    )}
+
+                    <div className="mb-4">
+                      <label htmlFor="recoveryEmail" className="form-label fw-semibold text-dark">
+                        Correo registrado
+                      </label>
+                      <input
+                        ref={recoveryEmailRef}
+                        id="recoveryEmail"
+                        type="email"
+                        className={`form-control form-control-custom ${recoveryError ? 'is-invalid' : ''}`}
+                        value={recoveryEmail}
+                        onChange={(e) => {
+                          setRecoveryEmail(e.target.value);
+                          setRecoveryError('');
+                        }}
+                        placeholder="tu@email.com"
+                        aria-describedby="recovery-help"
+                      />
+                      <small id="recovery-help" className="text-muted d-block mt-2">
+                        Si ya estás registrado y no recuerdas tu contraseña, este es el paso recomendado.
+                      </small>
+                    </div>
+
+                    <div className="d-grid gap-2">
+                      <button type="submit" className="btn btn-primary btn-custom">
+                        Enviar enlace de recuperación
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary btn-custom"
+                        onClick={() => {
+                          setShowRecoveryForm(false);
+                          setRecoveryError('');
+                          setRecoveryStatus('');
+                        }}
+                      >
+                        Volver al inicio de sesión
+                      </button>
+                    </div>
+
+                    <p className="text-muted mt-4 mb-0">
+                      ¿Correo incorrecto o sin cuenta?{' '}
+                      <Link to="/register" className="text-decoration-none fw-semibold">
+                        Crear cuenta
+                      </Link>
+                    </p>
+                  </form>
+                )}
               </div>
             </div>
 

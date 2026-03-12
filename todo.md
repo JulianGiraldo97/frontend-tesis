@@ -122,6 +122,41 @@ React 18 + TypeScript + Bootstrap 5 · Desplegado en GitHub Pages (`/frontend-te
 
 ---
 
+## 4. Nuevas tareas de valor (Frontend)
+
+Derivadas de la parte técnica de la tesis (requerimientos + arquitectura), enfocadas en valor funcional y evidencia técnica para evaluación.
+
+### 4.1 Flujos funcionales prioritarios (RF001–RF009)
+- [x] `src/pages/LoginPage.tsx` — implementar recuperación de acceso accesible (mensajes anunciables `role="status"/"alert"`, foco al primer error, alternativa clara a usuario ya registrado)
+- [x] `src/pages/ProfilePage.tsx` + `src/pages/ProfileBuilder.tsx` — crear flujo guiado de hoja de vida por pasos con guardado progresivo local para reducir abandono (RF002, RNF002)
+- [x] `src/pages/JobSearchPage.tsx` — persistir filtros en query params y restaurar estado al volver desde detalle para continuidad de búsqueda (RF003)
+- [x] `src/pages/JobDetailPage.tsx` + `src/pages/ApplicationPage.tsx` — mostrar estados de postulación (`ya postulado`, `vacante cerrada`, `perfil incompleto`) con acciones correctivas accesibles (RF004)
+- [x] `src/pages/EmployerDashboard.tsx` — vista de postulaciones por vacante con filtros, orden y empty states comprensibles (RF006)
+- [x] `src/pages/EmployerDashboard.tsx` — composer de retroalimentación accesible con plantillas de lenguaje claro y vista previa (RF007)
+- [x] `src/pages/AdminDashboard.tsx` — implementar `AccessibilityMonitoringPanel` con datos mock (fecha, alcance, severidad, estado) y exportación CSV/JSON (RF009)
+- [x] `src/pages/AdminDashboard.tsx` — timeline de trazabilidad de acciones administrativas (`quién`, `qué`, `cuándo`) consumiendo mock data (RF008)
+
+### 4.2 Accesibilidad avanzada (objetivo WCAG 2.2 AA)
+- [ ] `src/AppRouter.tsx` — anunciar cambios de ruta en `aria-live` y mover foco al `h1` principal en cada navegación SPA
+- [ ] `src/context/AccessibilityContext.tsx` + `src/data/` — implementar modo global de lectura fácil para labels/mensajes críticos (UC14)
+- [ ] `src/components/*` + `src/pages/*` — añadir soporte de subtítulos/transcripción descargable para contenidos multimedia de ayuda o retroalimentación (UC13)
+- [ ] `scripts/` + `docs/` — checklist manual de teclado/NVDA/VoiceOver para registro, login, búsqueda, postulación y gestión de vacantes
+
+### 4.3 Arquitectura frontend y gobernanza
+- [ ] `src/components/` — definir catálogo de componentes base accesibles (`Input`, `Button`, `Modal`, `Select`, `Toast`) para accesibilidad por defecto
+- [ ] `src/pages/*.tsx` + `src/components/*.tsx` — agregar pruebas de accesibilidad con `jest-axe` en flujos críticos (registro, login, búsqueda, postulación, vacantes)
+- [ ] `.github/workflows/` + `package.json` — activar gate de accesibilidad en CI (`eslint-plugin-jsx-a11y` + auditoría automática) y eliminar dependencia operativa de `DISABLE_ESLINT_PLUGIN=true`
+- [ ] `docs/adr/` — registrar ADRs de frontend (foco en SPA, anuncios SR, lectura fácil y estrategia de componentes)
+- [ ] `docs/traceability-frontend.md` — matriz RF/RNF → componente UI → evidencia (test, checklist, auditoría)
+
+### 4.4 Rendimiento y compatibilidad (RNF006, RNF009)
+- [ ] `src/AppRouter.tsx` + `src/pages/*` — aplicar code splitting con `React.lazy`/`Suspense` para vistas pesadas (`ProfilePage`, `EmployerDashboard`, `AdminDashboard`)
+- [ ] `src/index.tsx` + `docs/performance/` — medir baseline de Web Vitals (LCP, INP, CLS) y definir umbrales por pantalla crítica
+- [ ] `docs/compatibility-matrix.md` — crear matriz de compatibilidad (Chrome/Edge/Firefox/Safari + NVDA/VoiceOver) y protocolo de smoke test por release
+- [ ] `src/pages/JobSearchPage.tsx` + `src/pages/EmployerDashboard.tsx` — optimizar rendimiento de listados con paginación/virtualización ligera y mejoras de render
+
+---
+
 ## Notas
 
 - Las credenciales de demo (`demo@example.com` / `password`) y el token `mock-token` en `src/context/AuthContext.tsx` son intencionales para el prototipo de tesis.

@@ -1,21 +1,39 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   AccessibilityNotification,
   CandidateCVModal,
   VacancyDetailModal,
 } from '../components';
 import {
+  feedbackTemplates,
   MockApplication,
   MockVacancy,
   applications as mockApplications,
   vacancies as mockVacancies,
 } from '../data/mockData';
 
+type ApplicationStatusFilter =
+  | 'all'
+  | 'Nueva'
+  | 'En revisión'
+  | 'Entrevista'
+  | 'Rechazada';
+
+type ApplicationSort = 'recent' | 'match-desc' | 'name-asc';
+
+interface SentFeedback {
+  id: string;
+  candidateName: string;
+  vacancy: string;
+  sentAt: string;
+  message: string;
+}
+
 export const EmployerDashboard: React.FC = () => {
   const [notification, setNotification] = useState({
     message: '',
     type: 'info' as 'success' | 'info' | 'warning',
-    isVisible: false
+    isVisible: false,
   });
   const [selectedVacancy, setSelectedVacancy] = useState<MockVacancy | null>(null);
   const [isVacancyModalOpen, setIsVacancyModalOpen] = useState(false);
@@ -34,13 +52,70 @@ export const EmployerDashboard: React.FC = () => {
     mockApplications.map(application => ({ ...application }))
   );
 
-  const showNotification = (message: string, type: 'success' | 'info' | 'warning' = 'info') => {
+  const [selectedVacancyId, setSelectedVacancyId] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<ApplicationStatusFilter>('all');
+  const [sortBy, setSortBy] = useState<ApplicationSort>('recent');
+
+  const [composerCandidate, setComposerCandidate] = useState<MockApplication | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(
+    feedbackTemplates[0]?.id || ''
+  );
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [sentFeedback, setSentFeedback] = useState<SentFeedback[]>([]);
+
+  const showNotification = (
+    message: string,
+    type: 'success' | 'info' | 'warning' = 'info'
+  ) => {
     setNotification({
       message,
       type,
-      isVisible: true
+      isVisible: true,
     });
   };
+
+  const getVacancyName = (vacancyId: string) => {
+    const vacancy = vacancies.find(item => item.id === vacancyId);
+    return vacancy?.position || 'Vacante sin identificar';
+  };
+
+  const fillTemplate = (templateId: string, application: MockApplication) => {
+    const template = feedbackTemplates.find(item => item.id === templateId);
+    if (!template) return '';
+
+    return template.content
+      .replace('{{nombre}}', application.name)
+      .replace('{{vacante}}', application.position);
+  };
+
+  const filteredApplications = useMemo(() => {
+    const byVacancy = applications.filter(application =>
+      selectedVacancyId === 'all' ? true : application.vacancyId === selectedVacancyId
+    );
+
+    const byStatus = byVacancy.filter(application =>
+      statusFilter === 'all' ? true : application.status === statusFilter
+    );
+
+    const sorted = [...byStatus];
+
+    if (sortBy === 'match-desc') {
+      sorted.sort(
+        (a, b) =>
+          Number.parseInt(b.match.replace('%', ''), 10) -
+          Number.parseInt(a.match.replace('%', ''), 10)
+      );
+      return sorted;
+    }
+
+    if (sortBy === 'name-asc') {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+      return sorted;
+    }
+
+    sorted.sort((a, b) => Number(b.id) - Number(a.id));
+    return sorted;
+  }, [applications, selectedVacancyId, sortBy, statusFilter]);
 
   const handleViewVacancy = (vacancyId: string) => {
     const vacancy = vacancies.find(v => v.id === vacancyId);
@@ -55,15 +130,16 @@ export const EmployerDashboard: React.FC = () => {
     const vacancy = vacancies.find(v => v.id === vacancyId);
     if (vacancy) {
       showNotification(`Formulario de edición abierto para: ${vacancy.position}`, 'info');
-      // Aquí se abriría un formulario de edición
     }
   };
 
   const handleCloseVacancy = (vacancyId: string) => {
-    setVacancies(prev => prev.map(v => 
-      v.id === vacancyId ? { ...v, status: 'Cerrada', color: 'secondary' } : v
-    ));
-    showNotification(`Vacante cerrada exitosamente`, 'success');
+    setVacancies(prev =>
+      prev.map(v =>
+        v.id === vacancyId ? { ...v, status: 'Cerrada', color: 'secondary' } : v
+      )
+    );
+    showNotification('Vacante cerrada exitosamente', 'success');
   };
 
   const handleViewCV = (applicationId: string) => {
@@ -77,10 +153,42 @@ export const EmployerDashboard: React.FC = () => {
 
   const handleContactCandidate = (applicationId: string) => {
     const application = applications.find(a => a.id === applicationId);
-    if (application) {
-      showNotification(`Formulario de contacto abierto para: ${application.name}`, 'success');
-      // Aquí se abriría un formulario de contacto
+    if (!application) return;
+
+    const initialTemplateId = feedbackTemplates[0]?.id || '';
+    setComposerCandidate(application);
+    setSelectedTemplateId(initialTemplateId);
+    setFeedbackMessage(fillTemplate(initialTemplateId, application));
+    showNotification(`Editor de retroalimentación abierto para: ${application.name}`, 'info');
+  };
+
+  const handleTemplateChange = (templateId: string) => {
+    setSelectedTemplateId(templateId);
+    if (composerCandidate) {
+      setFeedbackMessage(fillTemplate(templateId, composerCandidate));
     }
+  };
+
+  const handleSendFeedback = () => {
+    if (!composerCandidate) return;
+
+    if (!feedbackMessage.trim()) {
+      showNotification('Escribe un mensaje antes de enviar la retroalimentación.', 'warning');
+      return;
+    }
+
+    const newFeedback: SentFeedback = {
+      id: `feedback-${Date.now()}`,
+      candidateName: composerCandidate.name,
+      vacancy: composerCandidate.position,
+      sentAt: new Date().toLocaleString('es-ES'),
+      message: feedbackMessage.trim(),
+    };
+
+    setSentFeedback(prev => [newFeedback, ...prev]);
+    setComposerCandidate(null);
+    setFeedbackMessage('');
+    showNotification('Retroalimentación enviada correctamente.', 'success');
   };
 
   const handleCloseVacancyModal = () => {
@@ -95,7 +203,6 @@ export const EmployerDashboard: React.FC = () => {
 
   return (
     <div className="min-vh-100 bg-light">
-      {/* Accessibility Notification */}
       <AccessibilityNotification
         message={notification.message}
         type={notification.type}
@@ -103,7 +210,6 @@ export const EmployerDashboard: React.FC = () => {
         onClose={() => setNotification(prev => ({ ...prev, isVisible: false }))}
       />
 
-      {/* Header Section */}
       <div className="bg-gradient-primary text-white py-5">
         <div className="container">
           <div className="row align-items-center">
@@ -113,7 +219,10 @@ export const EmployerDashboard: React.FC = () => {
             </div>
             <div className="col-md-4 text-md-end">
               <div className="d-flex align-items-center justify-content-md-end">
-                <div className="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '60px', height: '60px' }}>
+                <div
+                  className="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center me-3"
+                  style={{ width: '60px', height: '60px' }}
+                >
                   <span className="text-white fw-bold fs-4">S</span>
                 </div>
                 <div>
@@ -127,12 +236,14 @@ export const EmployerDashboard: React.FC = () => {
       </div>
 
       <div className="container py-5">
-        {/* Stats Cards */}
         <div className="row g-4 mb-5">
           <div className="col-md-3">
             <div className="card card-custom text-center animate-fade-in">
               <div className="card-body p-4">
-                <div className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '60px', height: '60px' }}>
+                <div
+                  className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                  style={{ width: '60px', height: '60px' }}
+                >
                   <span className="fs-2 text-primary">📋</span>
                 </div>
                 <h3 className="h2 fw-bold text-primary mb-2">{vacancies.length}</h3>
@@ -143,10 +254,13 @@ export const EmployerDashboard: React.FC = () => {
           <div className="col-md-3">
             <div className="card card-custom text-center animate-fade-in">
               <div className="card-body p-4">
-                <div className="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '60px', height: '60px' }}>
+                <div
+                  className="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                  style={{ width: '60px', height: '60px' }}
+                >
                   <span className="fs-2 text-success">👥</span>
                 </div>
-                <h3 className="h2 fw-bold text-success mb-2">{applications.reduce((sum, app) => sum + 1, 0)}</h3>
+                <h3 className="h2 fw-bold text-success mb-2">{applications.length}</h3>
                 <p className="text-muted mb-0">Candidatos</p>
               </div>
             </div>
@@ -154,10 +268,15 @@ export const EmployerDashboard: React.FC = () => {
           <div className="col-md-3">
             <div className="card card-custom text-center animate-fade-in">
               <div className="card-body p-4">
-                <div className="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '60px', height: '60px' }}>
+                <div
+                  className="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                  style={{ width: '60px', height: '60px' }}
+                >
                   <span className="fs-2 text-info">📝</span>
                 </div>
-                <h3 className="h2 fw-bold text-info mb-2">{applications.filter(app => app.status === 'Nueva').length}</h3>
+                <h3 className="h2 fw-bold text-info mb-2">
+                  {applications.filter(app => app.status === 'Nueva').length}
+                </h3>
                 <p className="text-muted mb-0">Postulaciones Nuevas</p>
               </div>
             </div>
@@ -165,21 +284,21 @@ export const EmployerDashboard: React.FC = () => {
           <div className="col-md-3">
             <div className="card card-custom text-center animate-fade-in">
               <div className="card-body p-4">
-                <div className="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '60px', height: '60px' }}>
+                <div
+                  className="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                  style={{ width: '60px', height: '60px' }}
+                >
                   <span className="fs-2 text-warning">✅</span>
                 </div>
-                <h3 className="h2 fw-bold text-warning mb-2">5</h3>
-                <p className="text-muted mb-0">Contrataciones</p>
+                <h3 className="h2 fw-bold text-warning mb-2">{sentFeedback.length}</h3>
+                <p className="text-muted mb-0">Mensajes Enviados</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="row g-4">
-          {/* Left Column */}
           <div className="col-lg-8">
-            {/* Active Vacancies */}
             <div className="card card-custom mb-4 animate-fade-in">
               <div className="card-header bg-transparent border-0 pb-0 d-flex justify-content-between align-items-center">
                 <h3 className="h4 fw-bold mb-0">Vacantes Activas</h3>
@@ -202,7 +321,7 @@ export const EmployerDashboard: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {vacancies.map((vacancy) => (
+                      {vacancies.map(vacancy => (
                         <tr key={vacancy.id}>
                           <td>
                             <h6 className="fw-bold mb-1">{vacancy.position}</h6>
@@ -226,7 +345,7 @@ export const EmployerDashboard: React.FC = () => {
                           </td>
                           <td>
                             <div className="btn-group btn-group-sm" role="group">
-                              <button 
+                              <button
                                 className="btn btn-outline-primary"
                                 onClick={() => handleViewVacancy(vacancy.id)}
                                 title="Ver detalles de la vacante"
@@ -234,7 +353,7 @@ export const EmployerDashboard: React.FC = () => {
                               >
                                 👁️ Ver
                               </button>
-                              <button 
+                              <button
                                 className="btn btn-outline-secondary"
                                 onClick={() => handleEditVacancy(vacancy.id)}
                                 title="Editar vacante"
@@ -242,7 +361,21 @@ export const EmployerDashboard: React.FC = () => {
                               >
                                 ✏️ Editar
                               </button>
-                              <button 
+                              <button
+                                className="btn btn-outline-info"
+                                onClick={() => {
+                                  setSelectedVacancyId(vacancy.id);
+                                  showNotification(
+                                    `Mostrando postulaciones de: ${vacancy.position}`,
+                                    'info'
+                                  );
+                                }}
+                                title="Ver postulaciones de esta vacante"
+                                aria-label={`Ver postulaciones de la vacante ${vacancy.position}`}
+                              >
+                                📄 Postulaciones
+                              </button>
+                              <button
                                 className="btn btn-outline-danger"
                                 onClick={() => handleCloseVacancy(vacancy.id)}
                                 title="Cerrar vacante"
@@ -260,54 +393,221 @@ export const EmployerDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Recent Applications */}
             <div className="card card-custom animate-fade-in">
               <div className="card-header bg-transparent border-0 pb-0">
-                <h3 className="h4 fw-bold mb-0">Postulaciones Recientes</h3>
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                  <h3 className="h4 fw-bold mb-0">Postulaciones por Vacante</h3>
+                  <div className="d-flex flex-wrap gap-2">
+                    <select
+                      className="form-select form-select-sm"
+                      value={selectedVacancyId}
+                      onChange={e => setSelectedVacancyId(e.target.value)}
+                      aria-label="Filtrar postulaciones por vacante"
+                    >
+                      <option value="all">Todas las vacantes</option>
+                      {vacancies.map(vacancy => (
+                        <option key={vacancy.id} value={vacancy.id}>
+                          {vacancy.position}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      className="form-select form-select-sm"
+                      value={statusFilter}
+                      onChange={e => setStatusFilter(e.target.value as ApplicationStatusFilter)}
+                      aria-label="Filtrar postulaciones por estado"
+                    >
+                      <option value="all">Todos los estados</option>
+                      <option value="Nueva">Nueva</option>
+                      <option value="En revisión">En revisión</option>
+                      <option value="Entrevista">Entrevista</option>
+                      <option value="Rechazada">Rechazada</option>
+                    </select>
+                    <select
+                      className="form-select form-select-sm"
+                      value={sortBy}
+                      onChange={e => setSortBy(e.target.value as ApplicationSort)}
+                      aria-label="Ordenar postulaciones"
+                    >
+                      <option value="recent">Más recientes</option>
+                      <option value="match-desc">Mayor coincidencia</option>
+                      <option value="name-asc">Nombre (A-Z)</option>
+                    </select>
+                  </div>
+                </div>
               </div>
               <div className="card-body">
-                <div className="row g-3">
-                  {applications.map((application) => (
-                    <div key={application.id} className="col-md-6">
-                      <div className="card border-0 shadow-sm h-100">
-                        <div className="card-body p-3">
-                          <div className="d-flex align-items-center mb-3">
-                            <div className="bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '40px', height: '40px' }}>
-                              <span className="text-white fw-bold">{application.name.charAt(0)}</span>
+                <p className="text-muted" role="status" aria-live="polite">
+                  {filteredApplications.length} postulaciones encontradas con los filtros actuales.
+                </p>
+
+                {filteredApplications.length === 0 ? (
+                  <div className="alert alert-info" role="status">
+                    No hay postulaciones para los filtros seleccionados. Ajusta la vacante, el estado o el orden.
+                  </div>
+                ) : (
+                  <div className="row g-3">
+                    {filteredApplications.map(application => (
+                      <div key={application.id} className="col-md-6">
+                        <div className="card border-0 shadow-sm h-100">
+                          <div className="card-body p-3">
+                            <div className="d-flex align-items-center mb-3">
+                              <div
+                                className="bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                style={{ width: '40px', height: '40px' }}
+                              >
+                                <span className="text-white fw-bold">{application.name.charAt(0)}</span>
+                              </div>
+                              <div className="flex-grow-1">
+                                <h6 className="fw-bold mb-1">{application.name}</h6>
+                                <small className="text-muted">{application.position}</small>
+                                <br />
+                                <small className="text-info">{application.disability}</small>
+                                <br />
+                                <small className="text-secondary">
+                                  Vacante: {getVacancyName(application.vacancyId)}
+                                </small>
+                              </div>
+                              <span className="badge bg-success rounded-pill">{application.match}</span>
                             </div>
-                            <div className="flex-grow-1">
-                              <h6 className="fw-bold mb-1">{application.name}</h6>
-                              <small className="text-muted">{application.position}</small>
-                              <br />
-                              <small className="text-info">{application.disability}</small>
+                            <div className="mb-2">
+                              <small className="text-muted">
+                                Experiencia: {application.experience}
+                              </small>
                             </div>
-                            <span className="badge bg-success rounded-pill">{application.match}</span>
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                              <span className={`badge bg-${application.color} rounded-pill`}>
+                                {application.status}
+                              </span>
+                              <small className="text-muted">{application.time}</small>
+                            </div>
+                            <div className="d-flex gap-2">
+                              <button
+                                className="btn btn-primary btn-sm flex-fill"
+                                onClick={() => handleViewCV(application.id)}
+                                aria-label={`Ver CV de ${application.name}`}
+                              >
+                                👁️ Ver CV
+                              </button>
+                              <button
+                                className="btn btn-outline-primary btn-sm flex-fill"
+                                onClick={() => handleContactCandidate(application.id)}
+                                aria-label={`Enviar retroalimentación a ${application.name}`}
+                              >
+                                ✉️ Retroalimentación
+                              </button>
+                            </div>
                           </div>
-                          <div className="mb-2">
-                            <small className="text-muted">Experiencia: {application.experience}</small>
-                          </div>
-                          <div className="d-flex justify-content-between align-items-center mb-3">
-                            <span className={`badge bg-${application.color} rounded-pill`}>
-                              {application.status}
-                            </span>
-                            <small className="text-muted">{application.time}</small>
-                          </div>
-                          <div className="d-flex gap-2">
-                            <button 
-                              className="btn btn-primary btn-sm flex-fill"
-                              onClick={() => handleViewCV(application.id)}
-                              aria-label={`Ver CV de ${application.name}`}
-                            >
-                              👁️ Ver CV
-                            </button>
-                            <button 
-                              className="btn btn-outline-primary btn-sm flex-fill"
-                              onClick={() => handleContactCandidate(application.id)}
-                              aria-label={`Contactar a ${application.name}`}
-                            >
-                              📞 Contactar
-                            </button>
-                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="col-lg-4">
+            <div className="card card-custom mb-4 animate-fade-in">
+              <div className="card-header bg-transparent border-0 pb-0">
+                <h3 className="h4 fw-bold mb-0">Retroalimentación Accesible</h3>
+              </div>
+              <div className="card-body">
+                {!composerCandidate ? (
+                  <div className="alert alert-secondary" role="status">
+                    Selecciona una postulación y pulsa <strong>Retroalimentación</strong> para redactar el mensaje.
+                  </div>
+                ) : (
+                  <>
+                    <p className="mb-2">
+                      <strong>Candidato:</strong> {composerCandidate.name}
+                    </p>
+                    <p className="mb-3 text-muted">
+                      Vacante: {composerCandidate.position}
+                    </p>
+
+                    <div className="mb-3">
+                      <label htmlFor="feedback-template" className="form-label fw-semibold">
+                        Plantilla de mensaje
+                      </label>
+                      <select
+                        id="feedback-template"
+                        className="form-select"
+                        value={selectedTemplateId}
+                        onChange={e => handleTemplateChange(e.target.value)}
+                      >
+                        {feedbackTemplates.map(template => (
+                          <option key={template.id} value={template.id}>
+                            {template.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="feedback-message" className="form-label fw-semibold">
+                        Mensaje final (lectura fácil)
+                      </label>
+                      <textarea
+                        id="feedback-message"
+                        className="form-control"
+                        rows={6}
+                        value={feedbackMessage}
+                        onChange={e => setFeedbackMessage(e.target.value)}
+                        aria-describedby="feedback-help"
+                      />
+                      <small id="feedback-help" className="text-muted d-block mt-2">
+                        Usa frases cortas, lenguaje directo y evita tecnicismos para mejorar comprensión.
+                      </small>
+                    </div>
+
+                    <div className="mb-3 p-3 bg-light rounded">
+                      <h4 className="h6 fw-bold">Vista previa del mensaje</h4>
+                      <p className="mb-0 text-muted">{feedbackMessage || 'Aún no hay contenido.'}</p>
+                    </div>
+
+                    <div className="d-flex gap-2">
+                      <button className="btn btn-primary btn-custom" onClick={handleSendFeedback}>
+                        Enviar retroalimentación
+                      </button>
+                      <button
+                        className="btn btn-outline-secondary btn-custom"
+                        onClick={() => {
+                          setComposerCandidate(null);
+                          setFeedbackMessage('');
+                        }}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="card card-custom animate-fade-in">
+              <div className="card-header bg-transparent border-0 pb-0">
+                <h3 className="h4 fw-bold mb-0">Notificaciones</h3>
+              </div>
+              <div className="card-body">
+                <div className="list-group list-group-flush">
+                  {sentFeedback.length === 0 && (
+                    <div className="list-group-item border-0 px-0 py-2 text-muted small">
+                      Aún no has enviado retroalimentación en esta sesión.
+                    </div>
+                  )}
+                  {sentFeedback.slice(0, 3).map(item => (
+                    <div key={item.id} className="list-group-item border-0 px-0 py-2">
+                      <div className="d-flex align-items-center">
+                        <div
+                          className="bg-success rounded-circle me-3"
+                          style={{ width: '8px', height: '8px' }}
+                        ></div>
+                        <div className="flex-grow-1">
+                          <p className="mb-0 small fw-semibold">
+                            Mensaje enviado a {item.candidateName}
+                          </p>
+                          <small className="text-muted">{item.sentAt}</small>
                         </div>
                       </div>
                     </div>
@@ -316,114 +616,9 @@ export const EmployerDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Right Column */}
-          <div className="col-lg-4">
-            {/* Quick Actions */}
-            <div className="card card-custom mb-4 animate-fade-in">
-              <div className="card-header bg-transparent border-0 pb-0">
-                <h3 className="h4 fw-bold mb-0">Acciones Rápidas</h3>
-              </div>
-              <div className="card-body">
-                <div className="d-grid gap-2">
-                  <button className="btn btn-primary btn-custom" aria-label="Crear vacante inclusiva">
-                    <span className="fs-5 me-2">📋</span>
-                    Crear Vacante Inclusiva
-                  </button>
-                  <button className="btn btn-outline-primary btn-custom" aria-label="Ver listado de candidatos">
-                    <span className="fs-5 me-2">👥</span>
-                    Ver Candidatos
-                  </button>
-                  <button className="btn btn-outline-primary btn-custom" aria-label="Ver reportes de inclusión">
-                    <span className="fs-5 me-2">📊</span>
-                    Reportes de Inclusión
-                  </button>
-                  <button className="btn btn-outline-primary btn-custom" aria-label="Abrir configuración del empleador">
-                    <span className="fs-5 me-2">⚙️</span>
-                    Configuración
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Company Stats */}
-            <div className="card card-custom mb-4 animate-fade-in">
-              <div className="card-header bg-transparent border-0 pb-0">
-                <h3 className="h4 fw-bold mb-0">Estadísticas de Inclusión</h3>
-              </div>
-              <div className="card-body">
-                <div className="mb-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="fw-semibold">Personas con Discapacidad</span>
-                    <span className="badge bg-success rounded-pill">75%</span>
-                  </div>
-                  <div className="progress" style={{ height: '8px' }}>
-                    <div className="progress-bar bg-success" style={{ width: '75%' }}></div>
-                  </div>
-                </div>
-                <div className="mb-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="fw-semibold">Adaptaciones Implementadas</span>
-                    <span className="badge bg-info rounded-pill">12</span>
-                  </div>
-                  <div className="progress" style={{ height: '8px' }}>
-                    <div className="progress-bar bg-info" style={{ width: '85%' }}></div>
-                  </div>
-                </div>
-                <div className="mb-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="fw-semibold">Satisfacción Laboral</span>
-                    <span className="badge bg-warning rounded-pill">4.8/5</span>
-                  </div>
-                  <div className="progress" style={{ height: '8px' }}>
-                    <div className="progress-bar bg-warning" style={{ width: '96%' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Notifications */}
-            <div className="card card-custom animate-fade-in">
-              <div className="card-header bg-transparent border-0 pb-0">
-                <h3 className="h4 fw-bold mb-0">Notificaciones</h3>
-              </div>
-              <div className="card-body">
-                <div className="list-group list-group-flush">
-                  <div className="list-group-item border-0 px-0 py-2">
-                    <div className="d-flex align-items-center">
-                      <div className="bg-success rounded-circle me-3" style={{ width: '8px', height: '8px' }}></div>
-                      <div className="flex-grow-1">
-                        <p className="mb-0 small fw-semibold">Nueva postulación para acomodador</p>
-                        <small className="text-muted">Hace 30 minutos</small>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="list-group-item border-0 px-0 py-2">
-                    <div className="d-flex align-items-center">
-                      <div className="bg-primary rounded-circle me-3" style={{ width: '8px', height: '8px' }}></div>
-                      <div className="flex-grow-1">
-                        <p className="mb-0 small fw-semibold">Vacante de tester cerrada exitosamente</p>
-                        <small className="text-muted">Hace 2 horas</small>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="list-group-item border-0 px-0 py-2">
-                    <div className="d-flex align-items-center">
-                      <div className="bg-info rounded-circle me-3" style={{ width: '8px', height: '8px' }}></div>
-                      <div className="flex-grow-1">
-                        <p className="mb-0 small fw-semibold">Nueva adaptación implementada</p>
-                        <small className="text-muted">Hace 1 día</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Vacancy Detail Modal */}
       <VacancyDetailModal
         vacancy={selectedVacancy}
         isOpen={isVacancyModalOpen}
@@ -432,7 +627,6 @@ export const EmployerDashboard: React.FC = () => {
         onCloseVacancy={handleCloseVacancy}
       />
 
-      {/* Candidate CV Modal */}
       <CandidateCVModal
         candidate={selectedCandidate}
         isOpen={isCandidateModalOpen}
@@ -441,4 +635,4 @@ export const EmployerDashboard: React.FC = () => {
       />
     </div>
   );
-}; 
+};

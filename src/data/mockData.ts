@@ -27,6 +27,7 @@ export interface MockSavedJob {
 
 export interface MockVacancy {
   id: string;
+  jobId: string;
   position: string;
   company: string;
   candidates: number;
@@ -43,6 +44,7 @@ export interface MockVacancy {
 
 export interface MockApplication {
   id: string;
+  vacancyId: string;
   name: string;
   position: string;
   match: string;
@@ -68,6 +70,32 @@ export interface AdminMetrics {
   accessibility: MetricSection;
   users: MetricSection;
 }
+
+export interface AccessibilityAuditReport {
+  id: string;
+  executedAt: string;
+  scope: string;
+  severity: 'critical' | 'serious' | 'moderate' | 'minor';
+  status: 'open' | 'in_progress' | 'resolved';
+  findings: number;
+  tool: string;
+}
+
+export interface AdminActionTrace {
+  id: string;
+  actor: string;
+  action: string;
+  target: string;
+  happenedAt: string;
+}
+
+export interface FeedbackTemplate {
+  id: string;
+  label: string;
+  content: string;
+}
+
+export const closedJobIds: string[] = ['3'];
 
 export const mockJobs: MockJob[] = [
   {
@@ -295,6 +323,7 @@ export const jobDetails: MockJob[] = mockJobs.filter(job =>
 export const vacancies: MockVacancy[] = [
   {
     id: '1',
+    jobId: '1',
     position: 'Acomodador de Cajas - Personas con Discapacidad Cognitiva',
     company: 'Supermercado Inclusivo S.L.',
     candidates: 8,
@@ -323,6 +352,7 @@ export const vacancies: MockVacancy[] = [
   },
   {
     id: '2',
+    jobId: '2',
     position: 'Operador de Telefonía - Personas Sordas',
     company: 'Centro de Atención Telefónica Inclusivo',
     candidates: 5,
@@ -351,6 +381,7 @@ export const vacancies: MockVacancy[] = [
   },
   {
     id: '3',
+    jobId: '3',
     position: 'Tester de Accesibilidad - Personas Ciegas',
     company: 'Empresa de Desarrollo de Software',
     candidates: 12,
@@ -379,6 +410,7 @@ export const vacancies: MockVacancy[] = [
   },
   {
     id: '4',
+    jobId: '4',
     position: 'Ayudante de Cocina - Personas con Discapacidad Cognitiva',
     company: 'Restaurante Inclusivo',
     candidates: 15,
@@ -410,6 +442,7 @@ export const vacancies: MockVacancy[] = [
 export const applications: MockApplication[] = [
   {
     id: '1',
+    vacancyId: '1',
     name: 'María González',
     position: 'Acomodador de Cajas',
     match: '98%',
@@ -421,6 +454,7 @@ export const applications: MockApplication[] = [
   },
   {
     id: '2',
+    vacancyId: '2',
     name: 'Carlos Rodríguez',
     position: 'Operador de Telefonía',
     match: '92%',
@@ -432,6 +466,7 @@ export const applications: MockApplication[] = [
   },
   {
     id: '3',
+    vacancyId: '3',
     name: 'Ana Martínez',
     position: 'Tester de Accesibilidad',
     match: '95%',
@@ -443,6 +478,7 @@ export const applications: MockApplication[] = [
   },
   {
     id: '4',
+    vacancyId: '4',
     name: 'Luis Pérez',
     position: 'Ayudante de Cocina',
     match: '90%',
@@ -474,3 +510,94 @@ export const adminMetrics: AdminMetrics = {
     ],
   },
 };
+
+export const accessibilityAuditReports: AccessibilityAuditReport[] = [
+  {
+    id: 'audit-001',
+    executedAt: '2026-03-09 10:30',
+    scope: '/login, /jobs, /apply/1',
+    severity: 'serious',
+    status: 'in_progress',
+    findings: 4,
+    tool: 'Axe',
+  },
+  {
+    id: 'audit-002',
+    executedAt: '2026-03-08 16:10',
+    scope: '/profile, /dashboard',
+    severity: 'moderate',
+    status: 'resolved',
+    findings: 2,
+    tool: 'WAVE',
+  },
+  {
+    id: 'audit-003',
+    executedAt: '2026-03-07 09:15',
+    scope: '/admin, /employer',
+    severity: 'critical',
+    status: 'open',
+    findings: 1,
+    tool: 'Axe',
+  },
+  {
+    id: 'audit-004',
+    executedAt: '2026-03-06 13:40',
+    scope: '/jobs, /job/2',
+    severity: 'minor',
+    status: 'resolved',
+    findings: 3,
+    tool: 'Lighthouse',
+  },
+];
+
+export const adminActionTimeline: AdminActionTrace[] = [
+  {
+    id: 'trace-001',
+    actor: 'Admin Principal',
+    action: 'Ejecutó auditoría de accesibilidad',
+    target: '/jobs y /apply/1',
+    happenedAt: '2026-03-09 10:35',
+  },
+  {
+    id: 'trace-002',
+    actor: 'Admin Principal',
+    action: 'Actualizó configuración de contraste global',
+    target: 'Preferencias de accesibilidad',
+    happenedAt: '2026-03-08 11:20',
+  },
+  {
+    id: 'trace-003',
+    actor: 'Moderador',
+    action: 'Desactivó cuenta por duplicidad',
+    target: 'usuario: test.duplicado@example.com',
+    happenedAt: '2026-03-08 09:45',
+  },
+  {
+    id: 'trace-004',
+    actor: 'Admin Principal',
+    action: 'Exportó reporte técnico',
+    target: 'RF009 - Monitoreo',
+    happenedAt: '2026-03-07 18:00',
+  },
+];
+
+export const feedbackTemplates: FeedbackTemplate[] = [
+  {
+    id: 'interview',
+    label: 'Invitación a entrevista',
+    content:
+      'Hola {{nombre}}. Gracias por tu postulación al cargo {{vacante}}. Queremos invitarte a una entrevista. Te compartiremos fecha y hora en un mensaje siguiente.',
+  },
+  {
+    id: 'additional_info',
+    label: 'Solicitud de información',
+    content:
+      'Hola {{nombre}}. Gracias por postularte a {{vacante}}. Para continuar, necesitamos información adicional sobre tu experiencia y disponibilidad.',
+  },
+  {
+    id: 'not_selected',
+    label: 'Cierre de proceso',
+    content:
+      'Hola {{nombre}}. Gracias por participar en el proceso para {{vacante}}. En esta ocasión avanzaremos con otro perfil, pero queremos mantener tus datos para futuras vacantes.',
+  },
+];
